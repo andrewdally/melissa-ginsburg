@@ -145,7 +145,6 @@ h1, h2, h3, h4, h5 {
   padding-bottom: 40px;
 }
 .app-page nav {
-  /* background: rgba(255, 255, 255, 0.25); */
   backdrop-filter: blur(3px);
 }
 .fade-enter-active,
