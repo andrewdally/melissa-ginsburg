@@ -42,7 +42,6 @@ export default {
 
   },
   mounted() {
-    console.log(this.$route)
     const initialState = this.$route.meta.granimState || 'default-state'
     this.granimInstance = new Granim({
       element: '#granim-canvas',
@@ -53,16 +52,14 @@ export default {
       states : {
         'home': {
             gradients: [
-              // Home animation
               ['#29323c', '#485563'],
               ['#FF6B6B', '#556270'],
             ],
-            // loop: false
             transitionSpeed: 8000
         },
         'books': {
           gradients: [
-            ['#FEF2E4', '#F8E4DD'],
+            ['#F8BDB4', '#F6E3B6'],
           ],
         },
         'about': {
@@ -75,19 +72,34 @@ export default {
             ['#FFF', '#FEF2E4']
           ]
         },
+        'poems': {
+          gradients: [
+            ['#FFF', '#F8BDB4']
+          ]
+        },
         'the-house': {
           gradients: [
-            ['#FFF', '#FEF2E4']
+            ['#F7C7B6', '#CEEAF3']
           ]
         },
         'sunset': {
           gradients: [
-            ['#FEF2E4', '#E0EDF5']
+            ['#FDEFC4', '#D5DAEB']
           ]
         },
         'weather': {
           gradients: [
-            ['#FFF', '#F8E4DD']
+            ['#FFF', '#D6FFFA']
+          ]
+        },
+        'arbor': {
+          gradients: [
+            ['#FFF', '#F9F7DD']
+          ]
+        },
+        'double-blind': {
+          gradients: [
+            ['#FFF', '#F6E3B6']
           ]
         }
       },
@@ -132,6 +144,11 @@ h1, h2, h3, h4, h5 {
   min-height: 420px;
   border-radius: 5px;
   box-shadow: 0 14px 25px rgb(0 0 0 / 50%);
+  transition: .3s ease;
+
+}
+a .book-cover:hover {
+  transform: scale(1.0075);
 }
 #granim-canvas {
   position: fixed;
@@ -144,7 +161,7 @@ h1, h2, h3, h4, h5 {
 .app-page {
   padding-bottom: 40px;
 }
-.app-page nav {
+nav {
   backdrop-filter: blur(3px);
 }
 .fade-enter-active,
@@ -153,11 +170,23 @@ h1, h2, h3, h4, h5 {
   transition-property: opacity;
   transition-timing-function: ease;
 }
-a:hover{
-  color: #F16A55;
+.uk-button-text {
+  font-size: 1rem;
+  color: #DB2D12;
+  margin-right:12px;
+}
+.uk-button-text:hover, a:hover{
+  color: #DB2D12;
+}
+.uk-button-text::before {
+  border-color: #DB2D12;
 }
 .fade-enter,
 .fade-leave-active {
   opacity: 0
+}
+hr {
+  border-color: rgba(0,0,0, 0.15);
+  margin: auto;
 }
 </style>

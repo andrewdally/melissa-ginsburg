@@ -1,8 +1,11 @@
 <template>
   <div class="poems uk-margin-xlarge-top">
     <div class="uk-margin-auto uk-text-large uk-container-small uk-text-justify uk-padding">
+      <h2>Poems</h2>
       <ul>
+        <li>A Folio of Poetry <span class="uk-text-muted">in</span> <a href="https://www.tupeloquarterly.com/a-folio-of-poetry-by-melissa-ginsburg/">Tupelo Quarterly</a></li>
         <li>Pastoral <span class="uk-text-muted">in</span> <a href="https://www.newyorker.com/magazine/2020/06/08/pastoral">The New Yorker</a></li>
+        <li>Four Poems <span class="uk-text-muted">in</span> <a href="https://thediagram.com/21_1/ginsburg.html">DIAGRAM</a></li>
         <li>History <span class="uk-text-muted">in</span> <a href="https://www.guernicamag.com/history/">Guernica</a></li>
         <li>The Faked Apollo Moon Landing & Apollo <span class="uk-text-muted">in</span> <a href="https://waywiser-press.com/melissa-ginsburg/">The Waywiser Press</a></li>
         <li>As Weapons Need Murder <span class="uk-text-muted">in</span> <a href="http://www.versedaily.org/2019/asweaponsneedmurder.shtml">Verse Daily </a></li>
@@ -14,12 +17,20 @@
         <li>The Job, Birthday, & Mermaid <span class="uk-text-muted">in</span> <a href="https://fourwayreview.com/fwr-monthly-three-poems-by-melissa-ginsburg/">Four Way Review</a></li>
         <li>Fixation <span class="uk-text-muted">in</span> <a href="http://diodepoetry.com/ginsburg_melissa/">Diode</a></li>
         <li>Séance <span class="uk-text-muted">in</span> <a href="https://kenyonreview.org/journal/mayjune-2016/selections/melissa-ginsburg/">Kenyon Review</a></li>
-        <li>A Conversation with <span class="uk-text-muted">in</span> <a href="https://kenyonreview.org/conversation/melissa-ginsburg/ (interview)">Kenyon Review</a></li>
         <li>Heron & My Daughter <span class="uk-text-muted">in</span> <a href="https://thediagram.com/8_5/ginsburg.html">DIAGRAM</a></li>
         <li>Boxwood Hedge <span class="uk-text-muted">in</span> <a href="https://www.pangyrus.com/poetry/boxwood-hedge/">Pangyrus</a></li>
         <li>Minnows <span class="uk-text-muted">in</span> <a href="http://www.winteranthology.com/?vol=6&author=ginsburg&title=minnows">The Winter Anthology</a></li>
         <li>Crows <span class="uk-text-muted">in</span> <a href="http://www.winteranthology.com/?vol=6&author=ginsburg&title=crows">The Winter Anthology</a></li>
       </ul>
+    </div>
+    <div class="uk-margin-auto uk-text-large uk-container-small uk-text-justify uk-padding">
+      <h2>&c.</h2>
+      <p>
+        On Keeping Chickens in the Literary Enclave of Oxford, Mississippi. <a href="https://crimereads.com/on-keeping-chickens-in-the-literary-enclave-of-oxford-mississippi">CrimeReads</a>
+      </p>
+      <p>
+        A conversation about “Seance" with <a href="https://kenyonreview.org/conversation/melissa-ginsburg/">Kenyon Review</a>
+      </p>
     </div>
   </div>
 </template>

@@ -4,7 +4,10 @@ import Home from '../views/Home.vue'
 import About from '../views/About.vue'
 import TheHouseUptown from '../views/TheHouseUptown.vue'
 import Books from '../views/Books.vue'
+import Poems from '../views/Poems.vue'
 import SunsetCity from '../views/SunsetCity.vue'
+import Arbor from '../views/Arbor.vue'
+import DoubleBlind from '../views/DoubleBlind.vue'
 import DearWeatherGhost from '../views/DearWeatherGhost.vue'
 
 
@@ -47,7 +50,10 @@ const routes = [
   {
     path: '/poems',
     name: 'Poems',
-    component: () => import(/* webpackChunkName: "poems" */ '../views/Poems.vue')
+    component: Poems,
+    meta: {
+      granimState: 'poems'
+    }
   },
   {
     path: '/sunset-city',
@@ -63,6 +69,22 @@ const routes = [
     component: DearWeatherGhost,
     meta: {
       granimState: 'weather'
+    }
+  },
+  {
+    path: '/arbor',
+    name: 'Arbor',
+    component: Arbor,
+    meta: {
+      granimState: 'arbor'
+    }
+  },
+  {
+    path: '/double-blind',
+    name: 'DoubleBlind',
+    component: DoubleBlind,
+    meta: {
+      granimState: 'double-blind'
     }
   }
 ]

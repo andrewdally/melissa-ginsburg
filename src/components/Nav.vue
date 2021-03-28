@@ -78,6 +78,7 @@ export default {
   left: 0;
   right: 0;
   color: white;
+  z-index: 980;
 }
 .uk-logo {
   font-family: 'Cormorant Garamond';
@@ -88,8 +89,7 @@ export default {
 .app-home .uk-logo {
   color: white;
 }
-.app-home .uk-navbar-nav>li>a
-{
+.app-home .uk-navbar-nav>li>a{
   color: white;
 }
 .uk-navbar-nav>li>a,
