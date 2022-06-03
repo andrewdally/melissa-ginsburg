@@ -2,6 +2,12 @@
   <div class="uk-container">
     <div uk-grid class="uk-flex uk-flex">
       <div>
+        <h2>Poetry</h2>
+        <router-link to="dear-weather-ghost">
+          <img class="uk-box-shadow-large book-cover" src="@/assets/dear-weather-ghost.jpg">
+        </router-link>
+      </div>
+      <div>
         <h2>Fiction</h2>
         <router-link to="/the-house-uptown">
           <img class="uk-box-shadow-large book-cover" src="@/assets/house-uptown.jpg">
@@ -11,10 +17,7 @@
         </router-link>
       </div>
       <div>
-        <h2>Poetry</h2>
-        <router-link to="dear-weather-ghost">
-          <img class="uk-box-shadow-large book-cover" src="@/assets/dear-weather-ghost.jpg">
-        </router-link>
+        <h2>Chapbooks</h2>
         <a>
           <router-link to="arbor">
             <img class="uk-box-shadow-large book-cover" src="@/assets/arbor-scan.jpg">

@@ -8,7 +8,7 @@
     </div>
     <div class="uk-width-1-2@s">
       <p class="uk-text-justify">
-        <strong>Melissa Ginsburg</strong> is the author of the novels <em>The House Uptown</em> and <em>Sunset City</em>, the poetry collection <em>Dear Weather Ghost</em>, and two poetry chapbooks, <em>Arbor</em> and <em>Double Blind</em>. A second poetry collection, <em>Doll Apollo</em>, will be published in 2022 by LSU Press, and the poetry chapbook <em>Apollo</em> is forthcoming in June from Condensery Press. Her poems have appeared in the <em>New Yorker</em>, <em>Guernica</em>, <em>Kenyon Review</em>, <em>Fence</em>, <em>Southwest Review</em>, and other magazines. Originally from Houston, Texas, Melissa studied poetry at the Iowa Writers' Workshop. She is Associate Professor of Creative Writing and Literature at the University of Mississippi. She lives in Oxford, Mississippi, with two dogs, eleven chickens, and the writer Chris Offutt.
+        <strong>Melissa Ginsburg</strong> is the author of the poetry collections <em>Doll Apollo</em> and  <em>Dear Weather Ghost</em>, the novels <em>The House Uptown</em> and <em>Sunset City</em>, and three poetry chapbooks, <em>Arbor</em>, <em>Double Blind</em>, and <em>Apollo</em>. Her poems have appeared in the <em>New Yorker</em>, <em>Image</em>, <em>Guernica</em>, <em>Kenyon Review</em>, <em>Fence</em>, <em>Southwest Review</em>, and other magazines. Originally from Houston, Texas, Melissa studied poetry at the Iowa Writers' Workshop. She is Associate Professor of Creative Writing and Literature at the University of Mississippi, and serves as Associate Editor of Tupelo Quarterly. She lives in Oxford, Mississippi.
       </p>
       <p class="uk-text-center uk-padding-top">
         <a class="uk-icon-link uk-margin-right" uk-icon="twitter" href="https://twitter.com/Ginsburgmelissa"></a>
@@ -19,9 +19,6 @@
       <hr class="uk-margin-top uk-margin-bottom">
       <p clas="uk-margin-large-top">
         Agent: <strong>Duvall Osteen</strong>, Aragi, Inc. <a target="_blank" href="mailto:connect@aragi.net">connect@aragi.net</a>
-      </p>
-      <p>
-        For publicity inquiries contact <strong>Marlena Bittner</strong> <a target="_blank" href="mailto:marlena.bittner@flatironbooks.com">marlena.bittner@flatironbooks.com</a>
       </p>
       <hr class="uk-margin-top uk-margin-bottom">
     </div>

@@ -3,6 +3,12 @@
     <div class="uk-margin-auto uk-text-large uk-container-small uk-text-justify uk-padding">
       <h2>Poems</h2>
       <ul>
+        <li>Whitetail in the Rain Moving About <span class="uk-text-muted">in></span> <a href="https://www.benningtonreview.org/issue-ten-ginsburg">Bennington Review</a></li>
+        <li>Calypso Bean <span class="uk-text-muted">in></span> <a href="https://www.newyorker.com/magazine/2021/12/20/calypso-bean">The New Yorker</a></li>
+        <li>Open Concept <span class="uk-text-muted">in></span> <a href="https://www.nocontactmag.com/twenty-nine/open-concept">No Contact</a></li>
+        <li>Is the Moon a Planet<span class="uk-text-muted">in></span> <a href="https://www.nocontactmag.com/twenty-seven/is-the-moon-a-planet">No Contact</a></li>
+        <li>Standing on the top of the hill throwing pine cones <span class="uk-text-muted">in></span> <a href="https://twitter.com/olicketysplit/status/1522299674136391681">The Lickety Split</a></li>
+        <li>Laying & It is still night <span class="uk-text-muted">in</span> <a href="https://coupletpoetry.com/melissa-ginsburg/">Couplet Poetry</a>
         <li>A Folio of Poetry <span class="uk-text-muted">in</span> <a href="https://www.tupeloquarterly.com/a-folio-of-poetry-by-melissa-ginsburg/">Tupelo Quarterly</a></li>
         <li>Pastoral <span class="uk-text-muted">in</span> <a href="https://www.newyorker.com/magazine/2020/06/08/pastoral">The New Yorker</a></li>
         <li>Four Poems <span class="uk-text-muted">in</span> <a href="https://thediagram.com/21_1/ginsburg.html">DIAGRAM</a></li>
@@ -25,6 +31,9 @@
     </div>
     <div class="uk-margin-auto uk-text-large uk-container-small uk-text-justify uk-padding">
       <h2>&c.</h2>
+      <p>
+        A series of video collaborations with <a href="http://homegrownstories.com/">Homegrown Stories</a>
+      </p>
       <p>
         On Keeping Chickens in the Literary Enclave of Oxford, Mississippi. <a href="https://crimereads.com/on-keeping-chickens-in-the-literary-enclave-of-oxford-mississippi">CrimeReads</a>
       </p>

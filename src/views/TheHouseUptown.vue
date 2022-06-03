@@ -25,6 +25,9 @@
   <template v-slot:praise>
     <h2>Praise</h2>
     <p>
+      The House Uptown was longlisted for the 2022 CWA Gold Dagger Award
+    </p>
+    <p>
       This is a superbly written, intriguing character study of how the past impacts on the present. <a class="attribution" href="https://www.theguardian.com/books/2021/mar/19/the-best-recent-and-thrillers-review-roundup">—Laura Wilson, The Guardian</a>
     </p>
     <p>
@@ -40,10 +43,32 @@
       <em>The House Uptown</em> is a powerful coming-of-age novel and a thoughtful portrait of one of the world’s great cities.
       <a class="attribution" href="https://crimereads.com/10-novels-you-should-read-this-march">—Dwyer Murphy, CrimeReads</a>
     </p>
+    <p>
+      A truly wonderful novel about family links, guilt and crime, Melissa Ginsburg’s follow-up to the excellent <em>Sunset City</em> resonates deeply in an emotional way while managing to balance its delicate thread of relationships with a twisty plot on the borderlines of crime.
+      <a class="attribution" href="https://crimereads.com/10-novels-you-should-read-this-march">—Maxim Jakubowski, Crime Time</a>
+    </p>
+    <p>
+      A crime novel, but one shaped by Ginsburg to foreground the emotional journeys of the grief-stricken. <a class="attribution" href="https://www.heraldscotland.com/news/19194801.house-uptown-melissa-ginsburg-veil-mist-donald-s-murray-men-hate-women-laura-bates-paperback-reviews/">—Alastair Mabbott, Herald Scotland</a>
+    </p>
+    <p>
+      Just as she did for Houston in the earlier novel, <em>The House Uptown</em> allows New Orleans to come alive, almost as a character itself. <a class="attribution" href="https://bolobooks.com/2021/04/the-house-uptown-the-bolo-books-review/">—BOLO Books</a>
+    </p>
   </template>
   <template v-slot:extra>
     <div class="press">
       <h2>Events</h2>
+      <h3>June 26, 7CT – Noir at the Bar</h3>
+      <p>
+        An in person: event at Wild Roast Cafe, Hoover, AL. <a class="attribution" href="https://www.wildroastcafe.com/events">Tickets here.</a>
+      </p>
+      <h3>June 11, 7CT – Prarie Lights</h3>
+      <p>
+        In conversation with Alexander Chee. <a class="attribution" href="https://www.prairielights.com/live/melissa-ginsburg-conversation-alexander-chee?fbclid=IwAR2-ajfJ5A4k8L6uZMvIksXBb13Y_HzdySHW6HAxAvk4PFLKWK93MWvairA">Register here.</a>
+      </p>
+      <h3>June 11, 6CT – Neo-Noir at the Bar</h3>
+      <p>
+        Hosted by Kew & Willow Books, with S.A. Cosby, Steph Cha, Ivy Pochoda, Alex Segura, Lori Rader-Day, & more. <a class="attribution" href="https://www.crowdcast.io/e/neo-noir--the-bar/register">Register here.</a>
+      </p>
       <h3>April 13 – Garden District Book Shop</h3>
       <p>
         Melissa Ginsburg in Conversation with Laura Lippman. <a class="attribution" href="https://www.gardendistrictbookshop.com/event/virtualzoom-event-melissa-ginsburg-conversation-laura-lippman-house-uptown">Register here.</a>
@@ -59,6 +84,18 @@
     </div>
     <div class="press">
       <h2>Press</h2>
+      <h3>Book Q&As with Deborah Kalb</h3>
+      <p>
+        We are trained to orient our lives around relationships, which demand our time and creative energy. Women’s relationships to art and art-making falls outside of this stricture.
+        Read more at <a class="attribution" href="https://deborahkalbbooks.blogspot.com/2021/05/q-with-melissa-ginsburg.html">Book Q&As with Deborah Kalb.</a>
+      </p>
+      <h3>Protective Veneer: A Conversation with Melissa Ginsburg</h3>
+      <p>
+        I had this idea. I had the people. They had lived in my head for a long time. They felt so real, and I was like, okay, I’m going to make this work.
+        Read more at <a class="attribution" href="http://southwestreview.com/protective-veneer-a-conversation-with-melissa-ginsburg">Southwest Review.</a>
+      </p>
+      <h3>The Reading Life with Susan Larson</h3>
+      <p>Listen to the interview at <a class="attribution" href="https://www.wwno.org/podcast/the-reading-life/2021-04-09/the-reading-life-c-s-harris-melissa-ginsburg">WWNO.</a>
       <h3>Melissa Ginsburg on Mystery, New Orleans and The House Uptown</h3>
       <p>
         I used to think that my poetry and fiction were entirely separate, but I find them influencing each other more and more.
