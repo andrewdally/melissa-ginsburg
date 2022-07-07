@@ -9,6 +9,9 @@
         </div>
         <div class="uk-navbar-right">
           <ul class="uk-navbar-nav uk-visible@m">
+            <li v-bind:class="isActive('doll-apollo')">
+              <router-link to="/doll-apollo">Doll Apollo</router-link>
+            </li>
             <li v-bind:class="isActive('the-house-uptown')">
               <router-link to="/the-house-uptown">The House Uptown</router-link>
             </li>

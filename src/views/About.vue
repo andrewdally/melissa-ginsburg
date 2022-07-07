@@ -1,10 +1,7 @@
 <template>
   <div uk-grid class="uk-container-small uk-margin-auto uk-flex uk-flex-middle">
     <div class="uk-width-1-2@s">
-      <img class="uk-box-shadow-large uk-" src="@/assets/melissa-ginsburg.jpg">
-      <p class="uk-text-small uk-margin-small uk-text-center">
-        Photo by Chris Offutt
-      </p>
+      <img class="uk-box-shadow-large uk-" src="@/assets/blue-melissa.jpg">
     </div>
     <div class="uk-width-1-2@s">
       <p class="uk-text-justify">

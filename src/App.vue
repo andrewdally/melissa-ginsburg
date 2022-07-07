@@ -52,8 +52,8 @@ export default {
       states : {
         'home': {
             gradients: [
-              ['#29323c', '#485563'],
-              ['#FF6B6B', '#556270'],
+              ['#333', '#A93336'],
+              ['#c9696c', '#fff'],
             ],
             transitionSpeed: 8000
         },
@@ -64,7 +64,7 @@ export default {
         },
         'about': {
           gradients: [
-            ['#F4F5F6', '#DEE3E1']
+            ['#A1C5E6', '#DEE3E1']
           ],
         },
         'default-state': {
@@ -75,6 +75,11 @@ export default {
         'poems': {
           gradients: [
             ['#FFF', '#F8BDB4']
+          ]
+        },
+        'doll-apollo': {
+          gradients: [
+            ['#c9696c', '#E4D6BA']
           ]
         },
         'the-house': {

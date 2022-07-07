@@ -1,14 +1,19 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+
 import Home from '../views/Home.vue'
 import About from '../views/About.vue'
-import TheHouseUptown from '../views/TheHouseUptown.vue'
 import Books from '../views/Books.vue'
 import Poems from '../views/Poems.vue'
+import Events from '../views/Events.vue'
+
+import DollApollo from '../views/DollApollo.vue'
+import DearWeatherGhost from '../views/DearWeatherGhost.vue'
+import TheHouseUptown from '../views/TheHouseUptown.vue'
 import SunsetCity from '../views/SunsetCity.vue'
+import Apollo from '../views/Apollo.vue'
 import Arbor from '../views/Arbor.vue'
 import DoubleBlind from '../views/DoubleBlind.vue'
-import DearWeatherGhost from '../views/DearWeatherGhost.vue'
 
 
 
@@ -29,6 +34,22 @@ const routes = [
     component: About,
     meta: {
       granimState: 'about'
+    },
+  },
+  {
+    path: '/events',
+    name: 'Events',
+    component: Events,
+    meta: {
+      granimState: 'about'
+    },
+  },
+  {
+    path: '/doll-apollo',
+    name: 'DollApollo',
+    component: DollApollo,
+    meta: {
+      granimState: 'doll-apollo'
     },
   },
   {
@@ -69,6 +90,14 @@ const routes = [
     component: DearWeatherGhost,
     meta: {
       granimState: 'weather'
+    }
+  },
+  {
+    path: '/apollo',
+    name: 'Apollo',
+    component: Apollo,
+    meta: {
+      granimState: 'arbor'
     }
   },
   {
