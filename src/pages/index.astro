@@ -1,0 +1,70 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import BookHero from '../components/BookHero.astro';
+import Shelf from '../components/Shelf.astro';
+import NewsList from '../components/NewsList.astro';
+import Excerpt from '../components/Excerpt.astro';
+import PullQuote from '../components/PullQuote.astro';
+import { getBooks, getFeaturedBook } from '../lib/books';
+
+const featured = await getFeaturedBook();
+const others = (await getBooks()).filter((b) => b.id !== featured.id);
+const pull = featured.data.praise.find((p) => p.featured);
+const news = (await getCollection('news'))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+  .slice(0, 3);
+---
+
+<Base wash={{ color: featured.data.color, color2: featured.data.color2 }} image={featured.data.cover}>
+  <BookHero book={featured} moreLink />
+
+  {featured.data.excerpt && <Excerpt text={featured.data.excerpt} title={featured.data.title} />}
+
+  {
+    pull && (
+      <section class="wrap column praise">
+        <PullQuote {...pull} />
+      </section>
+    )
+  }
+
+  {
+    news.length > 0 && (
+      <>
+        <p class="asterism" aria-hidden="true">* * *</p>
+        <section class="wrap column">
+          <h2 class="section-title">News</h2>
+          <NewsList items={news} />
+          <p class="sans all-news">
+            <a href="/news">All news →</a>
+          </p>
+        </section>
+      </>
+    )
+  }
+
+  <p class="asterism" aria-hidden="true">* * *</p>
+
+  <section class="wrap">
+    <h2 class="section-title shelf-title">Books</h2>
+    <Shelf books={others} />
+  </section>
+</Base>
+
+<style>
+  .praise {
+    padding-top: clamp(56px, 8vw, 88px);
+  }
+  .all-news {
+    margin: 32px 0 0;
+  }
+  .all-news a {
+    display: inline-block;
+    padding: 8px 0;
+    font-weight: 600;
+  }
+  .shelf-title {
+    margin-bottom: 40px;
+  }
+</style>

@@ -1,0 +1,174 @@
+---
+import { getCollection, render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import BookHero from '../../components/BookHero.astro';
+import Shelf from '../../components/Shelf.astro';
+import NewsList from '../../components/NewsList.astro';
+import Excerpt from '../../components/Excerpt.astro';
+import PullQuote from '../../components/PullQuote.astro';
+import { colophon, getBooks, type Book } from '../../lib/books';
+
+export async function getStaticPaths() {
+  const books = await getBooks();
+  return books.map((book) => ({ params: { slug: book.id }, props: { book } }));
+}
+
+const { book } = Astro.props as { book: Book };
+const { title, kind, tagline, color, color2, cover, excerpt, honors, praise, press } = book.data;
+const { Content } = await render(book);
+const hasDescription = !!book.body?.trim();
+
+const pull = praise.find((p) => p.featured);
+const otherPraise = praise.filter((p) => p !== pull);
+
+const news = (await getCollection('news'))
+  .filter((item) => item.data.book?.id === book.id)
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+const others = (await getBooks()).filter((b) => b.id !== book.id);
+---
+
+<Base
+  title={title}
+  description={tagline ?? `${title}, ${kind} by Melissa Ginsburg.`}
+  wash={{ color, color2 }}
+  image={cover}
+>
+  <BookHero book={book} />
+
+  {excerpt && <Excerpt text={excerpt} title={title} />}
+
+  {
+    (hasDescription || honors.length > 0) && (
+      <section class="wrap column description">
+        {hasDescription && (
+          <div class="prose opening">
+            <Content />
+          </div>
+        )}
+        {honors.length > 0 && (
+          <ul class="honors">
+            {honors.map((honor) => (
+              <li>{honor}</li>
+            ))}
+          </ul>
+        )}
+      </section>
+    )
+  }
+
+  {
+    praise.length > 0 && (
+      <>
+        <p class="asterism" aria-hidden="true">* * *</p>
+        <section class="wrap column" aria-labelledby="praise">
+          <h2 id="praise" class="visually-hidden">Praise</h2>
+          {pull && <PullQuote {...pull} />}
+          {otherPraise.map((p) => (
+            <p class="blurb">
+              “{p.quote}”{' '}
+              <span class="who">
+                — {p.url ? <a href={p.url}>{p.name}</a> : p.name}
+                {p.credit && <>, {p.credit}</>}
+              </span>
+            </p>
+          ))}
+        </section>
+      </>
+    )
+  }
+
+  {
+    press.length > 0 && (
+      <>
+        <p class="asterism" aria-hidden="true">* * *</p>
+        <section class="wrap column">
+          <h2 class="section-title">Interviews &amp; conversations</h2>
+          <ul class="press">
+            {press.map((item) => (
+              <li>
+                <a href={item.url}>{item.title}</a>, <em>{item.source}</em>
+                {item.quote && <span class="press-quote">“{item.quote}”</span>}
+              </li>
+            ))}
+          </ul>
+        </section>
+      </>
+    )
+  }
+
+  {
+    news.length > 0 && (
+      <>
+        <p class="asterism" aria-hidden="true">* * *</p>
+        <section class="wrap column">
+          <h2 class="section-title">News &amp; readings</h2>
+          <NewsList items={news} />
+        </section>
+      </>
+    )
+  }
+
+  <section class="wrap also">
+    <h2 class="section-title">Also by Melissa</h2>
+    <Shelf books={others} />
+  </section>
+
+  <p class="wrap colophon sans">
+    <em>{title}</em>
+    {
+      colophon(book).map((part) => (
+        <>
+          {' · '}
+          {part}
+        </>
+      ))
+    }
+  </p>
+</Base>
+
+<style>
+  .description {
+    padding-top: clamp(72px, 10vw, 120px);
+  }
+  .honors {
+    list-style: none;
+    margin: 32px 0 0;
+    padding: 0;
+    font-style: italic;
+  }
+  .blurb {
+    margin: 0 0 28px;
+  }
+  .who {
+    font-style: italic;
+  }
+  .press {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  .press-quote {
+    display: block;
+    margin-top: 4px;
+    font-size: 19px;
+    color: var(--muted);
+  }
+  .also {
+    padding-top: clamp(88px, 10vw, 120px);
+  }
+  .also .section-title {
+    margin-bottom: 40px;
+  }
+  .colophon {
+    margin-top: clamp(72px, 10vw, 120px);
+    margin-bottom: 0;
+    text-align: center;
+    font-size: 13px;
+    line-height: 1.8;
+    color: var(--muted);
+  }
+</style>
