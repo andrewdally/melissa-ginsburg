@@ -1,6 +1,7 @@
 ---
 import { Image } from 'astro:assets';
 import type { Book } from '../lib/books';
+import { url } from '../lib/url';
 
 interface Props {
   books: Book[];
@@ -16,7 +17,7 @@ const tilts = ['tilt-a', 'tilt-b', 'tilt-c', 'tilt-d'];
   {
     books.map((book, i) => (
       <li>
-        <a href={`/books/${book.id}`}>
+        <a href={url(`/books/${book.id}`)}>
           <Image
             src={book.data.cover}
             alt=""

@@ -1,6 +1,7 @@
 ---
 import { Image } from 'astro:assets';
 import { isUpcoming, publicationLine, type Book } from '../lib/books';
+import { url } from '../lib/url';
 
 interface Props {
   book: Book;
@@ -45,7 +46,7 @@ const buyVerb = isUpcoming(book) ? 'Preorder from' : 'Order from';
     {
       moreLink && (
         <p class="sans more">
-          <a href={`/books/${book.id}`}>More about {title} →</a>
+          <a href={url(`/books/${book.id}`)}>More about {title} →</a>
         </p>
       )
     }

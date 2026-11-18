@@ -31,8 +31,12 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      # Reports whether the site is served from a folder (github.io) or a custom domain.
+      - id: pages
+        uses: actions/configure-pages@v6
       - run: npm run build
-      - uses: actions/configure-pages@v6
+        env:
+          BASE_PATH: ${{ steps.pages.outputs.base_path }}
       - uses: actions/upload-pages-artifact@v5
         with:
           path: dist

@@ -7,6 +7,7 @@ import NewsList from '../components/NewsList.astro';
 import Excerpt from '../components/Excerpt.astro';
 import PullQuote from '../components/PullQuote.astro';
 import { getBooks, getFeaturedBook } from '../lib/books';
+import { url } from '../lib/url';
 
 const featured = await getFeaturedBook();
 const others = (await getBooks()).filter((b) => b.id !== featured.id);
@@ -37,7 +38,7 @@ const news = (await getCollection('news'))
           <h2 class="section-title">News</h2>
           <NewsList items={news} />
           <p class="sans all-news">
-            <a href="/news">All news →</a>
+            <a href={url('/news')}>All news →</a>
           </p>
         </section>
       </>
