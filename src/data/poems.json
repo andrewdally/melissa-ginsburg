@@ -1,0 +1,33 @@
+{
+  "poems": [
+    { "title": "Whitetail in the Rain Moving About", "venue": "Bennington Review", "url": "https://www.benningtonreview.org/issue-ten-ginsburg" },
+    { "title": "Calypso Bean", "venue": "The New Yorker", "url": "https://www.newyorker.com/magazine/2021/12/20/calypso-bean" },
+    { "title": "Open Concept", "venue": "No Contact", "url": "https://www.nocontactmag.com/twenty-nine/open-concept" },
+    { "title": "Is the Moon a Planet", "venue": "No Contact", "url": "https://www.nocontactmag.com/twenty-seven/is-the-moon-a-planet" },
+    { "title": "Standing on the top of the hill throwing pine cones", "venue": "The Lickety Split", "url": "https://twitter.com/olicketysplit/status/1522299674136391681" },
+    { "title": "Laying & It is still night", "venue": "Couplet Poetry", "url": "https://coupletpoetry.com/melissa-ginsburg/" },
+    { "title": "A Folio of Poetry", "venue": "Tupelo Quarterly", "url": "https://www.tupeloquarterly.com/a-folio-of-poetry-by-melissa-ginsburg/" },
+    { "title": "Pastoral", "venue": "The New Yorker", "url": "https://www.newyorker.com/magazine/2020/06/08/pastoral" },
+    { "title": "Four Poems", "venue": "DIAGRAM", "url": "https://thediagram.com/21_1/ginsburg.html" },
+    { "title": "History", "venue": "Guernica", "url": "https://www.guernicamag.com/history/" },
+    { "title": "The Faked Apollo Moon Landing & Apollo", "venue": "The Waywiser Press", "url": "https://waywiser-press.com/melissa-ginsburg/" },
+    { "title": "As Weapons Need Murder", "venue": "Verse Daily", "url": "http://www.versedaily.org/2019/asweaponsneedmurder.shtml" },
+    { "title": "Squab", "venue": "Verse Daily", "url": "http://www.versedaily.org/2013/squab.shtml" },
+    { "title": "The Beginning of the Analysis, I’d a road, & The Lake", "venue": "Dream Pop Press", "url": "https://www.dreampoppress.net/melissa-ginsburg/" },
+    { "title": "Drought & Prayer", "venue": "The Boiler", "url": "https://theboilerjournal.com/2018/02/27/melissa-ginsburg/" },
+    { "title": "Tigers", "venue": "poets.org", "url": "https://poets.org/poem/tigers" },
+    { "title": "Oversight", "venue": "poets.org", "url": "https://poets.org/poem/oversight" },
+    { "title": "The Job, Birthday, & Mermaid", "venue": "Four Way Review", "url": "https://fourwayreview.com/fwr-monthly-three-poems-by-melissa-ginsburg/" },
+    { "title": "Fixation", "venue": "Diode", "url": "http://diodepoetry.com/ginsburg_melissa/" },
+    { "title": "Séance", "venue": "Kenyon Review", "url": "https://kenyonreview.org/journal/mayjune-2016/selections/melissa-ginsburg/" },
+    { "title": "Heron & My Daughter", "venue": "DIAGRAM", "url": "https://thediagram.com/8_5/ginsburg.html" },
+    { "title": "Boxwood Hedge", "venue": "Pangyrus", "url": "https://www.pangyrus.com/poetry/boxwood-hedge/" },
+    { "title": "Minnows", "venue": "The Winter Anthology", "url": "http://www.winteranthology.com/?vol=6&author=ginsburg&title=minnows" },
+    { "title": "Crows", "venue": "The Winter Anthology", "url": "http://www.winteranthology.com/?vol=6&author=ginsburg&title=crows" }
+  ],
+  "elsewhere": [
+    { "title": "On Keeping Chickens in the Literary Enclave of Oxford, Mississippi", "venue": "CrimeReads", "url": "https://crimereads.com/on-keeping-chickens-in-the-literary-enclave-of-oxford-mississippi" },
+    { "title": "A series of video collaborations", "venue": "Homegrown Stories", "url": "http://homegrownstories.com/" },
+    { "title": "A conversation about “Séance”", "venue": "Kenyon Review", "url": "https://kenyonreview.org/conversation/melissa-ginsburg/" }
+  ]
+}

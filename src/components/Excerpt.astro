@@ -1,0 +1,54 @@
+---
+interface Props {
+  text: string;
+  /** The book it comes from, for the "— from …" line. */
+  title: string;
+}
+
+const { text, title } = Astro.props;
+// A blank line starts a new stanza; each line keeps its own break.
+const stanzas = text
+  .trim()
+  .split(/\n\s*\n/)
+  .map((stanza) => stanza.split('\n'));
+---
+
+<section class="wrap column excerpt-section">
+  <div class="excerpt">
+    {
+      stanzas.map((lines) => (
+        <p class="stanza">
+          {lines.map((line) => (
+            <span class="line">{line}</span>
+          ))}
+        </p>
+      ))
+    }
+  </div>
+  <p class="source">— from <em>{title}</em></p>
+</section>
+
+<style>
+  .excerpt-section {
+    padding-top: clamp(88px, 12vw, 144px);
+  }
+  .column > .excerpt {
+    max-width: 820px;
+  }
+  .stanza {
+    margin: 0 0 1em;
+    font-size: clamp(24px, 2.8vw, 34px);
+    line-height: 1.45;
+  }
+  /* A line too long for the screen wraps with a hanging indent, as poems are set. */
+  .line {
+    display: block;
+    padding-left: 1.5em;
+    text-indent: -1.5em;
+  }
+  .source {
+    margin: 4px 0 0;
+    font-style: italic;
+    font-size: 20px;
+  }
+</style>

@@ -1,0 +1,35 @@
+---
+interface Props {
+  quote: string;
+  name: string;
+  credit?: string;
+  url?: string;
+}
+
+const { quote, name, credit, url } = Astro.props;
+---
+
+<figure class="pull">
+  <blockquote>“{quote}”</blockquote>
+  <figcaption>
+    — {url ? <a href={url}>{name}</a> : name}
+    {credit && <>, <em>{credit}</em></>}
+  </figcaption>
+</figure>
+
+<style>
+  .pull {
+    margin: 0 0 48px;
+  }
+  .pull blockquote {
+    margin: 0;
+    font-style: italic;
+    font-weight: 600;
+    font-size: clamp(32px, 3.6vw, 46px);
+    line-height: 1.12;
+  }
+  .pull figcaption {
+    margin-top: 14px;
+    font-size: 20px;
+  }
+</style>

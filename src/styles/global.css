@@ -1,0 +1,204 @@
+@import '@fontsource/cormorant-garamond/500.css';
+@import '@fontsource/cormorant-garamond/600.css';
+@import '@fontsource/cormorant-garamond/500-italic.css';
+@import '@fontsource/cormorant-garamond/600-italic.css';
+@import '@fontsource/proza-libre/400.css';
+@import '@fontsource/proza-libre/600.css';
+
+:root {
+  color-scheme: light;
+  --ink: #1b1a18;
+  --paper: #fbf7f1;
+  --muted: #5e554d;
+  --rust: #a3410c;
+  --rule: rgb(27 26 24 / 0.15);
+  --serif: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+  --sans: 'Proza Libre', 'Helvetica Neue', Arial, sans-serif;
+  --measure: 640px;
+  /* Each page sets these two from its book (or section) colors. */
+  --wash-1: #fef2e4;
+  --wash-2: #fef2e4;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  color: var(--ink);
+  background-color: var(--paper);
+  /* The color pools in the top-left corner and drifts in from the right. */
+  background-image:
+    radial-gradient(
+      140% 75% at 8% 0%,
+      color-mix(in srgb, var(--wash-1) 85%, transparent) 0%,
+      color-mix(in srgb, var(--wash-1) 50%, transparent) 38%,
+      transparent 78%
+    ),
+    radial-gradient(
+      55% 45% at 96% 30%,
+      color-mix(in srgb, var(--wash-2) 40%, transparent) 0%,
+      transparent 100%
+    );
+  background-repeat: no-repeat;
+  background-size: 100% 1500px;
+  font-family: var(--serif);
+  font-size: 22px;
+  font-weight: 500;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+@media (max-width: 640px) {
+  body {
+    font-size: 20px;
+    background-size: 100% 1100px;
+  }
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+a {
+  color: inherit;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+}
+a:hover {
+  color: var(--rust);
+}
+:focus-visible {
+  outline: 2px solid var(--rust);
+  outline-offset: 3px;
+}
+
+h1,
+h2,
+h3 {
+  font-weight: 600;
+  line-height: 1.15;
+  text-wrap: balance;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.skip {
+  position: absolute;
+  left: -9999px;
+}
+.skip:focus {
+  left: 16px;
+  top: 16px;
+  padding: 8px 12px;
+  background: var(--paper);
+  font-family: var(--sans);
+  font-size: 15px;
+  z-index: 10;
+}
+
+/* ---------- Layout ---------- */
+
+.wrap {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* An offset reading column: sits right of center on wide screens, full width on phones. */
+.column {
+  padding-left: clamp(24px, calc((100% - var(--measure)) * 0.55), 380px);
+}
+.column > * {
+  max-width: var(--measure);
+}
+
+.sans {
+  font-family: var(--sans);
+  font-size: 16px;
+}
+
+.slashes .sep {
+  margin: 0 0.5em;
+}
+
+/* Section headings: italic, sentence case. */
+.section-title {
+  margin: 0 0 16px;
+  font-style: italic;
+  font-size: 34px;
+}
+
+.page-title {
+  margin: 0;
+  padding: 48px 0 8px;
+  font-style: italic;
+  font-size: clamp(64px, 9vw, 112px);
+  line-height: 0.9;
+  letter-spacing: -0.015em;
+}
+
+/* "* * *" between sections, as in a novel. */
+.asterism {
+  margin: 0;
+  padding: clamp(56px, 9vw, 88px) 0;
+  text-align: center;
+  font-size: 26px;
+  letter-spacing: 0.6em;
+  color: var(--rust);
+}
+
+.prose p {
+  margin: 0 0 22px;
+}
+.prose p:last-child {
+  margin-bottom: 0;
+}
+/* The first line opens in small caps, like a chapter. */
+.prose.opening > p:first-child::first-line {
+  font-variant: small-caps;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+/* ---------- Covers ---------- */
+
+.cover {
+  display: block;
+  width: 100%;
+  height: auto;
+  box-shadow: 0 8px 20px rgb(27 26 24 / 0.2);
+  transition: rotate 0.35s ease;
+}
+/* A small, varied tilt, like books left on a table. */
+.tilt-a { rotate: -1.5deg; }
+.tilt-b { rotate: 1.25deg; }
+.tilt-c { rotate: -0.75deg; }
+.tilt-d { rotate: 2deg; }
+a:hover .cover,
+a:focus-visible .cover {
+  rotate: 0deg;
+}
+@media (prefers-reduced-motion: reduce) {
+  .cover { transition: none; }
+}

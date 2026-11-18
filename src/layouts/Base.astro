@@ -1,0 +1,151 @@
+---
+import '../styles/global.css';
+import { getImage } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import site from '../data/site.json';
+import melissa from '../assets/melissa.jpg';
+
+interface Props {
+  /** Page title; omitted on the home page. */
+  title?: string;
+  description?: string;
+  /** The page's two wash colors. */
+  wash?: { color: string; color2?: string };
+  /** Image for link previews (a book cover, say). Defaults to Melissa's photo. */
+  image?: ImageMetadata;
+}
+
+const { title, description = site.description, wash, image = melissa } = Astro.props;
+const fullTitle = title ? `${title} · ${site.name}` : site.name;
+const ogImage = await getImage({ src: image, width: 1200, format: 'jpg' });
+const ogImageUrl = new URL(ogImage.src, Astro.site).href;
+const canonical = new URL(Astro.url.pathname, Astro.site).href;
+const washStyle = wash ? `--wash-1: ${wash.color}; --wash-2: ${wash.color2 ?? wash.color};` : undefined;
+
+const nav = [
+  { label: 'Books', href: '/books' },
+  { label: 'Poems &c.', href: '/poems' },
+  { label: 'News', href: '/news' },
+  { label: 'About', href: '/about' },
+];
+const path = Astro.url.pathname.replace(/\/$/, '');
+const isCurrent = (href: string) => path === href || path.startsWith(`${href}/`);
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🐓</text></svg>"
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:title" content={title ?? site.name} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImageUrl} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+  </head>
+  <body style={washStyle}>
+    <a class="skip" href="#main">Skip to content</a>
+    <header class="wrap">
+      <nav class="site-nav" aria-label="Main">
+        <a class="site-name" href="/">{site.name}</a>
+        <p class="menu sans slashes">
+          {
+            nav.map((item, i) => (
+              <>
+                {i > 0 && <span class="sep" aria-hidden="true">/</span>}
+                <a href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>
+                  {item.label}
+                </a>
+              </>
+            ))
+          }
+        </p>
+      </nav>
+    </header>
+
+    <main id="main">
+      <slot />
+    </main>
+
+    <footer class="wrap site-footer">
+      <p class="footer-note">{site.footerNote}</p>
+      <p class="sans footer-contact">
+        Agent: {site.agent.name}, {site.agent.agency} ·{' '}
+        <a href={`mailto:${site.agent.email}`}>{site.agent.email}</a>
+        {
+          site.links.map((link) => (
+            <>
+              <span class="sep" aria-hidden="true">/</span>
+              <a href={link.url}>{link.label}</a>
+            </>
+          ))
+        }
+      </p>
+    </footer>
+  </body>
+</html>
+
+<style>
+  .site-nav {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 8px 32px;
+    padding: 32px 0 0;
+  }
+  .site-name {
+    font-size: 30px;
+    font-weight: 600;
+    line-height: 1.1;
+    text-decoration: none;
+  }
+  .menu {
+    margin: 0;
+    font-size: 15px;
+  }
+  .menu a {
+    display: inline-block;
+    padding: 10px 0;
+    text-decoration: none;
+  }
+  .menu a[aria-current='page'] {
+    text-decoration: underline;
+  }
+  .site-footer {
+    margin-top: 120px;
+    padding-bottom: 64px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 16px 40px;
+  }
+  .site-footer::before {
+    content: '';
+    flex-basis: 100%;
+    border-top: 1px solid var(--rule);
+    margin-bottom: 24px;
+  }
+  .footer-note {
+    margin: 0;
+    max-width: 28em;
+    font-size: 20px;
+  }
+  .footer-contact {
+    margin: 0;
+    font-size: 15px;
+  }
+  .footer-contact .sep {
+    margin: 0 0.5em;
+  }
+</style>
