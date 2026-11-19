@@ -237,7 +237,7 @@ const stackEm = stacked ? Math.max(textEm(firstLine), textEm(lastWord)) : textEm
   /* ---------- left: Runoff. A wide block from the left, the title crossing its
      right edge and the sliver behind it. The reference composition. ---------- */
   .collage--left {
-    --h: 730;
+    --h: 760;
     --ct: 84;
     /* A two-line title starts higher. */
     --words-top: calc(270 - (var(--lines) - 1) * 210);
@@ -257,7 +257,7 @@ const stackEm = stacked ? Math.max(textEm(firstLine), textEm(lastWord)) : textEm
     left: 47%;
     top: calc(540 * var(--u));
     width: 21%;
-    height: calc(190 * var(--u));
+    height: calc(220 * var(--u));
   }
   .collage--left .b3 {
     left: 56%;
@@ -270,12 +270,12 @@ const stackEm = stacked ? Math.max(textEm(firstLine), textEm(lastWord)) : textEm
   }
   /* The circle lies behind the block's lower right corner. */
   .collage--left.circle {
-    --h: 760;
+    --h: 772;
   }
   .collage--left .round {
     left: 46%;
     top: calc(540 * var(--u));
-    width: 16%;
+    width: 17%;
   }
   .collage--left .title {
     margin-left: 38%;
@@ -304,10 +304,15 @@ const stackEm = stacked ? Math.max(textEm(firstLine), textEm(lastWord)) : textEm
     --low: max(
       calc(840 * var(--u)),
       var(--hold),
-      calc(var(--cover-top) + var(--cover-h) + 32px + max(72px, 110 * var(--u))),
-      calc(730 * var(--u) + max(72px, 110 * var(--u)))
+      calc(var(--cover-top) + var(--cover-h) + 32px + var(--b2h)),
+      calc(730 * var(--u) + var(--b2h))
     );
     --ct: 170;
+    /* The accent is at least a third as tall as the main block is wide (it
+       widens as the window does). */
+    --b2h: max(72px, calc(130 * var(--u)), calc((var(--content) * 0.24 + var(--bleed)) / 3));
+    /* Clear of the piece above it at any width. */
+    --cover-top: max(calc(170 * var(--u)), calc(max(90px, 110 * var(--u)) + 16px));
     --words-top: 150;
     --share: 0.5;
     --cw: 0.26;
@@ -324,13 +329,13 @@ const stackEm = stacked ? Math.max(textEm(firstLine), textEm(lastWord)) : textEm
     left: 52%;
     top: max(calc(730 * var(--u)), calc(var(--cover-top) + var(--cover-h) + 32px));
     width: 30%;
-    height: max(72px, calc(110 * var(--u)));
+    height: var(--b2h);
   }
   .collage--tower .b3 {
     left: 70%;
     top: 0;
-    width: max(72px, 9%);
-    height: max(72px, calc(110 * var(--u)));
+    width: max(90px, 9%);
+    height: max(90px, calc(110 * var(--u)));
   }
   .collage--tower .cover {
     left: 60%;
@@ -377,10 +382,10 @@ const stackEm = stacked ? Math.max(textEm(firstLine), textEm(lastWord)) : textEm
     height: calc(150 * var(--u));
   }
   .collage--band .b3 {
-    left: 88%;
+    right: 3%;
     top: calc(300 * var(--u));
-    width: 9%;
-    height: calc(150 * var(--u));
+    width: max(90px, 9%);
+    height: max(90px, calc(150 * var(--u)));
   }
   .collage--band .cover {
     left: 60%;
@@ -408,8 +413,8 @@ const stackEm = stacked ? Math.max(textEm(firstLine), textEm(lastWord)) : textEm
   /* ---------- right: the block on the right, a narrow strip crossing its left
      edge; the words on paper at the left. ---------- */
   .collage--right {
-    --h: 660;
-    --low: max(calc(660 * var(--u)), calc(var(--hold) - 8px + 80 * var(--u)));
+    --h: 676;
+    --low: max(calc(676 * var(--u)), calc(var(--hold) - 8px + max(90px, 96 * var(--u))));
     --ct: 110;
     --words-top: 96;
     --share: 0.34;
@@ -426,14 +431,15 @@ const stackEm = stacked ? Math.max(textEm(firstLine), textEm(lastWord)) : textEm
   .collage--right .b2 {
     left: 42%;
     top: 0;
-    width: 9%;
+    /* At least a third of the main block's height. */
+    width: max(15%, calc(max(560 * var(--u), var(--hold) - 40 * var(--u)) / 3));
     height: calc(420 * var(--u));
   }
   .collage--right .b3 {
     left: 66%;
     top: max(calc(580 * var(--u)), calc(var(--hold) - 8px));
     width: 22%;
-    height: calc(80 * var(--u));
+    height: max(90px, calc(96 * var(--u)));
   }
   .collage--right .cover {
     left: 60%;
@@ -451,7 +457,7 @@ const stackEm = stacked ? Math.max(textEm(firstLine), textEm(lastWord)) : textEm
      left edge behind it, the title on paper to its right. ---------- */
   .collage--framed {
     --h: 750;
-    --low: max(calc(750 * var(--u)), calc(var(--hold) - 60px + 150 * var(--u)));
+    --low: max(calc(750 * var(--u)), calc(var(--hold) - 60px + max(90px, 150 * var(--u))));
     --ct: 96;
     --words-top: 120;
     --share: 0.36;
@@ -475,7 +481,7 @@ const stackEm = stacked ? Math.max(textEm(firstLine), textEm(lastWord)) : textEm
     left: 54%;
     top: max(calc(600 * var(--u)), calc(var(--hold) - 60px));
     width: 14%;
-    height: calc(150 * var(--u));
+    height: max(90px, calc(150 * var(--u)));
   }
   .collage--framed .cover {
     left: 24%;
@@ -520,7 +526,7 @@ const stackEm = stacked ? Math.max(textEm(firstLine), textEm(lastWord)) : textEm
     --title-x: calc(var(--dl) + var(--dw) + var(--cover-w) / 2 + 48px);
     --avail: calc(var(--content) - var(--title-x));
     --words-top: 0;
-    --low: max(calc(var(--door-b) - 30 * var(--u) + max(70px, 100 * var(--u))), var(--hold));
+    --low: max(calc(var(--door-b) - 30 * var(--u) + max(90px, 100 * var(--u))), var(--hold));
   }
   @media (min-width: 761px) and (max-width: 1179px) {
     .collage--door {
@@ -548,8 +554,8 @@ const stackEm = stacked ? Math.max(textEm(firstLine), textEm(lastWord)) : textEm
   .collage--door .b3 {
     left: calc(var(--dl) + var(--dw) * 0.12);
     top: calc(var(--door-b) - 30 * var(--u));
-    width: max(68px, calc(96 * var(--u)));
-    height: max(70px, calc(100 * var(--u)));
+    width: max(90px, calc(96 * var(--u)));
+    height: max(90px, calc(100 * var(--u)));
   }
   .collage--door .cover {
     left: calc(var(--dl) + var(--dw) - var(--cover-w) / 2);
@@ -591,17 +597,17 @@ const stackEm = stacked ? Math.max(textEm(firstLine), textEm(lastWord)) : textEm
   }
   /* A small square tucked into the block's lower left corner. */
   .collage--home .b2 {
-    left: calc(48% - 50 * var(--u));
-    width: calc(110 * var(--u));
-    height: calc(110 * var(--u));
+    left: calc(48% - 60 * var(--u));
+    width: calc(200 * var(--u));
+    height: calc(200 * var(--u));
     bottom: 0;
   }
   /* 24px below the tagline, at every width. */
   .collage--home .b3 {
-    left: 90%;
+    right: 0;
     top: -32px;
-    width: max(64px, 7%);
-    height: calc(120 * var(--u));
+    width: max(90px, 7%);
+    height: max(90px, calc(120 * var(--u)));
   }
   .collage--home .cover {
     right: 13%;
@@ -721,7 +727,7 @@ const stackEm = stacked ? Math.max(textEm(firstLine), textEm(lastWord)) : textEm
       right: 0;
       top: 0;
       width: 30%;
-      height: 70px;
+      height: max(104px, calc(var(--content) * 0.2));
     }
     .collage--left .b3 {
       left: 84%;
@@ -743,16 +749,11 @@ const stackEm = stacked ? Math.max(textEm(firstLine), textEm(lastWord)) : textEm
       left: -20px;
       top: 120px;
       width: calc(20px + 30%);
-      height: 56px;
+      height: max(56px, calc((var(--content) * 0.36 + 20px) / 3));
     }
-    .collage--tower .stage {
-      padding-top: 56px;
-    }
+    /* No room for a third piece of any size. */
     .collage--tower .b3 {
-      left: 46%;
-      top: 0;
-      width: 24%;
-      height: 44px;
+      display: none;
     }
     .collage--tower .cover {
       margin-left: 40%;
@@ -773,8 +774,8 @@ const stackEm = stacked ? Math.max(textEm(firstLine), textEm(lastWord)) : textEm
     .collage--band .b3 {
       left: 28%;
       top: 18px;
-      width: 16%;
-      height: 46px;
+      width: max(56px, 16%);
+      height: 56px;
     }
     .collage--band .cover {
       margin-left: 52%;
@@ -791,26 +792,27 @@ const stackEm = stacked ? Math.max(textEm(firstLine), textEm(lastWord)) : textEm
     .collage--right .b2 {
       left: 0;
       bottom: 24px;
-      width: 26%;
-      height: 110px;
+      width: 30%;
+      height: max(110px, calc(var(--content) * 0.22));
     }
-    /* On the home page, a small square in the block's lower left corner. */
+    .collage--right .cover {
+      width: min(44%, calc(320px * var(--ratio)));
+    }
+    /* No room on the home page for a square large enough. */
     .collage--home .b2 {
-      left: calc(20% - 24px);
-      bottom: 16px;
-      width: 48px;
-      height: 48px;
+      display: none;
     }
     .collage--right .stage,
     .collage--home .stage {
-      padding-top: 52px;
+      padding-top: 64px;
     }
     .collage--right .b3,
     .collage--home .b3 {
       right: 6%;
+      left: auto;
       top: 0;
       width: 24%;
-      height: 44px;
+      height: 56px;
     }
     .collage--right .cover,
     .collage--home .cover {
@@ -833,10 +835,10 @@ const stackEm = stacked ? Math.max(textEm(firstLine), textEm(lastWord)) : textEm
       width: 26%;
     }
     .collage--door .b3 {
-      left: 15%;
+      left: 12%;
       bottom: 0;
-      width: 13%;
-      height: 48px;
+      width: max(56px, 16%);
+      height: 56px;
     }
     .collage--door .cover {
       margin-left: 30%;
@@ -868,8 +870,9 @@ const stackEm = stacked ? Math.max(textEm(firstLine), textEm(lastWord)) : textEm
     }
     .collage--framed .b3 {
       right: 0;
+      left: auto;
       top: 40px;
-      width: 14%;
+      width: max(56px, 14%);
       height: 90px;
     }
     .collage--framed .cover {
@@ -883,13 +886,13 @@ const stackEm = stacked ? Math.max(textEm(firstLine), textEm(lastWord)) : textEm
       bottom: 24px;
     }
     .collage--framed.circle .cover {
-      margin-left: 24%;
+      margin-left: 30%;
     }
     .collage--framed .round {
       left: 0;
       top: auto;
       bottom: 0;
-      width: 22%;
+      width: 27%;
     }
   }
 </style>

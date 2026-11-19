@@ -14,6 +14,7 @@ const hasNote = Astro.slots.has('note');
 ---
 
 <Tag class:list={['grid', 'row', className]}>
+  <slot name="decor" />
   {
     hasNote && (
       <div class:list={['col-margin', noteStyle]}>
@@ -28,6 +29,7 @@ const hasNote = Astro.slots.has('note');
 
 <style>
   .row {
+    position: relative;
     align-items: baseline;
   }
   @media (max-width: 760px) {

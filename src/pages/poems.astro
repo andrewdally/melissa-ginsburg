@@ -2,7 +2,7 @@
 import Base from '../layouts/Base.astro';
 import Excerpt from '../components/Excerpt.astro';
 import Row from '../components/Row.astro';
-import Tints from '../components/Tints.astro';
+import Edge from '../components/Edge.astro';
 import data from '../data/poems.json';
 
 type Poem = { title: string; venue: string; url: string; excerpt?: string };
@@ -13,7 +13,6 @@ const featured = poems.find((poem) => poem.excerpt);
 ---
 
 <Base title="Poems &c." description="Poems by Melissa Ginsburg in magazines and online, and other writing.">
-  <Tints slot="backdrop" layout="poems" />
   <div class="frame">
     <h1 class="visually-hidden">Poems &amp;c.</h1>
 
@@ -30,7 +29,8 @@ const featured = poems.find((poem) => poem.excerpt);
       )
     }
 
-    <section class:list={['grid', featured?.excerpt ? 'section' : 'first']} aria-labelledby="in-magazines">
+    <section class:list={['grid', 'magazines', featured?.excerpt ? 'section' : 'first']} aria-labelledby="in-magazines">
+      <Edge layout="poems" />
       <h2 class="col-wide label run-label" id="in-magazines">Poems in magazines</h2>
       <ul class="col-wide run">
         {
@@ -90,14 +90,21 @@ const featured = poems.find((poem) => poem.excerpt);
   .run li {
     display: inline;
   }
-  /* Where it appeared, not a link: a quieter italic. */
-  .venue {
-    color: #5f574d;
+  /* Colour pieces lie behind the run; see Edge.astro. On a phone they sit
+     above it. */
+  .magazines {
+    position: relative;
   }
+  @media (max-width: 760px) {
+    .magazines {
+      margin-top: calc(var(--space-m) + 96px);
+    }
+  }
+  /* Where it appeared, not a link: italic, in ink, since the run may cross
+     the orange, where grey wouldn't read. */
   /* Caslon's slash is nearly upright; hair spaces and a little room on each
      side keep it from reading as a rule. */
   .sep {
-    color: var(--muted);
     margin-inline: 0.3em;
   }
   .elsewhere {

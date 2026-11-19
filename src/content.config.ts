@@ -54,6 +54,8 @@ const books = defineCollection({
         mirror: z.boolean().default(false),
         /** "circle" only where the cover has one (a moon, a light, a target): the color2 piece becomes a circle. */
         shape: z.enum(['rect', 'circle']).default('rect'),
+        /** Whether the tile's second piece lies "front" (over a top corner) or "back" (behind). Blank: alternating along the wall; a circle is always in front. */
+        scrapLayer: optional(z.enum(['front', 'back'])),
         /** Tile size on the collage wall: "large", "tall", "wide" or "small". */
         tile: optional(z.enum(['large', 'tall', 'wide', 'small'])),
         /** Indent every other line of the excerpt. */
@@ -183,8 +185,6 @@ const pages = defineCollection({
   schema: ({ image }) =>
     z.object({
       title: z.string(),
-      /** Two sentences for the home page. */
-      summary: optional(z.string()),
       photo: optional(image()),
       photoAlt: optional(z.string()),
     }),

@@ -15,12 +15,7 @@ const books = await getBooks();
 const wall = books.filter((b) => isFullLength(b) && b.id !== featured.id);
 
 // Context for the featured book, between the hero and the wall.
-const { title, kind, publisher, format, pages, homeBlurb, homePraise, praise } = featured.data;
-const facts = [
-  kind.charAt(0).toUpperCase() + kind.slice(1),
-  publisher,
-  [format, pages ? `${pages} pages` : undefined].filter(Boolean).join(', '),
-].filter(Boolean);
+const { title, homeBlurb, homePraise, praise } = featured.data;
 const firstSentence = (featured.body ?? '').trim().match(/^[\s\S]+?[.!?](?=\s|$)/)?.[0];
 const blurb = homeBlurb ?? firstSentence;
 const quote = homePraise
@@ -35,6 +30,10 @@ const LatestContent = latest ? (await render(latest)).Content : undefined;
 
 const recent = poems.poems.slice(0, 3);
 const about = await getEntry('pages', 'about');
+// The About row: the bio's first and last sentences, word for word.
+const bioSentences = (about?.body ?? '').replace(/\s+/g, ' ').trim().split(/(?<=[.!?])\s+(?=[A-Z])/);
+const bioShort =
+  bioSentences.length > 1 ? `${bioSentences[0]} ${bioSentences[bioSentences.length - 1]}` : bioSentences[0];
 ---
 
 <Base home image={featured.data.cover}>
@@ -43,15 +42,7 @@ const about = await getEntry('pages', 'about');
 
     {
       (blurb || quote) && (
-        <Row class="section context" as="section">
-          <Fragment slot="note">
-            {facts.map((line, i) => (
-              <>
-                {i > 0 && <br />}
-                {line}
-              </>
-            ))}
-          </Fragment>
+        <section class="major context" aria-label={`About ${title}`}>
           {blurb && <p class="blurb" set:html={inline(blurb)} />}
           {quote && (
             <figure class="praise">
@@ -66,13 +57,13 @@ const about = await getEntry('pages', 'about');
               More about <i>{title}</i>
             </a>
           </p>
-        </Row>
+        </section>
       )
     }
 
     {
       wall.length > 0 && (
-        <section class="section" aria-labelledby="also-by">
+        <section class="major" aria-labelledby="also-by">
           <h2 class="heading" id="also-by">
             Also by Melissa
           </h2>
@@ -86,7 +77,7 @@ const about = await getEntry('pages', 'about');
       )
     }
 
-    <div class="section rows">
+    <div class="major rows">
       {
         latest && LatestContent && (
           <Row noteStyle="label">
@@ -124,10 +115,10 @@ const about = await getEntry('pages', 'about');
       </Row>
 
       {
-        about?.data.summary && (
+        bioShort && (
           <Row noteStyle="label">
             <Fragment slot="note">About</Fragment>
-            <p set:html={inline(about.data.summary)} />
+            <p set:html={inline(bioShort)} />
             <p class="more links">
               <a href={url('/about')}>About</a>
               <span class="sep" aria-hidden="true">
@@ -151,8 +142,11 @@ const about = await getEntry('pages', 'about');
 </Base>
 
 <style>
-  /* The featured book in a few lines: the facts in the margin, a description,
-     one blurb, a link. */
+  /* The featured book in a few lines, in the hero text's column: a
+     description, one blurb, a link. */
+  .context {
+    max-width: 36%;
+  }
   .blurb {
     font-size: 23px;
     line-height: 1.55;
@@ -177,6 +171,9 @@ const about = await getEntry('pages', 'about');
     font-size: 19px;
   }
   @media (max-width: 760px) {
+    .context {
+      max-width: none;
+    }
     .blurb {
       font-size: 20px;
     }

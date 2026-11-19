@@ -12,11 +12,13 @@ Everything on the site comes from plain text files; no code changes are needed t
 | Book covers | `src/assets/covers/` |
 | News and readings (one file each) | `src/content/news/*.md` |
 | Poems &c. list | `src/data/poems.json` |
-| Bio, photo, and the short summary on the home page (asterisks for italic) | `src/content/pages/about.md` |
+| Bio and photo (the home page quotes the bio's first and last sentences) | `src/content/pages/about.md` |
 | Tagline, footer line, agent, email, social links, arts commission credit, the About page's colours | `src/data/site.json` |
 
-The book marked `featured: true` leads the home page, and its colours tint the
-backgrounds of the News and Poems &c. pages (worked out when the site is built).
+The book marked `featured: true` leads the home page, and three pieces in its
+colours sit at one edge of the News and Poems &c. pages. Text may cross the main
+colour and the lighter accent, so if ink wouldn't read on one of them (4.5:1),
+it's mixed with paper until it does.
 Colour comes only from a book's cover, or on the About page from the photo
 (`aboutColors` in `site.json`).
 
@@ -50,6 +52,7 @@ Each book file sets its own look; no page has CSS of its own.
 | `collage` | The top of the book page: `left` (the title crosses the colour, as for *Runoff*), `tower` (a tall narrow block off the edge of the page, as for *Doll Apollo*), `band` (a broad band off the edge of the page with the cover half off its end, as for *Arbor*), `door` (a tall narrow block down from the top of the page like a doorway, a small square level with the light in the cover, as for *The House Uptown*), `right` (as for *Sunset City*) or `framed` (as for *Apollo*). `left` only works where ink reads on `color`; leave it out to get `left` for a light colour and `framed` for a dark one. Give books next to each other on the Books page different collages. |
 | `mirror` | `true` to flip the collage left to right. |
 | `shape` | `circle` only where the cover has a circle in it (a moon, a light, a target): the `color2` piece becomes a circle tucked behind the main block, and the book's scrap on the wall is a circle too. Leave it out otherwise. |
+| `scrapLayer` | `front` to lay the tile's second piece over its top left corner on the wall, `back` to tuck it behind. Leave it out to alternate along the wall. A circle is always in front. |
 | `tile` | The book's tile on the wall of books: `large`, `tall`, `wide` (the default) or `small` (the default for chapbooks). |
 | `excerpt` | A few lines from the book. Line breaks are kept; a blank line starts a new stanza. |
 | `excerptStagger` | `true` to indent every other line of the excerpt. |
