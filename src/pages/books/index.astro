@@ -1,39 +1,23 @@
 ---
 import Base from '../../layouts/Base.astro';
-import Shelf from '../../components/Shelf.astro';
+import Wall from '../../components/Wall.astro';
 import { getBooks } from '../../lib/books';
 
+// Every book, newest first; the kind and year on each tile carry the grouping.
 const books = await getBooks();
-const groups = [
-  { title: 'Poetry', books: books.filter((b) => b.data.category === 'poetry') },
-  { title: 'Fiction', books: books.filter((b) => b.data.category === 'fiction') },
-  { title: 'Chapbooks', books: books.filter((b) => b.data.category === 'chapbook') },
-].filter((g) => g.books.length > 0);
 ---
 
-<Base
-  title="Books"
-  description="Poetry collections, novels, and chapbooks by Melissa Ginsburg."
-  wash={{ color: '#F8BDB4', color2: '#F6E3B6' }}
->
-  <div class="wrap">
-    <h1 class="page-title">Books</h1>
-    {
-      groups.map((group) => (
-        <section class="group">
-          <h2 class="section-title">{group.title}</h2>
-          <Shelf books={group.books} details />
-        </section>
-      ))
-    }
+<Base title="Books" description="Poetry collections, novels, and chapbooks by Melissa Ginsburg.">
+  <div class="frame">
+    <h1 class="visually-hidden">Books</h1>
+    <div class="wall-top">
+      <Wall books={books} />
+    </div>
   </div>
 </Base>
 
 <style>
-  .group {
-    padding-top: 88px;
-  }
-  .group .section-title {
-    margin-bottom: 40px;
+  .wall-top {
+    margin-top: var(--space-m);
   }
 </style>

@@ -1,0 +1,61 @@
+---
+// Books as overlapping colour tiles, never a uniform grid. Offsets and stacking
+// vary by position from a fixed pattern; each book sets only its tile size.
+// On a phone the wall becomes an offset pile, alternating left and right.
+import WallTile from './WallTile.astro';
+import type { Book } from '../lib/books';
+
+interface Props {
+  books: Book[];
+  label?: string;
+}
+
+const { books, label = 'Books' } = Astro.props;
+---
+
+<nav class="wall" aria-label={label}>
+  {books.map((book, i) => <WallTile book={book} index={i} />)}
+</nav>
+
+<style>
+  .wall {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    row-gap: var(--space-m);
+    padding-left: 20px;
+  }
+  .wall > :global(*) {
+    margin-left: -20px;
+  }
+  .wall > :global(:nth-child(6n + 1)) { margin-top: 40px; }
+  .wall > :global(:nth-child(6n + 2)) { margin-top: 0; }
+  .wall > :global(:nth-child(6n + 3)) { margin-top: 96px; }
+  .wall > :global(:nth-child(6n + 4)) { margin-top: 24px; }
+  .wall > :global(:nth-child(6n + 5)) { margin-top: 72px; }
+  .wall > :global(:nth-child(6n + 6)) { margin-top: 8px; }
+
+  @media (max-width: 760px) {
+    .wall {
+      flex-direction: column;
+      flex-wrap: nowrap;
+      row-gap: 0;
+      padding-left: 0;
+    }
+    .wall > :global(*) {
+      margin-left: 0;
+    }
+    .wall > :global(:nth-child(even)) {
+      margin-left: auto;
+    }
+    .wall > :global(:nth-child(6n + 1)) { margin-top: -10px; }
+    .wall > :global(:nth-child(6n + 2)) { margin-top: -14px; }
+    .wall > :global(:nth-child(6n + 3)) { margin-top: -8px; }
+    .wall > :global(:nth-child(6n + 4)) { margin-top: -16px; }
+    .wall > :global(:nth-child(6n + 5)) { margin-top: -12px; }
+    .wall > :global(:nth-child(6n + 6)) { margin-top: -10px; }
+    .wall > :global(:first-child) {
+      margin-top: 0;
+    }
+  }
+</style>

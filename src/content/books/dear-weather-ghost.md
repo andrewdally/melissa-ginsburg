@@ -5,8 +5,13 @@ category: poetry
 publisher: Four Way Books
 year: 2013
 cover: ../../assets/covers/dear-weather-ghost.jpg
-color: "#A8D8CB"
-color2: "#D6FFFA"
+coverAlt: A pheasant beneath an ornate birdcage in a deep teal room crossed by a band of light
+color: "#2A7059"
+color2: "#022420"
+color3: "#54A78D"
+textOn: paper
+collage: right
+tile: wide
 buy:
   - label: Four Way Books
     url: https://fourwaybooks.com/site/dear-weather-ghost
@@ -19,6 +24,7 @@ praise:
       approaches the transformative.
     name: Mark Levine
     featured: true
+    pull: This book is a subtly beautiful address to the air, and it approaches the transformative.
   - quote: >-
       In deceptively simple language, and with a child’s-eye view, Melissa
       Ginsburg’s poems describe a world as complex and surprising as any. In

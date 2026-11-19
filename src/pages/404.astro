@@ -1,0 +1,14 @@
+---
+import Base from '../layouts/Base.astro';
+import { url } from '../lib/url';
+---
+
+<Base home title="Page not found">
+  <div class="frame">
+    <div class="grid section">
+      <p class="col-read">
+        There is nothing at this address. <a href={url('/')}>Go to the home page</a>.
+      </p>
+    </div>
+  </div>
+</Base>

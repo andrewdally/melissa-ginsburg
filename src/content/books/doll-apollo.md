@@ -5,16 +5,21 @@ category: poetry
 publisher: LSU Press
 year: 2022
 cover: ../../assets/covers/doll-apollo.jpg
-color: "#C9696C"
-color2: "#E4D6BA"
+coverAlt: A red toile pattern with an astronaut, a rider on horseback, and paper-doll figures
+color: "#E1D8BC"
+color2: "#B2493F"
+color3: "#C6AA91"
+textOn: ink
+collage: framed
+tile: wide
 buy:
   - label: LSU Press
-    url: https://lsu.longleafservices.org/
+    url: https://lsupress.org/books/detail/doll-apollo/
   - label: Barnes & Noble
     url: https://www.barnesandnoble.com/w/doll-apollo-melissa-ginsburg/1141376711
 praise:
   - quote: >-
-      Doll Apollo swallows us into the secrets of the stitched surface, presses us
+      *Doll Apollo* swallows us into the secrets of the stitched surface, presses us
       into the spaces between threads. We are launched from blackberry roots to the
       face of the moon. We rove over landscapes of language both sly and sylleptic;
       we are given the slip, fall for the trick, and love it. These poems are
@@ -23,8 +28,9 @@ praise:
       dreamy book you’ll want to fold yourself into again and again.
     name: Claire Wahmanholm
     featured: true
+    pull: This is joyous attention.
   - quote: >-
-      The poems of Doll Apollo chart a fascinating constellation of emotional and
+      The poems of *Doll Apollo* chart a fascinating constellation of emotional and
       spiritual intricacy. These virtuosic lyrics sift the fragments of our
       seemingly divided societal moment to find luminous and enduring connections
       between technology and faith, mythology and modernity. From ruminations on
@@ -38,7 +44,7 @@ praise:
       beaches. Some Atlantic; some Pacific. I would take them out and set them
       together in various combinations just to admire the patterns, colors,
       textures—to be lost inside them, to feel the contours of them. While reading
-      Melissa Ginsburg’s Doll Apollo I felt that same habit return: the paying
+      Melissa Ginsburg’s *Doll Apollo* I felt that same habit return: the paying
       attention to surfaces, repetitions, threads. Much admiring the ways in which
       the pastoral landscape and the pastoral tradition in poetry sort of overlap
       and at the same time tug at one another: Daphne pulling in one direction;
@@ -54,8 +60,8 @@ praise:
     name: D. A. Powell
   - quote: >-
       Each well-made lyric poem is a solution to the problem of lyricism—the
-      problem of fluency as a response to, and memorialization of, difficulty. Doll
-      Apollo is a book of solutions—the poems do not ignore the problem of their
+      problem of fluency as a response to, and memorialization of, difficulty. *Doll
+      Apollo* is a book of solutions—the poems do not ignore the problem of their
       own fluency, but neither do they compromise their fluency, which could only
       be patronizing, a gesture; their beauty is the inevitable beauty of achieved
       art, not the easy beauty of art that seeks to be ingratiating, and is

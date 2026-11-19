@@ -1,0 +1,40 @@
+---
+// A small scrap of a book's two main colours, in place of a cover thumbnail.
+// Sized in ems, so it scales with the text it sits beside. The overlap varies
+// by position in a list, from four fixed shapes, so a list never repeats one.
+import type { Book } from '../lib/books';
+
+interface Props {
+  book: Book;
+  index?: number;
+}
+
+const { book, index = 0 } = Astro.props;
+const { color, color2 } = book.data;
+---
+
+<span class:list={['scrap', `v${index % 4}`]} aria-hidden="true">
+  <span class="a" style={`background: ${color}`}></span>
+  {color2 && <span class="b" style={`background: ${color2}`} />}
+</span>
+
+<style>
+  .scrap {
+    position: relative;
+    display: block;
+    width: 1.3em;
+    height: 1em;
+  }
+  .a,
+  .b {
+    position: absolute;
+  }
+  .v0 .a { left: 0; top: 0; width: 70%; height: 70%; }
+  .v0 .b { left: 44%; top: 42%; width: 46%; height: 58%; }
+  .v1 .a { left: 30%; top: 0; width: 70%; height: 72%; }
+  .v1 .b { left: 4%; top: 46%; width: 44%; height: 54%; }
+  .v2 .a { left: 8%; top: 22%; width: 70%; height: 70%; }
+  .v2 .b { left: 58%; top: 0; width: 38%; height: 50%; }
+  .v3 .a { left: 30%; top: 26%; width: 70%; height: 74%; }
+  .v3 .b { left: 0; top: 0; width: 48%; height: 56%; }
+</style>

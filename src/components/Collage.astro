@@ -1,0 +1,432 @@
+---
+// The top of every book page and the home page's hero: up to three flat
+// blocks of the book's colours, the cover laid flat on them, and the title.
+// Everything is placed by the book's `collage` preset; no page sets its own CSS.
+import { Image } from 'astro:assets';
+import OrderLinks from './OrderLinks.astro';
+import { excerptLines, heroLabel, when, type Book } from '../lib/books';
+import { fitStyle } from '../lib/fit';
+import { url } from '../lib/url';
+
+interface Props {
+  book: Book;
+  /** "page": the book's own page, with its title as the h1. "home": the home hero. */
+  variant?: 'page' | 'home';
+}
+
+const { book, variant = 'page' } = Astro.props;
+const { title, kind, publisher, cover, coverAlt, color, color2, color3, textOn } = book.data;
+// The home hero always uses the "right" layout, whatever the book's own preset.
+const preset = variant === 'home' ? 'right' : book.data.collage;
+const href = url(`/books/${book.id}`);
+const alt = coverAlt ? `Cover of ${title}: ${coverAlt}` : `Cover of ${title}`;
+const style = [
+  `--c1: ${color}`,
+  color2 && `--c2: ${color2}`,
+  color3 && `--c3: ${color3}`,
+  `--ratio: ${(cover.width / cover.height).toFixed(4)}`,
+]
+  .filter(Boolean)
+  .join('; ');
+const lines = variant === 'home' ? excerptLines(book, 2) : [];
+// The title may cross onto the colour only where ink reads on it.
+const crosses = variant === 'page' && textOn === 'ink';
+---
+
+<div class:list={['collage', `collage--${preset}`, `collage--${variant}`, { crosses }]} style={style}>
+  <div class="stage">
+    <div class="blk b1" aria-hidden="true"></div>
+    {color2 && <div class="blk b2" aria-hidden="true" />}
+    {color3 && preset !== 'right' && <div class="blk b3" aria-hidden="true" />}
+    <div class="cover">
+      {
+        variant === 'home' ? (
+          <a href={href}>
+            <Image src={cover} alt={alt} widths={[360, 720]} sizes="(max-width: 760px) 52vw, 330px" loading="eager" />
+          </a>
+        ) : (
+          <Image src={cover} alt={alt} widths={[360, 720]} sizes="(max-width: 760px) 52vw, 360px" loading="eager" />
+        )
+      }
+    </div>
+  </div>
+
+  <div class="words">
+    {
+      variant === 'page' ? (
+        <>
+          <h1 class="display title" style={fitStyle(title)}>
+            {title}
+          </h1>
+          <div class="meta">
+            <p class="kind">{kind}</p>
+            <p>
+              {publisher}
+              <br />
+              {when(book)}
+            </p>
+            <OrderLinks book={book} class="meta-order" />
+          </div>
+        </>
+      ) : (
+        <>
+          <p class="label">{heroLabel(book)}</p>
+          <h2 class="display title" style={fitStyle(title)}>
+            <a href={href}>{title}</a>
+          </h2>
+          {lines.length > 0 && (
+            <p class="lines">
+              {lines.map((line, i) => (
+                <>
+                  {i > 0 && <br />}
+                  {line}
+                </>
+              ))}
+            </p>
+          )}
+          <OrderLinks book={book} first class="hero-order" />
+        </>
+      )
+    }
+  </div>
+</div>
+
+<style>
+  /*
+   * Desktop: blocks and cover are placed absolutely on a stage; the words are in
+   * normal flow on top, so a long title makes the collage taller rather than
+   * running into what follows. Vertical sizes are in --u (1px at full width).
+   */
+  .collage {
+    position: relative;
+    margin-top: var(--space-m);
+    min-height: calc(var(--h) * var(--u));
+  }
+  .stage {
+    position: absolute;
+    inset: 0;
+  }
+  .blk {
+    position: absolute;
+  }
+  .b1 {
+    background: var(--c1);
+  }
+  .b2 {
+    background: var(--c2);
+  }
+  .b3 {
+    background: var(--c3);
+  }
+  /* Covers lie flat at their natural shape: never cropped, tilted or shadowed.
+     A tall cover gets narrower rather than taller than the space allows. */
+  .cover {
+    position: absolute;
+    width: min(var(--cw), var(--cw-max), calc(var(--ch-max) * var(--ratio)));
+  }
+  .cover a {
+    display: block;
+    padding: 0;
+  }
+  .cover :global(img) {
+    width: 100%;
+    height: auto;
+  }
+  .words {
+    position: relative;
+    z-index: 1;
+    padding-top: calc(var(--words-top) * var(--u));
+  }
+  .title {
+    font-size: min(clamp(96px, 15.5vw, 236px), calc(var(--content) * var(--share) / var(--word-em)));
+    line-height: 0.9;
+    letter-spacing: -0.015em;
+    /* Display titles sit tight; this clears their descenders. */
+    margin-bottom: 0.2em;
+  }
+  .title a {
+    text-decoration: none;
+  }
+  .title a:hover {
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.12em;
+  }
+  .meta {
+    font-size: 19px;
+    line-height: 1.5;
+  }
+  .meta > * + * {
+    margin-top: var(--space-s);
+  }
+  .meta :global(.meta-order) {
+    margin-top: calc(var(--space-s) - 10px);
+  }
+  .kind {
+    font-size: 26px;
+    font-style: italic;
+    line-height: 1.2;
+  }
+
+  /* Runoff: a wide block from the left, the title crossing its right edge. */
+  .collage--left {
+    --h: 760;
+    --words-top: 270;
+    --share: 0.58;
+    --cw: 24%;
+    --cw-max: 340px;
+    --ch-max: calc(620 * var(--u));
+  }
+  .collage--left .b1 {
+    left: 0;
+    top: 0;
+    width: 56%;
+    height: calc(640 * var(--u));
+  }
+  .collage--left .b2 {
+    left: 47%;
+    top: calc(540 * var(--u));
+    width: 21%;
+    height: calc(190 * var(--u));
+  }
+  .collage--left .b3 {
+    left: 56%;
+    top: calc(110 * var(--u));
+    width: 1.6%;
+    height: calc(330 * var(--u));
+  }
+  .collage--left .cover {
+    left: 9%;
+    top: calc(84 * var(--u));
+  }
+  .collage--left .title {
+    margin-left: 38%;
+  }
+  .collage--left .meta {
+    margin-left: 72%;
+    width: 24%;
+  }
+
+  /* The home hero: the block on the right, the words on paper at the left. */
+  .collage--right {
+    --h: 700;
+    --words-top: 96;
+    --share: 0.34;
+    --cw: 23%;
+    --cw-max: 330px;
+    --ch-max: calc(600 * var(--u));
+  }
+  .collage--right .b1 {
+    right: 0;
+    top: 0;
+    width: 52%;
+    height: calc(600 * var(--u));
+  }
+  .collage--right .b2 {
+    right: 40%;
+    top: calc(430 * var(--u));
+    width: 19%;
+    height: calc(220 * var(--u));
+  }
+  .collage--right .cover {
+    right: 13%;
+    top: calc(70 * var(--u));
+  }
+  .collage--right .words {
+    width: 36%;
+  }
+
+  /* Doll Apollo: the block inset like a frame, the title on paper to its right. */
+  .collage--framed {
+    --h: 780;
+    --words-top: 120;
+    --share: 0.36;
+    --cw: 26%;
+    --cw-max: 360px;
+    --ch-max: calc(660 * var(--u));
+  }
+  .collage--framed .b1 {
+    left: 14%;
+    top: 0;
+    width: 44%;
+    height: calc(700 * var(--u));
+  }
+  .collage--framed .b2 {
+    left: 0;
+    top: calc(330 * var(--u));
+    width: 22%;
+    height: calc(420 * var(--u));
+  }
+  .collage--framed .b3 {
+    left: 52%;
+    top: calc(600 * var(--u));
+    width: 14%;
+    height: calc(150 * var(--u));
+  }
+  .collage--framed .cover {
+    left: 22%;
+    top: calc(96 * var(--u));
+  }
+  .collage--framed .title {
+    margin-left: 61%;
+  }
+  .collage--framed .meta {
+    margin-left: 68%;
+    width: 28%;
+  }
+
+  /* Home hero words. */
+  .collage--home .title {
+    font-size: min(clamp(64px, 8vw, 124px), calc(var(--content) * var(--share) / var(--word-em)));
+    line-height: 0.92;
+    margin-top: var(--space-s);
+  }
+  .lines {
+    hyphens: manual;
+    max-width: 19em;
+    font-size: 22px;
+    line-height: 1.5;
+  }
+  .collage--home :global(.hero-order) {
+    margin-top: calc(var(--space-s) - 10px);
+  }
+
+  /*
+   * Phone: the collage is redrawn, not hidden. The stage is in flow and sized by
+   * the cover; the title follows it, crossing the block's bottom edge where ink
+   * reads on the colour, so title and order link show without scrolling far.
+   */
+  @media (max-width: 760px) {
+    .collage {
+      min-height: 0;
+      margin-top: var(--space-s);
+    }
+    .stage {
+      position: relative;
+      inset: auto;
+      min-height: 300px;
+      padding: 20px 0 28px;
+    }
+    .collage .blk {
+      left: auto;
+      right: auto;
+      top: auto;
+      bottom: auto;
+    }
+    .collage .cover {
+      position: relative;
+      left: auto;
+      right: auto;
+      top: auto;
+      width: min(48%, calc(340px * var(--ratio)));
+    }
+    .words,
+    .collage--right .words {
+      padding-top: 0;
+      width: auto;
+    }
+    .title,
+    .collage--left .title,
+    .collage--framed .title {
+      margin-left: 0;
+      margin-top: var(--space-s);
+      /* No wider than its longest word, and no more than about two lines. */
+      font-size: min(
+        92px,
+        calc(var(--content) * 0.94 / var(--word-em)),
+        calc(var(--content) * 1.5 / var(--title-em))
+      );
+    }
+    .crosses .title {
+      margin-top: -0.42em;
+    }
+    .meta,
+    .collage--left .meta,
+    .collage--framed .meta {
+      margin-left: 0;
+      width: auto;
+      font-size: 17px;
+    }
+    .meta > * + * {
+      margin-top: var(--space-s);
+    }
+    .meta > .kind + * {
+      margin-top: 2px;
+    }
+    .kind {
+      font-size: 21px;
+    }
+    .collage--home .title {
+      font-size: min(64px, calc(var(--content) * 0.94 / var(--word-em)));
+    }
+    .collage--home .label {
+      margin-top: var(--space-s);
+    }
+    .lines {
+      font-size: 19px;
+    }
+
+    .collage--left .b1 {
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 84%;
+      height: auto;
+    }
+    .collage--left .b2 {
+      right: 0;
+      bottom: 24px;
+      width: 34%;
+      height: 110px;
+    }
+    .collage--left .b3 {
+      left: 84%;
+      top: 60px;
+      width: 8px;
+      height: 200px;
+    }
+    .collage--left .cover {
+      margin-left: 14%;
+    }
+
+    .collage--right .b1 {
+      right: 0;
+      top: 0;
+      bottom: 0;
+      width: 80%;
+      height: auto;
+    }
+    .collage--right .b2 {
+      left: 0;
+      bottom: 24px;
+      width: 38%;
+      height: 110px;
+    }
+    .collage--right .cover {
+      margin-left: 34%;
+    }
+
+    .collage--framed .b1 {
+      left: 8%;
+      top: 0;
+      bottom: 0;
+      width: 80%;
+      height: auto;
+    }
+    .collage--framed .b2 {
+      left: 0;
+      top: 200px;
+      width: 22%;
+      height: 150px;
+    }
+    .collage--framed .b3 {
+      right: 0;
+      top: 40px;
+      width: 12%;
+      height: 90px;
+    }
+    .collage--framed .cover {
+      margin-left: 20%;
+    }
+  }
+</style>

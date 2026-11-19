@@ -1,0 +1,38 @@
+---
+// One row of the page: a note in the margin column (a name, a date, publication
+// details), aligned on its first baseline with the text in the reading column.
+// On a phone the note moves above its text as a short line.
+interface Props {
+  /** "note" (italic) or "label" (spaced capitals). */
+  noteStyle?: 'note' | 'label';
+  as?: 'div' | 'li' | 'section';
+  class?: string;
+}
+
+const { noteStyle = 'note', as: Tag = 'div', class: className } = Astro.props;
+const hasNote = Astro.slots.has('note');
+---
+
+<Tag class:list={['grid', 'row', className]}>
+  {
+    hasNote && (
+      <div class:list={['col-margin', noteStyle]}>
+        <slot name="note" />
+      </div>
+    )
+  }
+  <div class="col-read">
+    <slot />
+  </div>
+</Tag>
+
+<style>
+  .row {
+    align-items: baseline;
+  }
+  @media (max-width: 760px) {
+    .row {
+      row-gap: 4px;
+    }
+  }
+</style>

@@ -1,6 +1,7 @@
 import { defineCollection, reference } from 'astro:content';
 import { glob } from 'astro/loaders';
 import { z } from 'astro/zod';
+import { bestTextOn, contrast, textColor } from './lib/color';
 
 // Editors (and the CMS) tend to leave optional fields as "" rather than
 // deleting them. Treat blanks as "not set" so they don't fail validation.
@@ -11,64 +12,117 @@ const color = z
   .string()
   .regex(/^#[0-9a-fA-F]{6}$/, 'Use a six-digit hex color, like #F47B20');
 
+/** Small text on a colour needs 4.5:1; wall tiles set the kind and year small. */
+const MIN_CONTRAST = 4.5;
+
 const books = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/books' }),
   schema: ({ image }) =>
-    z.object({
-      title: z.string(),
-      /** Shown under the title, lower case: "poems", "a novel", "a chapbook". */
-      kind: z.string(),
-      category: z.enum(['poetry', 'fiction', 'chapbook']),
-      /** One sentence for the top of the page. */
-      tagline: optional(z.string()),
-      publisher: z.string(),
-      year: optional(z.coerce.number().int()),
-      /** Only needed for a book that isn't out yet: drives "Preorder" wording. */
-      releaseDate: optional(z.coerce.date()),
-      /** The featured book leads the home page. */
-      featured: z.boolean().default(false),
-      cover: image(),
-      coverAlt: optional(z.string()),
-      /** The book's color: tints the top of its page. */
-      color,
-      /** Optional second color that drifts in from the right. */
-      color2: optional(color),
-      buy: z.array(z.object({ label: z.string(), url: z.url() })).default([]),
-      /** A few lines from the book, line breaks kept. */
-      excerpt: optional(z.string()),
-      format: optional(z.string()),
-      pages: optional(z.coerce.number().int()),
-      price: optional(z.string()),
-      isbn: optional(z.string()),
-      honors: z.array(z.string()).default([]),
-      praise: z
-        .array(
-          z.object({
-            quote: z.string(),
-            name: z.string(),
-            credit: optional(z.string()),
-            url: optional(z.url()),
-            /** Set one blurb as the large pull quote. */
-            featured: z.boolean().default(false),
-          }),
-        )
-        .default([]),
-      press: z
-        .array(
-          z.object({
-            title: z.string(),
-            source: z.string(),
-            url: z.url(),
-            quote: optional(z.string()),
-          }),
-        )
-        .default([]),
-    }),
+    z
+      .object({
+        title: z.string(),
+        /** Shown under the title, lower case: "poems", "a novel", "a chapbook". */
+        kind: z.string(),
+        category: z.enum(['poetry', 'fiction', 'chapbook']),
+        /** Used only for the page's description in search results and link previews. */
+        tagline: optional(z.string()),
+        publisher: z.string(),
+        year: optional(z.coerce.number().int()),
+        /** Only needed for a book that isn't out yet: drives "Preorder" wording. */
+        releaseDate: optional(z.coerce.date()),
+        /** The featured book leads the home page. */
+        featured: z.boolean().default(false),
+        cover: image(),
+        /** What the cover shows, for people who can't see it. */
+        coverAlt: optional(z.string()),
+        /** The main colour block, sampled from the cover. */
+        color,
+        /** A smaller accent block that overlaps the main one. */
+        color2: optional(color),
+        /** Optional third colour: a thin sliver or scrap. */
+        color3: optional(color),
+        /** Text set on `color`: "ink" or "paper". Leave blank to pick whichever reads better. */
+        textOn: optional(z.enum(['ink', 'paper'])),
+        /** Layout of the top of the book page: "left", "right" or "framed". */
+        collage: optional(z.enum(['left', 'right', 'framed'])),
+        /** Tile size on the collage wall: "large", "tall", "wide" or "small". */
+        tile: optional(z.enum(['large', 'tall', 'wide', 'small'])),
+        /** Indent every other line of the excerpt. */
+        excerptStagger: z.boolean().default(false),
+        buy: z.array(z.object({ label: z.string(), url: z.url() })).default([]),
+        /** A few lines from the book, line breaks kept; a blank line starts a new stanza. */
+        excerpt: optional(z.string()),
+        format: optional(z.string()),
+        pages: optional(z.coerce.number().int()),
+        price: optional(z.string()),
+        isbn: optional(z.string()),
+        honors: z.array(z.string()).default([]),
+        praise: z
+          .array(
+            z
+              .object({
+                /** *Asterisks* set a book title in italic. */
+                quote: z.string(),
+                name: z.string(),
+                credit: optional(z.string()),
+                url: optional(z.url()),
+                /** Set one blurb as the large pull quote. */
+                featured: z.boolean().default(false),
+                /** The line to set large, copied exactly from the quote. Blank: the whole quote. */
+                pull: optional(z.string()),
+              })
+              // Case aside (a pull line may start with a capital), it must be the reviewer's words.
+              .refine((p) => !p.pull || p.quote.toLowerCase().includes(p.pull.toLowerCase()), {
+                message: 'The pull line must be copied exactly from the quote',
+                path: ['pull'],
+              }),
+          )
+          .default([]),
+        press: z
+          .array(
+            z.object({
+              title: z.string(),
+              source: z.string(),
+              url: z.url(),
+              quote: optional(z.string()),
+            }),
+          )
+          .default([]),
+      })
+      .superRefine((book, ctx) => {
+        const on = book.textOn ?? bestTextOn(book.color);
+        const ratio = contrast(book.color, textColor(on));
+        if (ratio < MIN_CONTRAST) {
+          ctx.addIssue({
+            code: 'custom',
+            path: ['textOn'],
+            message: `${on} text on ${book.color} is ${ratio.toFixed(1)}:1; it needs ${MIN_CONTRAST}:1. Darken or lighten the color, or switch textOn.`,
+          });
+        }
+        if (book.collage === 'left' && on === 'paper') {
+          ctx.addIssue({
+            code: 'custom',
+            path: ['collage'],
+            message: `The "left" collage sets the title across the colour in ink, which doesn't read on ${book.color}. Use "right" or "framed".`,
+          });
+        }
+      })
+      .transform((book) => {
+        const textOn = book.textOn ?? bestTextOn(book.color);
+        return {
+          ...book,
+          textOn,
+          // The title may only cross the colour where ink reads on it.
+          collage: book.collage ?? (textOn === 'ink' ? 'left' : 'framed'),
+          tile: book.tile ?? (book.category === 'chapbook' ? 'small' : 'wide'),
+        };
+      }),
 });
 
 const news = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/news' }),
   schema: z.object({
+    /** *Asterisks* set a book title in italic. */
     title: z.string(),
     date: z.coerce.date(),
     /** Link the item to a book so it also shows on that book's page. */
@@ -83,6 +137,8 @@ const pages = defineCollection({
   schema: ({ image }) =>
     z.object({
       title: z.string(),
+      /** Two sentences for the home page. */
+      summary: optional(z.string()),
       photo: optional(image()),
       photoAlt: optional(z.string()),
     }),

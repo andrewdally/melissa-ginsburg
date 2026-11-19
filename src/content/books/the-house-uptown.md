@@ -5,13 +5,18 @@ category: fiction
 publisher: Flatiron Books
 year: 2021
 cover: ../../assets/covers/the-house-uptown.jpg
-color: "#F7C7B6"
-color2: "#CEEAF3"
+coverAlt: Blurred deep-blue vertical stripes, like rain or a curtain, around a single orange light
+color: "#292E4C"
+color2: "#E8572A"
+color3: "#1A181D"
+textOn: paper
+collage: right
+tile: tall
 buy:
   - label: Square Books (signed copies)
     url: https://www.squarebooks.com/book/9781250784186
-  - label: IndieBound
-    url: https://www.indiebound.org/book/9781250784186
+  - label: Bookshop.org
+    url: https://bookshop.org/book/9781250784186
   - label: Books-A-Million
     url: https://www.booksamillion.com/product/9781250784186
   - label: Barnes & Noble
@@ -42,19 +47,19 @@ praise:
       spinning apart.
     name: Maurice Carlos Ruffin
   - quote: >-
-      Ginsburg’s brilliance is on full display in The House Uptown. By giving us
+      Ginsburg’s brilliance is on full display in *The House Uptown*. By giving us
       these layered, complicated characters, all suffering from previous traumas,
       Ginsburg reveals how the past keeps reaching toward us, and what we’ll do to
       stay out of its reach. It’s a book that breaks you down, even though you
       can’t put it down.
     name: Kevin Wilson
-  - quote: The House Uptown is a powerful coming-of-age novel and a thoughtful portrait of one of the world’s great cities.
+  - quote: "*The House Uptown* is a powerful coming-of-age novel and a thoughtful portrait of one of the world’s great cities."
     name: Dwyer Murphy
     credit: CrimeReads
     url: https://crimereads.com/10-novels-you-should-read-this-march
   - quote: >-
       A truly wonderful novel about family links, guilt and crime, Melissa
-      Ginsburg’s follow-up to the excellent Sunset City resonates deeply in an
+      Ginsburg’s follow-up to the excellent *Sunset City* resonates deeply in an
       emotional way while managing to balance its delicate thread of
       relationships with a twisty plot on the borderlines of crime.
     name: Maxim Jakubowski
@@ -63,7 +68,7 @@ praise:
     name: Alastair Mabbott
     credit: Herald Scotland
     url: https://www.heraldscotland.com/news/19194801.house-uptown-melissa-ginsburg-veil-mist-donald-s-murray-men-hate-women-laura-bates-paperback-reviews/
-  - quote: Just as she did for Houston in the earlier novel, The House Uptown allows New Orleans to come alive, almost as a character itself.
+  - quote: "Just as she did for Houston in the earlier novel, *The House Uptown* allows New Orleans to come alive, almost as a character itself."
     name: BOLO Books
     url: https://bolobooks.com/2021/04/the-house-uptown-the-bolo-books-review/
 press:
@@ -78,7 +83,7 @@ press:
   - title: The Reading Life with Susan Larson
     source: WWNO
     url: https://www.wwno.org/podcast/the-reading-life/2021-04-09/the-reading-life-c-s-harris-melissa-ginsburg
-  - title: Melissa Ginsburg on Mystery, New Orleans and The House Uptown
+  - title: Melissa Ginsburg on Mystery, New Orleans and *The House Uptown*
     source: Southern Review of Books
     url: https://southernreviewofbooks.com/2021/03/11/the-house-uptown-melissa-ginsburg-interview/
     quote: I used to think that my poetry and fiction were entirely separate, but I find them influencing each other more and more.
