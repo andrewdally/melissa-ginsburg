@@ -1,5 +1,7 @@
 {
   "name": "Melissa Ginsburg",
+  "tagline": "poems & novels",
+  "location": "Oxford, Mississippi",
   "description": "Melissa Ginsburg is a poet and novelist, the author of Runoff, Doll Apollo, Dear Weather Ghost, The House Uptown, and Sunset City.",
   "footerNote": "Melissa Ginsburg lives in Oxford, Mississippi, where she keeps chickens.",
   "email": "",
@@ -10,5 +12,6 @@
   },
   "links": [
     { "label": "Instagram", "url": "https://www.instagram.com/chickenpoet" }
-  ]
+  ],
+  "macCredit": "[CREDIT LINE FOR THE MISSISSIPPI ARTS COMMISSION]"
 }

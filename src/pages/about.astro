@@ -11,98 +11,89 @@ const { Content } = await render(about);
 const { photo, photoAlt } = about.data;
 ---
 
-<Base title="About" wash={{ color: '#A1C5E6', color2: '#DEE3E1' }} image={photo}>
-  <div class="wrap">
-    <h1 class="page-title">About</h1>
-    <div class="about">
+<Base title="About" image={photo}>
+  <div class="frame">
+    <h1 class="visually-hidden">About</h1>
+    <div class="grid top">
       {
         photo && (
-          <div class="photo">
+          <div class="col-photo photo">
             <Image
               src={photo}
               alt={photoAlt ?? 'Melissa Ginsburg'}
               widths={[340, 680]}
-              sizes="(max-width: 640px) 80vw, 340px"
+              sizes="(max-width: 760px) 90vw, 340px"
+              loading="eager"
             />
           </div>
         )
       }
-      <div class="bio prose">
-        <Content />
+      <div class="col-read">
+        <div class="prose bio">
+          <Content />
+        </div>
+
+        <div class="contact">
+          {
+            site.email && (
+              <p>
+                Write to Melissa Ginsburg at <a href={`mailto:${site.email}`}>{site.email}</a>.
+              </p>
+            )
+          }
+          <p>
+            For rights, readings, and other inquiries, contact her agent, {site.agent.name}, at{' '}
+            {site.agent.agency}:&nbsp;<a href={`mailto:${site.agent.email}`}>{site.agent.email}</a>.
+          </p>
+          {
+            site.links.map((link) => (
+              <p>
+                <a href={link.url}>{link.label}</a>
+              </p>
+            ))
+          }
+        </div>
       </div>
     </div>
+  </div>
 
-    <section class="contact">
-      <h2 class="section-title">Contact</h2>
-      {
-        site.email && (
-          <p>
-            Write to Melissa at <a href={`mailto:${site.email}`}>{site.email}</a>.
-          </p>
-        )
-      }
-      <p>
-        For rights, readings, and other inquiries, contact her agent, {site.agent.name}, at {site.agent.agency}:{' '}
-        <a href={`mailto:${site.agent.email}`}>{site.agent.email}</a>.
-      </p>
-      {
-        site.links.length > 0 && (
-          <p class="sans slashes">
-            {site.links.map((link, i) => (
-              <>
-                {i > 0 && <span class="sep" aria-hidden="true">/</span>}
-                <a href={link.url}>{link.label}</a>
-              </>
-            ))}
-          </p>
-        )
-      }
-    </section>
-
-    <p class="support">
-      <Image src={mac} alt="Mississippi Arts Commission" width={180} />
-    </p>
+  <div slot="footer" class="support">
+    <Image src={mac} alt="Mississippi Arts Commission" width={180} />
+    <p>{site.macCredit}</p>
   </div>
 </Base>
 
 <style>
-  .about {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: flex-start;
-    gap: 48px 72px;
-    padding-top: 72px;
-  }
-  .photo {
-    flex: 0 1 340px;
-    min-width: 220px;
-    padding: 0 8px;
+  .top {
+    margin-top: var(--space-m);
+    align-items: start;
   }
   .photo :global(img) {
-    display: block;
     width: 100%;
-    height: auto;
-    rotate: -1.5deg;
-    box-shadow: 0 12px 28px rgb(27 26 24 / 0.22);
-  }
-  .bio {
-    flex: 1 1 420px;
-    min-width: 0;
-    max-width: var(--measure);
+    max-width: 340px;
   }
   .contact {
-    max-width: var(--measure);
-    padding-top: 96px;
-  }
-  .contact p {
-    margin: 0 0 16px;
+    margin-top: var(--space-m);
   }
   .support {
-    margin: 96px 0 0;
-    text-align: center;
+    margin-top: var(--space-m);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-s);
+    font-size: 15px;
+    font-style: italic;
   }
   .support :global(img) {
-    opacity: 0.8;
+    width: 140px;
     mix-blend-mode: multiply;
+  }
+  @media (max-width: 760px) {
+    .photo {
+      margin-bottom: var(--space-m);
+    }
+    .photo :global(img) {
+      max-width: 280px;
+    }
   }
 </style>

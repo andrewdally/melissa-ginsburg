@@ -1,28 +1,38 @@
 ---
 import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
-import NewsList from '../components/NewsList.astro';
+import NewsRow from '../components/NewsRow.astro';
+import Row from '../components/Row.astro';
 
 const news = (await getCollection('news')).sort(
   (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
 );
 ---
 
-<Base
-  title="News"
-  description="Readings, events, and news from Melissa Ginsburg."
-  wash={{ color: '#F6E3B6', color2: '#F8BDB4' }}
->
-  <div class="wrap">
-    <h1 class="page-title">News</h1>
-  </div>
-  <div class="wrap column list">
-    {news.length > 0 ? <NewsList items={news} /> : <p>Nothing new just now.</p>}
+<Base title="News" description="Readings, events, and news from Melissa Ginsburg.">
+  <div class="frame">
+    <h1 class="visually-hidden">News</h1>
+    {
+      news.length > 0 ? (
+        <ul class="list">
+          {news.map((item) => (
+            <NewsRow item={item} />
+          ))}
+        </ul>
+      ) : (
+        <Row class="list">
+          <p>Nothing new just now.</p>
+        </Row>
+      )
+    }
   </div>
 </Base>
 
 <style>
   .list {
-    padding-top: 72px;
+    margin-top: var(--space-m);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-m);
   }
 </style>

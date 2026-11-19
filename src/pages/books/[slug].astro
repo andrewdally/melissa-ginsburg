@@ -1,12 +1,15 @@
 ---
 import { getCollection, render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
-import BookHero from '../../components/BookHero.astro';
-import Shelf from '../../components/Shelf.astro';
-import NewsList from '../../components/NewsList.astro';
+import Collage from '../../components/Collage.astro';
 import Excerpt from '../../components/Excerpt.astro';
 import PullQuote from '../../components/PullQuote.astro';
-import { colophon, getBooks, type Book } from '../../lib/books';
+import Row from '../../components/Row.astro';
+import NewsRow from '../../components/NewsRow.astro';
+import Scrap from '../../components/Scrap.astro';
+import { editionNotes, getBooks, type Book } from '../../lib/books';
+import { inline } from '../../lib/inline';
+import { url } from '../../lib/url';
 
 export async function getStaticPaths() {
   const books = await getBooks();
@@ -14,12 +17,15 @@ export async function getStaticPaths() {
 }
 
 const { book } = Astro.props as { book: Book };
-const { title, kind, tagline, color, color2, cover, excerpt, honors, praise, press } = book.data;
+const { title, kind, tagline, cover, excerpt, excerptStagger, honors, praise, press } = book.data;
 const { Content } = await render(book);
 const hasDescription = !!book.body?.trim();
+const notes = [...editionNotes(book), ...honors];
 
+// The pull quote is set large; if it's only a line from a longer blurb, the
+// whole blurb still appears below. Never two quotes from one person otherwise.
 const pull = praise.find((p) => p.featured);
-const otherPraise = praise.filter((p) => p !== pull);
+const rows = praise.filter((p) => p !== pull || (p.pull && p.pull !== p.quote));
 
 const news = (await getCollection('news'))
   .filter((item) => item.data.book?.id === book.id)
@@ -28,147 +34,176 @@ const news = (await getCollection('news'))
 const others = (await getBooks()).filter((b) => b.id !== book.id);
 ---
 
-<Base
-  title={title}
-  description={tagline ?? `${title}, ${kind} by Melissa Ginsburg.`}
-  wash={{ color, color2 }}
-  image={cover}
->
-  <BookHero book={book} />
+<Base title={title} description={tagline ?? `${title}, ${kind} by Melissa Ginsburg.`} image={cover}>
+  <div class="frame">
+    <Collage book={book} />
 
-  {excerpt && <Excerpt text={excerpt} title={title} />}
+    {excerpt && <Excerpt text={excerpt} stagger={excerptStagger} />}
 
-  {
-    (hasDescription || honors.length > 0) && (
-      <section class="wrap column description">
-        {hasDescription && (
-          <div class="prose opening">
-            <Content />
-          </div>
-        )}
-        {honors.length > 0 && (
-          <ul class="honors">
-            {honors.map((honor) => (
-              <li>{honor}</li>
-            ))}
-          </ul>
-        )}
-      </section>
-    )
-  }
-
-  {
-    praise.length > 0 && (
-      <>
-        <p class="asterism" aria-hidden="true">* * *</p>
-        <section class="wrap column" aria-labelledby="praise">
-          <h2 id="praise" class="visually-hidden">Praise</h2>
-          {pull && <PullQuote {...pull} />}
-          {otherPraise.map((p) => (
-            <p class="blurb">
-              “{p.quote}”{' '}
-              <span class="who">
-                — {p.url ? <a href={p.url}>{p.name}</a> : p.name}
-                {p.credit && <>, {p.credit}</>}
-              </span>
-            </p>
-          ))}
-        </section>
-      </>
-    )
-  }
-
-  {
-    press.length > 0 && (
-      <>
-        <p class="asterism" aria-hidden="true">* * *</p>
-        <section class="wrap column">
-          <h2 class="section-title">Interviews &amp; conversations</h2>
-          <ul class="press">
-            {press.map((item) => (
-              <li>
-                <a href={item.url}>{item.title}</a>, <em>{item.source}</em>
-                {item.quote && <span class="press-quote">“{item.quote}”</span>}
-              </li>
-            ))}
-          </ul>
-        </section>
-      </>
-    )
-  }
-
-  {
-    news.length > 0 && (
-      <>
-        <p class="asterism" aria-hidden="true">* * *</p>
-        <section class="wrap column">
-          <h2 class="section-title">News &amp; readings</h2>
-          <NewsList items={news} />
-        </section>
-      </>
-    )
-  }
-
-  <section class="wrap also">
-    <h2 class="section-title">Also by Melissa</h2>
-    <Shelf books={others} />
-  </section>
-
-  <p class="wrap colophon sans">
-    <em>{title}</em>
     {
-      colophon(book).map((part) => (
-        <>
-          {' · '}
-          {part}
-        </>
-      ))
+      (hasDescription || notes.length > 0) && (
+        <Row class="section">
+          {notes.length > 0 && (
+            <Fragment slot="note">
+              {notes.map((line, i) => (
+                <>
+                  {i > 0 && <br />}
+                  {line.startsWith('ISBN') ? <span class="isbn">{line}</span> : line}
+                </>
+              ))}
+            </Fragment>
+          )}
+          {hasDescription && (
+            <div class="prose">
+              <Content />
+            </div>
+          )}
+        </Row>
+      )
     }
-  </p>
+
+    {
+      praise.length > 0 && (
+        <section class="section stack" aria-label="Praise">
+          {pull && <PullQuote quote={pull.pull ?? pull.quote} name={pull.name} url={pull.url} />}
+          {rows.length > 0 && (
+            <ul class="stack">
+              {rows.map((p) => (
+                <Row as="li">
+                  <Fragment slot="note">
+                    {p.url ? <a href={p.url}>{p.name}</a> : p.name}
+                    {p.credit && (
+                      <>
+                        <br />
+                        <span set:html={inline(p.credit)} />
+                      </>
+                    )}
+                  </Fragment>
+                  <p class="praise" set:html={`“${inline(p.quote)}”`} />
+                </Row>
+              ))}
+            </ul>
+          )}
+        </section>
+      )
+    }
+
+    {
+      press.length > 0 && (
+        <ul class="section stack-s" aria-label="Interviews">
+          {press.map((item) => (
+            <Row as="li">
+              <Fragment slot="note">{item.source}</Fragment>
+              <p>
+                <a href={item.url} set:html={inline(item.title)} />
+              </p>
+              {item.quote && <p class="press-quote" set:html={`“${inline(item.quote)}”`} />}
+            </Row>
+          ))}
+        </ul>
+      )
+    }
+
+    {
+      news.length > 0 && (
+        <ul class="section stack" aria-label="News">
+          {news.map((item) => (
+            <NewsRow item={item} />
+          ))}
+        </ul>
+      )
+    }
+
+    <nav class="grid section" aria-label="Other books">
+      <ul class="col-wide others">
+        {
+          others.map((other, i) => (
+            <li>
+              <a href={url(`/books/${other.id}`)}>
+                <span class="scrap-size">
+                  <Scrap book={other} index={i} />
+                </span>
+                <span class="other-title">{other.data.title}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+  </div>
 </Base>
 
 <style>
-  .description {
-    padding-top: clamp(72px, 10vw, 120px);
+  /* An ISBN never breaks at its hyphens. */
+  .isbn {
+    white-space: nowrap;
   }
-  .honors {
-    list-style: none;
-    margin: 32px 0 0;
-    padding: 0;
-    font-style: italic;
-  }
-  .blurb {
-    margin: 0 0 28px;
-  }
-  .who {
-    font-style: italic;
-  }
-  .press {
-    list-style: none;
-    margin: 0;
-    padding: 0;
+  .stack {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: var(--space-m);
+  }
+  .stack-s {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-s);
+  }
+  .praise {
+    font-size: 18px;
+    line-height: 1.62;
+    hanging-punctuation: first;
   }
   .press-quote {
-    display: block;
     margin-top: 4px;
-    font-size: 19px;
-    color: var(--muted);
+    font-size: 18px;
+    line-height: 1.62;
   }
-  .also {
-    padding-top: clamp(88px, 10vw, 120px);
+  .others {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    column-gap: var(--gutter);
+    row-gap: var(--space-m);
   }
-  .also .section-title {
-    margin-bottom: 40px;
+  .others a {
+    display: block;
+    text-decoration: none;
   }
-  .colophon {
-    margin-top: clamp(72px, 10vw, 120px);
-    margin-bottom: 0;
-    text-align: center;
-    font-size: 13px;
-    line-height: 1.8;
-    color: var(--muted);
+  .others a:hover .other-title {
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 4px;
+  }
+  .scrap-size {
+    display: block;
+    font-size: 64px;
+  }
+  .other-title {
+    display: block;
+    margin-top: 12px;
+    font-size: 17px;
+    font-style: italic;
+    line-height: 1.3;
+  }
+  @media (max-width: 760px) {
+    .praise {
+      font-size: 16.5px;
+      line-height: 1.6;
+    }
+    .press-quote {
+      font-size: 16.5px;
+    }
+    .others {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      row-gap: var(--space-s);
+    }
+    .others a {
+      padding: 0 0 8px;
+    }
+    .scrap-size {
+      font-size: 56px;
+    }
+    .other-title {
+      font-size: 16px;
+    }
   }
 </style>

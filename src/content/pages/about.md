@@ -1,6 +1,7 @@
 ---
 title: About
 photo: ../../assets/melissa.jpg
+summary: Melissa Ginsburg is Associate Professor of Creative Writing and Literature at the University of Mississippi. She lives in Oxford, where she keeps chickens.
 photoAlt: Melissa Ginsburg in a blue dress, leaning on a stair rail
 ---
 
@@ -8,4 +9,4 @@ photoAlt: Melissa Ginsburg in a blue dress, leaning on a stair rail
 
 She is the winner of the Mississippi Institute of Arts and Letters Poetry Award and was named the inaugural South Arts Mississippi State Fellow for Literary Arts.
 
-Originally from Houston, Texas, Melissa studied poetry at the Iowa Writers’ Workshop. She is Associate Professor of Creative Writing and Literature at the University of Mississippi, and serves as Associate Editor of *Tupelo Quarterly*. She lives in Oxford, Mississippi.
+Originally from Houston, Texas, Ginsburg studied poetry at the Iowa Writers’ Workshop. She is Associate Professor of Creative Writing and Literature at the University of Mississippi, and serves as Associate Editor of *Tupelo Quarterly*. She lives in Oxford, Mississippi.

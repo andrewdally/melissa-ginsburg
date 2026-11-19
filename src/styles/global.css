@@ -1,23 +1,44 @@
-@import '@fontsource/cormorant-garamond/500.css';
-@import '@fontsource/cormorant-garamond/600.css';
-@import '@fontsource/cormorant-garamond/500-italic.css';
-@import '@fontsource/cormorant-garamond/600-italic.css';
-@import '@fontsource/proza-libre/400.css';
-@import '@fontsource/proza-libre/600.css';
+@import '@fontsource/libre-caslon-display/400.css';
+@import '@fontsource/libre-caslon-text/400.css';
+@import '@fontsource/libre-caslon-text/400-italic.css';
+@import '@fontsource/libre-caslon-text/700.css';
 
+/*
+ * One family on paper and ink; every other colour comes from a book file.
+ * Layout hangs from one 12-column grid (.grid) inside a centred frame (.frame).
+ * Text starts at only three left edges: the outer margin, column 2 and column 6.
+ */
 :root {
   color-scheme: light;
-  --ink: #1b1a18;
-  --paper: #fbf7f1;
-  --muted: #5e554d;
-  --rust: #a3410c;
-  --rule: rgb(27 26 24 / 0.15);
-  --serif: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
-  --sans: 'Proza Libre', 'Helvetica Neue', Arial, sans-serif;
-  --measure: 640px;
-  /* Each page sets these two from its book (or section) colors. */
-  --wash-1: #fef2e4;
-  --wash-2: #fef2e4;
+  --paper: #f3eee5;
+  --ink: #221e19;
+  --muted: #6b6158; /* 5.2:1 on paper */
+  --rule: rgb(34 30 25 / 0.3);
+
+  --display: 'Libre Caslon Display', Georgia, 'Times New Roman', serif;
+  --text: 'Libre Caslon Text', Georgia, 'Times New Roman', serif;
+
+  --max: 1440px;
+  --margin: clamp(20px, 3vw, 40px);
+  --gutter: 24px;
+  /* Width between the outer margins; collage and title sizes are fractions of it. */
+  --content: calc(min(100vw, var(--max)) - 2 * var(--margin));
+  /* 1px at full width, shrinking with the page, so collages keep their shape. */
+  --u: calc(var(--content) / 1360);
+
+  /* The only vertical gaps between sections. */
+  --space-s: 24px;
+  --space-m: 56px;
+  --space-l: 120px;
+}
+
+@media (max-width: 760px) {
+  :root {
+    --margin: 20px;
+    --space-s: 16px;
+    --space-m: 40px;
+    --space-l: 80px;
+  }
 }
 
 *,
@@ -28,70 +49,90 @@
 
 html {
   -webkit-text-size-adjust: 100%;
+  background: var(--paper);
 }
 
 body {
   margin: 0;
   color: var(--ink);
-  background-color: var(--paper);
-  /* The color pools in the top-left corner and drifts in from the right. */
-  background-image:
-    radial-gradient(
-      140% 75% at 8% 0%,
-      color-mix(in srgb, var(--wash-1) 85%, transparent) 0%,
-      color-mix(in srgb, var(--wash-1) 50%, transparent) 38%,
-      transparent 78%
-    ),
-    radial-gradient(
-      55% 45% at 96% 30%,
-      color-mix(in srgb, var(--wash-2) 40%, transparent) 0%,
-      transparent 100%
-    );
-  background-repeat: no-repeat;
-  background-size: 100% 1500px;
-  font-family: var(--serif);
-  font-size: 22px;
-  font-weight: 500;
-  line-height: 1.5;
+  background: var(--paper);
+  font-family: var(--text);
+  font-size: 19.5px;
+  line-height: 1.65;
   -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
+  hyphens: manual;
 }
 
-@media (max-width: 640px) {
+@media (max-width: 760px) {
   body {
-    font-size: 20px;
-    background-size: 100% 1100px;
+    font-size: 17.5px;
+    line-height: 1.62;
+    hyphens: auto;
   }
 }
 
 img {
+  display: block;
   max-width: 100%;
   height: auto;
 }
 
-a {
-  color: inherit;
-  text-decoration-thickness: 1px;
-  text-underline-offset: 4px;
-}
-a:hover {
-  color: var(--rust);
-}
-:focus-visible {
-  outline: 2px solid var(--rust);
-  outline-offset: 3px;
+h1,
+h2,
+h3,
+p,
+figure,
+blockquote,
+ul,
+ol {
+  margin: 0;
 }
 
 h1,
 h2,
 h3 {
-  font-weight: 600;
-  line-height: 1.15;
+  font-weight: 400;
   text-wrap: balance;
 }
 
-p {
+p,
+li,
+blockquote {
   text-wrap: pretty;
+}
+
+ul,
+ol {
+  padding: 0;
+  list-style: none;
+}
+
+em,
+i {
+  font-style: italic;
+}
+
+/* Links are underlined words in ink; hover thickens the line. Nothing moves. */
+a {
+  color: inherit;
+  text-decoration-line: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+}
+a:hover {
+  text-decoration-thickness: 2px;
+}
+:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+}
+/* On a phone every link is at least 44px tall to the touch. The padding is on
+   inline links, so it adds no space to the layout and keeps separators glued.
+   (Libre Caslon's text box is 1.23em tall.) Block links set their own. */
+@media (max-width: 760px) {
+  a {
+    padding-block: calc((45px - 1.23em) / 2);
+  }
 }
 
 .visually-hidden {
@@ -112,93 +153,123 @@ p {
   top: 16px;
   padding: 8px 12px;
   background: var(--paper);
-  font-family: var(--sans);
-  font-size: 15px;
   z-index: 10;
 }
 
-/* ---------- Layout ---------- */
+/* ---------- Grid ---------- */
 
-.wrap {
-  max-width: 1120px;
-  margin: 0 auto;
-  padding: 0 24px;
+.frame {
+  max-width: var(--max);
+  margin-inline: auto;
+  padding-inline: var(--margin);
 }
 
-/* An offset reading column: sits right of center on wide screens, full width on phones. */
-.column {
-  padding-left: clamp(24px, calc((100% - var(--measure)) * 0.55), 380px);
-}
-.column > * {
-  max-width: var(--measure);
+.grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--gutter);
 }
 
-.sans {
-  font-family: var(--sans);
-  font-size: 16px;
+.col-margin {
+  grid-column: 2 / 5;
+} /* notes, names, publication details */
+.col-read {
+  grid-column: 6 / 12;
+} /* prose, praise, news */
+.col-wide {
+  grid-column: 2 / 12;
+} /* poem excerpt, pull quote */
+.col-photo {
+  grid-column: 2 / 6;
+}
+.col-full {
+  grid-column: 1 / -1;
 }
 
-.slashes .sep {
-  margin: 0 0.5em;
+@media (max-width: 760px) {
+  .grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .col-margin,
+  .col-read,
+  .col-wide,
+  .col-photo,
+  .col-full {
+    grid-column: 1 / -1;
+  }
 }
 
-/* Section headings: italic, sentence case. */
-.section-title {
-  margin: 0 0 16px;
+/* Sections are separated by the largest step of the spacing scale. */
+.section {
+  margin-top: var(--space-l);
+}
+
+/* ---------- Type ---------- */
+
+.display {
+  hyphens: manual;
+  font-family: var(--display);
+  font-weight: 400;
+  text-wrap: balance;
+}
+
+/* Spaced capitals, only where they carry information: a date, "New poems". */
+.label {
+  font-size: 11.5px;
+  line-height: 1.6;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+/* Italic notes in the margin column: publication details, names, dates. */
+.note {
   font-style: italic;
-  font-size: 34px;
+  font-size: 15px;
+  line-height: 1.75;
 }
 
-.page-title {
-  margin: 0;
-  padding: 48px 0 8px;
-  font-style: italic;
-  font-size: clamp(64px, 9vw, 112px);
-  line-height: 0.9;
-  letter-spacing: -0.015em;
+@media (max-width: 760px) {
+  .label {
+    font-size: 11px;
+  }
+  .note {
+    font-size: 14.5px;
+  }
 }
 
-/* "* * *" between sections, as in a novel. */
-.asterism {
-  margin: 0;
-  padding: clamp(56px, 9vw, 88px) 0;
-  text-align: center;
-  font-size: 26px;
-  letter-spacing: 0.6em;
-  color: var(--rust);
+.prose p + p {
+  text-indent: 1.5em;
 }
 
-.prose p {
-  margin: 0 0 22px;
-}
-.prose p:last-child {
-  margin-bottom: 0;
-}
-/* The first line opens in small caps, like a chapter. */
-.prose.opening > p:first-child::first-line {
-  font-variant: small-caps;
-  font-weight: 600;
-  letter-spacing: 0.04em;
+/* Lists separated by slashes or dots: the separator is glued to the words on
+   both sides with no-break spaces, so no line starts or ends with one. */
+.sep {
+  white-space: nowrap;
 }
 
-/* ---------- Covers ---------- */
+/* ---------- Grid overlay (dev only: add ?grid to the address) ---------- */
 
-.cover {
-  display: block;
-  width: 100%;
-  height: auto;
-  box-shadow: 0 8px 20px rgb(27 26 24 / 0.2);
-  transition: rotate 0.35s ease;
+.grid-overlay {
+  display: none;
 }
-/* A small, varied tilt, like books left on a table. */
-.tilt-a { rotate: -1.5deg; }
-.tilt-b { rotate: 1.25deg; }
-.tilt-c { rotate: -0.75deg; }
-.tilt-d { rotate: 2deg; }
-a:hover .cover,
-a:focus-visible .cover {
-  rotate: 0deg;
+.show-grid .grid-overlay {
+  display: grid;
+  position: fixed;
+  inset: 0;
+  margin-inline: auto;
+  pointer-events: none;
+  z-index: 100;
 }
-@media (prefers-reduced-motion: reduce) {
-  .cover { transition: none; }
+.show-grid .grid-overlay span {
+  background: rgb(255 0 80 / 0.08);
+  border-inline: 1px solid rgb(255 0 80 / 0.25);
+}
+.show-grid .grid-overlay span:nth-child(2),
+.show-grid .grid-overlay span:nth-child(6) {
+  background: rgb(255 0 80 / 0.16);
+}
+@media (max-width: 760px) {
+  .show-grid .grid-overlay span:not(:first-child) {
+    display: none;
+  }
 }

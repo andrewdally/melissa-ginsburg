@@ -4,8 +4,13 @@ kind: a chapbook
 category: chapbook
 publisher: Dancing Girl Press
 cover: ../../assets/covers/double-blind.jpg
-color: "#EFCF7A"
-color2: "#F6E3B6"
+coverAlt: A mustard-yellow fox drawn as a shooting target, with rings and scores, on white
+color: "#D59E1A"
+color2: "#EFE3C2"
+color3: "#DAB658"
+textOn: ink
+collage: left
+tile: small
 buy:
   - label: Dancing Girl Press
     url: https://dulcetshop.myshopify.com/products/double-blind-melissa-ginsburg

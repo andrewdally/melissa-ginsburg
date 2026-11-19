@@ -1,0 +1,53 @@
+---
+import { isUpcoming, type Book } from '../lib/books';
+
+interface Props {
+  book: Book;
+  /** Only the first link (the home page). */
+  first?: boolean;
+  class?: string;
+}
+
+const { book, first = false, class: className } = Astro.props;
+const links = first ? book.data.buy.slice(0, 1) : book.data.buy;
+const verb = isUpcoming(book) ? 'Preorder from' : 'Order from';
+---
+
+{
+  links.length === 1 && (
+    <p class:list={['order', className]}>
+      <a href={links[0].url}>
+        {verb} {links[0].label}
+      </a>
+    </p>
+  )
+}
+{
+  links.length > 1 && (
+    <p class:list={['order', className]}>
+      {verb}&nbsp;
+      {links.map((link, i) => (
+        <>
+          {i > 0 && (
+            <span class="sep" aria-hidden="true">
+              &nbsp;/&nbsp;
+            </span>
+          )}
+          <a href={link.url}>{link.label}</a>
+        </>
+      ))}
+    </p>
+  )
+}
+
+<style>
+  .order {
+    font-size: 18px;
+    line-height: 1.5;
+  }
+  @media (max-width: 760px) {
+    .order {
+      font-size: 17px;
+    }
+  }
+</style>

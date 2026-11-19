@@ -1,0 +1,42 @@
+---
+import { render, type CollectionEntry } from 'astro:content';
+import Row from './Row.astro';
+import { formatDate, isoDate } from '../lib/books';
+import { inline } from '../lib/inline';
+
+interface Props {
+  item: CollectionEntry<'news'>;
+}
+
+const { item } = Astro.props;
+const { Content } = await render(item);
+const { title, date, link, linkLabel } = item.data;
+---
+
+<Row as="li">
+  <time slot="note" datetime={isoDate(date)}>{formatDate(date)}</time>
+  <h2 class="news-title" set:html={inline(title)} />
+  <div class="prose">
+    <Content />
+  </div>
+  {
+    link && (
+      <p class="news-link">
+        <a href={link}>{linkLabel ?? 'More'}</a>
+      </p>
+    )
+  }
+</Row>
+
+<style>
+  .news-title {
+    font-size: 26px;
+    line-height: 1.3;
+    margin-bottom: 8px;
+  }
+  @media (max-width: 760px) {
+    .news-title {
+      font-size: 22px;
+    }
+  }
+</style>

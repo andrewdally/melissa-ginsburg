@@ -1,0 +1,111 @@
+---
+// A book on the collage wall: a block of its main colour with the title set on
+// it, and its accent colour peeking out from behind. The whole tile is the link.
+import { kindAndYear, type Book } from '../lib/books';
+import { textColor } from '../lib/color';
+import { fitStyle } from '../lib/fit';
+import { url } from '../lib/url';
+
+interface Props {
+  book: Book;
+  index: number;
+}
+
+const { book, index } = Astro.props;
+const { title, color, color2, textOn, tile } = book.data;
+const style = `--c1: ${color}; --on: ${textColor(textOn)};${color2 ? ` --c2: ${color2};` : ''}`;
+---
+
+<a
+  class:list={['tile', tile, `v${index % 4}`]}
+  href={url(`/books/${book.id}`)}
+  style={`${style} --i: ${index};`}
+>
+  {color2 && <span class="back" aria-hidden="true" />}
+  <span class="face">
+    <span class="display t" style={fitStyle(title)}>{title}</span>
+    <span class="k">{kindAndYear(book)}</span>
+  </span>
+</a>
+
+<style>
+  .tile {
+    position: relative;
+    display: block;
+    flex: none;
+    width: var(--w);
+    height: var(--h);
+    max-width: 100%;
+    padding: 0;
+    text-decoration: none;
+    color: var(--on);
+    /* Across a row, each tile lies over the one before; titles sit left. */
+    z-index: calc(1 + var(--i));
+  }
+  .face {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    height: 100%;
+    padding: 22px 24px;
+    background: var(--c1);
+  }
+  .back {
+    position: absolute;
+    z-index: 0;
+    background: var(--c2);
+  }
+  .t {
+    font-size: min(var(--t), calc((var(--w) - 48px) / var(--word-em)));
+    line-height: 0.95;
+  }
+  .tile:hover .t {
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.12em;
+  }
+  .k {
+    margin-top: 10px;
+    font-size: 15px;
+    font-style: italic;
+    line-height: 1.4;
+  }
+
+  .large { --w: 400px; --h: 330px; --t: 62px; }
+  .tall { --w: 310px; --h: 400px; --t: 54px; }
+  .wide { --w: 380px; --h: 280px; --t: 56px; }
+  .small { --w: 290px; --h: 240px; --t: 54px; }
+
+  .v0 .back { left: 40px; top: -26px; width: 30%; height: 56%; }
+  .v1 .back { right: -22px; top: 70px; width: 22%; height: 40%; }
+  .v2 .back { left: -24px; bottom: -28px; width: 50%; height: 40%; }
+  .v3 .back { left: 24px; bottom: -26px; width: 64%; height: 22%; }
+
+  @media (max-width: 760px) {
+    .face {
+      padding: 16px 18px;
+    }
+    .t {
+      font-size: min(var(--t), calc((var(--content) * var(--pw) - 36px) / var(--word-em)));
+    }
+    .k {
+      margin-top: 8px;
+      font-size: 14px;
+    }
+    .large { --pw: 0.88; --h: 230px; --t: 46px; }
+    .tall { --pw: 0.72; --h: 240px; --t: 42px; }
+    .wide { --pw: 0.82; --h: 190px; --t: 42px; }
+    .small { --pw: 0.68; --h: 170px; --t: 40px; }
+    /* Down the pile, each tile lies over the top of the next; titles sit low. */
+    .tile {
+      width: calc(var(--pw) * 100%);
+      z-index: calc(100 - var(--i));
+    }
+    .v0 .back { left: 30px; top: -16px; width: 26%; height: 50%; }
+    .v1 .back { right: -14px; top: 40px; width: 18%; height: 40%; }
+    .v2 .back { left: -14px; bottom: -18px; width: 46%; height: 30%; }
+    .v3 .back { left: 20px; bottom: -16px; width: 60%; height: 20%; }
+  }
+</style>

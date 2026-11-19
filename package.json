@@ -11,8 +11,8 @@
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.6",
-    "@fontsource/cormorant-garamond": "^5.3.0",
-    "@fontsource/proza-libre": "^5.3.0",
+    "@fontsource/libre-caslon-display": "^5.3.0",
+    "@fontsource/libre-caslon-text": "^5.3.0",
     "astro": "^7.4.13"
   }
 }

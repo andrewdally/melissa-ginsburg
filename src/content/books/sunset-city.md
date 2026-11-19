@@ -5,20 +5,26 @@ category: fiction
 publisher: Ecco
 year: 2016
 cover: ../../assets/covers/sunset-city.jpg
-color: "#FCE3A6"
-color2: "#C9D0EA"
+coverAlt: The Houston skyline at dusk above a highway streaked with car lights
+color: "#3D5A96"
+color2: "#E9B83A"
+color3: "#151820"
+textOn: paper
+collage: framed
+tile: tall
 buy:
-  - label: IndieBound
-    url: https://www.indiebound.org/book/9780062429704
+  - label: Bookshop.org
+    url: https://bookshop.org/book/9780062429704
   - label: Amazon
     url: https://www.amazon.com/Sunset-City-Novel-Melissa-Ginsburg/dp/0062429701
 praise:
   - quote: >-
-      Melissa Ginsburg’s Sunset City entrances from its first pages. Suffused with
+      Melissa Ginsburg’s *Sunset City* entrances from its first pages. Suffused with
       longing, regret and a twisty eroticism, it’s a mystery of character as much
       as crime, and is literary noir at its most captivating.
     name: Megan Abbott
     featured: true
+    pull: It’s a mystery of character as much as crime, and is literary noir at its most captivating.
   - quote: >-
       Smart and sexy, sexy and smart, this literary crime novel has it all.
       Melissa Ginsburg understands our darkest secrets and desires, and she’s
@@ -27,7 +33,7 @@ praise:
   - quote: >-
       In her stunning debut, Melissa Ginsburg has found in Houston what earlier
       noir writers found in Los Angeles: a dark netherworld of sin, violence, and
-      blighted souls. Sunset City is sexy, disturbing, intense, and, at times,
+      blighted souls. *Sunset City* is sexy, disturbing, intense, and, at times,
       movingly poignant.
     name: Ron Rash
 ---

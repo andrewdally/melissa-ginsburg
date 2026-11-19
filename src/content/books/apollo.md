@@ -4,8 +4,13 @@ kind: a chapbook
 category: chapbook
 publisher: Condensery Press
 cover: ../../assets/covers/apollo.jpg
-color: "#B8C4C9"
-color2: "#E4E0D4"
+coverAlt: A large slate-grey disc, like a moon, on pale grey, with the title running down the right edge
+color: "#59666D"
+color2: "#CECBBE"
+color3: "#B23A4A"
+textOn: paper
+collage: framed
+tile: small
 buy:
   - label: Condensery Press
     url: https://www.condenserypress.com/product/apollo
