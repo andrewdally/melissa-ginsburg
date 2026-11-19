@@ -1,39 +1,73 @@
 ---
-// Lines from the book, set large in the wide column: the one place type may run
-// wider than the reading column. Each line keeps its break; a long line wraps
-// with a hanging indent, as poems are set.
+// Lines from the book. On a book page they're set large in the wide column, the
+// one place type may run wider than the reading column; on the home hero, at
+// reading size. Each line keeps its break. The size is chosen so the longest
+// line fits on one line; where a line must still wrap, its continuation hangs
+// 2.4em in, deeper than any stagger, so a wrap never looks like a new line.
+import { lineEm } from '../lib/fit';
+
 interface Props {
   text: string;
-  /** Indent every other line. */
+  /** Indent every other line (not on a phone). */
   stagger?: boolean;
+  /** "page": large, in the wide column. "hero": at reading size, in place. */
+  variant?: 'page' | 'hero';
 }
 
-const { text, stagger = false } = Astro.props;
+const STAGGER = 1.2;
+const { text, stagger = false, variant = 'page' } = Astro.props;
 const stanzas = text
   .trim()
   .split(/\n\s*\n/)
   .map((stanza) => stanza.split('\n').map((line) => line.trim()));
+// The longest line in ems, counting its stagger.
+const longest = Math.max(
+  ...stanzas.flatMap((lines) => lines.map((line, i) => lineEm(line) + (stagger && i % 2 === 1 ? STAGGER : 0))),
+);
+const style = `--longest: ${longest.toFixed(2)}`;
 ---
 
-<div class="grid section">
-  <div class:list={['col-wide', 'excerpt', { stagger }]}>
-    {
-      stanzas.map((lines) => (
+{
+  variant === 'page' ? (
+    <div class="grid section">
+      <div class="col-wide fit">
+        <div class:list={['excerpt', 'page', { stagger }]} style={style}>
+          {stanzas.map((lines) => (
+            <p class="stanza">
+              {lines.map((line) => (
+                <span class="line">{line}</span>
+              ))}
+            </p>
+          ))}
+        </div>
+      </div>
+    </div>
+  ) : (
+    <div class:list={['excerpt', 'hero', { stagger }]} style={style}>
+      {stanzas.map((lines) => (
         <p class="stanza">
           {lines.map((line) => (
             <span class="line">{line}</span>
           ))}
         </p>
-      ))
-    }
-  </div>
-</div>
+      ))}
+    </div>
+  )
+}
 
 <style>
   .excerpt {
     /* Poems keep their words whole. */
     hyphens: manual;
-    font-size: clamp(30px, 3.4vw, 50px);
+    font-size: 22px;
+    line-height: 1.5;
+  }
+  .fit {
+    container-type: inline-size;
+  }
+  .page {
+    /* The design size, or smaller so the longest line fits; never below 24px. */
+    font-size: min(clamp(30px, 3.4vw, 50px), max(24px, calc(100cqi / var(--longest) - 0.5px)));
     line-height: 1.3;
   }
   .stanza + .stanza {
@@ -41,19 +75,22 @@ const stanzas = text
   }
   .line {
     display: block;
-    padding-left: 1.2em;
-    text-indent: -1.2em;
+    padding-left: 2.4em;
+    text-indent: -2.4em;
   }
   .stagger .line:nth-child(even) {
-    margin-left: 2.4em;
+    margin-left: 1.2em;
   }
   @media (max-width: 760px) {
     .excerpt {
+      font-size: 19px;
+    }
+    .page {
       font-size: 23px;
       line-height: 1.4;
     }
     .stagger .line:nth-child(even) {
-      margin-left: 1.2em;
+      margin-left: 0;
     }
   }
 </style>

@@ -6,6 +6,7 @@ import Excerpt from '../../components/Excerpt.astro';
 import PullQuote from '../../components/PullQuote.astro';
 import Row from '../../components/Row.astro';
 import NewsRow from '../../components/NewsRow.astro';
+import OrderLinks from '../../components/OrderLinks.astro';
 import Scrap from '../../components/Scrap.astro';
 import { editionNotes, getBooks, type Book } from '../../lib/books';
 import { inline } from '../../lib/inline';
@@ -17,10 +18,13 @@ export async function getStaticPaths() {
 }
 
 const { book } = Astro.props as { book: Book };
-const { title, kind, tagline, cover, excerpt, excerptStagger, honors, praise, press } = book.data;
+const { title, kind, tagline, cover, excerpt, excerptStagger, honors, praise, press, buy } = book.data;
 const { Content } = await render(book);
 const hasDescription = !!book.body?.trim();
 const notes = [...editionNotes(book), ...honors];
+// The hero names at most three shops; the rest follow the description.
+const HERO_LINKS = 3;
+const moreShops = buy.length > HERO_LINKS;
 
 // The pull quote is set large; if it's only a line from a longer blurb, the
 // whole blurb still appears below. Never two quotes from one person otherwise.
@@ -41,7 +45,7 @@ const others = (await getBooks()).filter((b) => b.id !== book.id);
     {excerpt && <Excerpt text={excerpt} stagger={excerptStagger} />}
 
     {
-      (hasDescription || notes.length > 0) && (
+      (hasDescription || notes.length > 0 || moreShops) && (
         <Row class="section">
           {notes.length > 0 && (
             <Fragment slot="note">
@@ -58,6 +62,7 @@ const others = (await getBooks()).filter((b) => b.id !== book.id);
               <Content />
             </div>
           )}
+          {moreShops && <OrderLinks book={book} start={HERO_LINKS} lead="Also from" class="also" />}
         </Row>
       )
     }
@@ -108,7 +113,7 @@ const others = (await getBooks()).filter((b) => b.id !== book.id);
       news.length > 0 && (
         <ul class="section stack" aria-label="News">
           {news.map((item) => (
-            <NewsRow item={item} />
+            <NewsRow item={item} skip={buy.slice(0, HERO_LINKS).map((b) => b.url)} />
           ))}
         </ul>
       )
@@ -137,6 +142,9 @@ const others = (await getBooks()).filter((b) => b.id !== book.id);
   /* An ISBN never breaks at its hyphens. */
   .isbn {
     white-space: nowrap;
+  }
+  .prose + :global(.also) {
+    margin-top: var(--space-s);
   }
   .stack {
     display: flex;

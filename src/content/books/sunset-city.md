@@ -10,7 +10,7 @@ color: "#3D5A96"
 color2: "#E9B83A"
 color3: "#151820"
 textOn: paper
-collage: framed
+collage: right
 tile: tall
 buy:
   - label: Bookshop.org

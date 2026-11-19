@@ -1,11 +1,21 @@
 ---
 // The top of every book page and the home page's hero: up to three flat
 // blocks of the book's colours, the cover laid flat on them, and the title.
-// Everything is placed by the book's `collage` preset; no page sets its own CSS.
+// Everything is placed by the book's `collage` preset, flipped left to right by
+// `mirror`; no page sets its own CSS.
+//
+// Two rules hold in every preset, at every width:
+// - A block sits behind title letters only where ink reads on its colour
+//   (the "left" preset, checked at build time in content.config.ts). Elsewhere
+//   the title is on paper, clear of every block.
+// - An accent block (b2, b3) never touches the cover. The main block (b1) may
+//   carry the cover, and is grown to hold a tall cover with 40px to spare.
 import { Image } from 'astro:assets';
+import Excerpt from './Excerpt.astro';
 import OrderLinks from './OrderLinks.astro';
-import { excerptLines, heroLabel, when, type Book } from '../lib/books';
-import { fitStyle } from '../lib/fit';
+import { heroLabel, when, type Book } from '../lib/books';
+import { coverMatches } from '../lib/cover';
+import { fitStyle, longestWordEm, textEm } from '../lib/fit';
 import { url } from '../lib/url';
 
 interface Props {
@@ -15,30 +25,41 @@ interface Props {
 }
 
 const { book, variant = 'page' } = Astro.props;
-const { title, kind, publisher, cover, coverAlt, color, color2, color3, textOn } = book.data;
-// The home hero always uses the "right" layout, whatever the book's own preset.
-const preset = variant === 'home' ? 'right' : book.data.collage;
+const { title, kind, publisher, cover, coverAlt, color, color2, color3, textOn, excerpt, excerptStagger } =
+  book.data;
+// The home hero always uses its own layout, whatever the book's own preset.
+const preset = variant === 'home' ? 'home' : book.data.collage;
+const mirror = variant === 'page' && book.data.mirror;
 const href = url(`/books/${book.id}`);
 const alt = coverAlt ? `Cover of ${title}: ${coverAlt}` : `Cover of ${title}`;
+
+// "left" sets the title at up to 58% of the width; a title that needs two lines
+// there starts higher, so the order link stays in the first screen.
+const share = 0.58;
+const size = Math.min(236, (1360 * share) / longestWordEm(title));
+const lines = Math.max(1, Math.ceil((textEm(title) * size) / (1360 * share)));
+
 const style = [
   `--c1: ${color}`,
   color2 && `--c2: ${color2}`,
   color3 && `--c3: ${color3}`,
   `--ratio: ${(cover.width / cover.height).toFixed(4)}`,
+  `--lines: ${lines}`,
 ]
   .filter(Boolean)
   .join('; ');
-const lines = variant === 'home' ? excerptLines(book, 2) : [];
+const hairline = await coverMatches(cover, color);
+const lead = variant === 'home' && excerpt ? excerpt.trim().split('\n').filter((l) => l.trim()).slice(0, 2).join('\n') : '';
 // The title may cross onto the colour only where ink reads on it.
 const crosses = variant === 'page' && textOn === 'ink';
 ---
 
-<div class:list={['collage', `collage--${preset}`, `collage--${variant}`, { crosses }]} style={style}>
+<div class:list={['collage', `collage--${preset}`, `collage--${variant}`, { crosses, mirror }]} style={style}>
   <div class="stage">
     <div class="blk b1" aria-hidden="true"></div>
     {color2 && <div class="blk b2" aria-hidden="true" />}
-    {color3 && preset !== 'right' && <div class="blk b3" aria-hidden="true" />}
-    <div class="cover">
+    {color3 && <div class="blk b3" aria-hidden="true" />}
+    <div class:list={['cover', { hairline }]}>
       {
         variant === 'home' ? (
           <a href={href}>
@@ -65,26 +86,19 @@ const crosses = variant === 'page' && textOn === 'ink';
               <br />
               {when(book)}
             </p>
-            <OrderLinks book={book} class="meta-order" />
+            <OrderLinks book={book} max={3} class="meta-order" />
           </div>
         </>
       ) : (
         <>
           <p class="label">{heroLabel(book)}</p>
-          <h2 class="display title" style={fitStyle(title)}>
-            <a href={href}>{title}</a>
-          </h2>
-          {lines.length > 0 && (
-            <p class="lines">
-              {lines.map((line, i) => (
-                <>
-                  {i > 0 && <br />}
-                  {line}
-                </>
-              ))}
-            </p>
-          )}
-          <OrderLinks book={book} first class="hero-order" />
+          <div class="foot">
+            <h2 class="display title" style={fitStyle(title)}>
+              <a href={href}>{title}</a>
+            </h2>
+            {lead && <Excerpt text={lead} stagger={excerptStagger} variant="hero" />}
+            <OrderLinks book={book} max={1} class="hero-order" />
+          </div>
         </>
       )
     }
@@ -96,15 +110,33 @@ const crosses = variant === 'page' && textOn === 'ink';
    * Desktop: blocks and cover are placed absolutely on a stage; the words are in
    * normal flow on top, so a long title makes the collage taller rather than
    * running into what follows. Vertical sizes are in --u (1px at full width).
+   * --bleed reaches from the content edge to the edge of the window.
    */
   .collage {
+    --col: calc((var(--content) + var(--gutter)) / 12);
+    --bleed: calc(var(--margin) + (100vw - min(100vw, var(--max))) / 2);
+    /* The cover: never cropped, tilted or shadowed. A tall cover gets narrower
+       rather than taller than the space allows. */
+    --cover-w: min(calc(var(--content) * var(--cw)), var(--cw-max), calc(var(--ch-max) * var(--u) * var(--ratio)));
+    --cover-h: calc(var(--cover-w) / var(--ratio));
+    --cover-top: calc(var(--ct) * var(--u));
+    /* The main block holds a cover lying on it with 40px to spare. */
+    --hold: calc(var(--cover-top) + var(--cover-h) + 40px);
+    --cap: 1.5;
+
     position: relative;
     margin-top: var(--space-m);
-    min-height: calc(var(--h) * var(--u));
+    min-height: max(calc(var(--h) * var(--u)), calc(var(--hold) + 40px));
   }
   .stage {
     position: absolute;
     inset: 0;
+  }
+  .mirror .stage {
+    transform: scaleX(-1);
+  }
+  .mirror .cover :global(img) {
+    transform: scaleX(-1);
   }
   .blk {
     position: absolute;
@@ -118,11 +150,14 @@ const crosses = variant === 'page' && textOn === 'ink';
   .b3 {
     background: var(--c3);
   }
-  /* Covers lie flat at their natural shape: never cropped, tilted or shadowed.
-     A tall cover gets narrower rather than taller than the space allows. */
   .cover {
     position: absolute;
-    width: min(var(--cw), var(--cw-max), calc(var(--ch-max) * var(--ratio)));
+    top: var(--cover-top);
+    width: var(--cover-w);
+  }
+  /* A cover the colour of its block gets a hairline, so it doesn't dissolve. */
+  .cover.hairline :global(img) {
+    outline: 1px solid rgb(34 30 25 / 0.35);
   }
   .cover a {
     display: block;
@@ -138,11 +173,17 @@ const crosses = variant === 'page' && textOn === 'ink';
     padding-top: calc(var(--words-top) * var(--u));
   }
   .title {
-    font-size: min(clamp(96px, 15.5vw, 236px), calc(var(--content) * var(--share) / var(--word-em)));
+    /* No wider than its share of the page, and no more than two lines. */
+    font-size: min(
+      clamp(96px, 15.5vw, 236px),
+      calc(var(--content) * var(--share) / var(--word-em)),
+      calc(var(--content) * var(--share) * var(--cap) / var(--title-em))
+    );
     line-height: 0.9;
     letter-spacing: -0.015em;
     /* Display titles sit tight; this clears their descenders. */
     margin-bottom: 0.2em;
+    max-width: calc(var(--content) * var(--share));
   }
   .title a {
     text-decoration: none;
@@ -168,20 +209,24 @@ const crosses = variant === 'page' && textOn === 'ink';
     line-height: 1.2;
   }
 
-  /* Runoff: a wide block from the left, the title crossing its right edge. */
+  /* ---------- left: Runoff. A wide block from the left, the title crossing its
+     right edge and the sliver behind it. The reference composition. ---------- */
   .collage--left {
     --h: 760;
-    --words-top: 270;
+    --ct: 84;
+    /* A two-line title starts higher. */
+    --words-top: calc(270 - (var(--lines) - 1) * 210);
     --share: 0.58;
-    --cw: 24%;
+    --cap: 99;
+    --cw: 0.24;
     --cw-max: 340px;
-    --ch-max: calc(620 * var(--u));
+    --ch-max: 620;
   }
   .collage--left .b1 {
     left: 0;
     top: 0;
     width: 56%;
-    height: calc(640 * var(--u));
+    height: max(calc(640 * var(--u)), var(--hold));
   }
   .collage--left .b2 {
     left: 47%;
@@ -197,7 +242,6 @@ const crosses = variant === 'page' && textOn === 'ink';
   }
   .collage--left .cover {
     left: 9%;
-    top: calc(84 * var(--u));
   }
   .collage--left .title {
     margin-left: 38%;
@@ -206,66 +250,188 @@ const crosses = variant === 'page' && textOn === 'ink';
     margin-left: 72%;
     width: 24%;
   }
+  /* Mirrored, the title ends on the block, crossing its left edge. */
+  @media (min-width: 761px) {
+    .collage--left.mirror .title {
+      margin-left: 4%;
+      width: 58%;
+      text-align: right;
+    }
+    .collage--left.mirror .meta {
+      margin-left: 4%;
+    }
+  }
 
-  /* The home hero: the block on the right, the words on paper at the left. */
-  .collage--right {
-    --h: 700;
-    --words-top: 96;
-    --share: 0.34;
-    --cw: 23%;
-    --cw-max: 330px;
-    --ch-max: calc(600 * var(--u));
+  /* ---------- tower: a tall, narrow block bleeding off the right edge of the
+     page, the cover half off it, a cut strip running out the other side.
+     The title on open paper. ---------- */
+  .collage--tower {
+    --h: 860;
+    --ct: 150;
+    --words-top: 150;
+    --share: 0.5;
+    --cw: 0.26;
+    --cw-max: 360px;
+    --ch-max: 600;
   }
-  .collage--right .b1 {
-    right: 0;
+  .collage--tower .b1 {
+    left: 76%;
+    right: calc(-1 * var(--bleed));
     top: 0;
-    width: 52%;
-    height: calc(600 * var(--u));
+    height: max(calc(820 * var(--u)), var(--hold));
   }
-  .collage--right .b2 {
-    right: 40%;
-    top: calc(430 * var(--u));
-    width: 19%;
+  .collage--tower .b2 {
+    left: 52%;
+    top: max(calc(730 * var(--u)), calc(var(--cover-top) + var(--cover-h) + 32px));
+    width: 30%;
+    height: calc(110 * var(--u));
+  }
+  .collage--tower .b3 {
+    left: calc(-1 * var(--bleed));
+    top: calc(40 * var(--u));
+    width: calc(var(--bleed) + 30%);
+    height: calc(16 * var(--u));
+  }
+  .collage--tower .cover {
+    left: 60%;
+  }
+  .collage--tower .meta {
+    margin-left: var(--col);
+    width: 28%;
+  }
+  @media (min-width: 761px) {
+    .collage--tower.mirror .title {
+      margin-left: 48%;
+    }
+    .collage--tower.mirror .meta {
+      margin-left: calc(48% + var(--col));
+    }
+  }
+
+  /* ---------- band: a wide, shallow band bleeding off the left edge, the cover
+     standing on it, a bar crossing it. Title and details below. ---------- */
+  .collage--band {
+    --h: 560;
+    --ct: 40;
+    --words-top: 520;
+    --share: 0.5;
+    --cw: 0.24;
+    --cw-max: 340px;
+    --ch-max: 520;
+  }
+  .collage--band .b1 {
+    left: calc(-1 * var(--bleed));
+    width: calc(var(--bleed) + 92%);
+    top: calc(150 * var(--u));
     height: calc(220 * var(--u));
   }
+  .collage--band .b2 {
+    left: 30%;
+    top: calc(60 * var(--u));
+    width: 4.5%;
+    height: calc(390 * var(--u));
+  }
+  .collage--band .b3 {
+    left: 88%;
+    top: calc(300 * var(--u));
+    width: 9%;
+    height: calc(150 * var(--u));
+  }
+  .collage--band .cover {
+    left: 60%;
+  }
+  .collage--band .words {
+    display: grid;
+    grid-template-columns: 50% 34%;
+    column-gap: 10%;
+    align-items: start;
+    padding-left: var(--col);
+  }
+  .collage--band .meta {
+    /* Below the cover. */
+    margin-top: max(0px, calc(var(--cover-top) + var(--cover-h) + 32px - var(--words-top) * var(--u)));
+  }
+  @media (min-width: 761px) {
+    .collage--band.mirror .words {
+      grid-template-columns: 34% 50%;
+    }
+    .collage--band.mirror .title {
+      order: 2;
+    }
+  }
+
+  /* ---------- right: the block on the right, a narrow strip crossing its left
+     edge; the words on paper at the left. ---------- */
+  .collage--right {
+    --h: 700;
+    --ct: 110;
+    --words-top: 96;
+    --share: 0.34;
+    --cw: 0.23;
+    --cw-max: 330px;
+    --ch-max: 520;
+  }
+  .collage--right .b1 {
+    left: 48%;
+    right: calc(-1 * var(--bleed));
+    top: calc(40 * var(--u));
+    height: max(calc(560 * var(--u)), calc(var(--hold) - 40 * var(--u)));
+  }
+  .collage--right .b2 {
+    left: 42%;
+    top: 0;
+    width: 9%;
+    height: calc(420 * var(--u));
+  }
+  .collage--right .b3 {
+    left: 66%;
+    top: max(calc(580 * var(--u)), calc(var(--hold) - 8px));
+    width: 22%;
+    height: calc(80 * var(--u));
+  }
   .collage--right .cover {
-    right: 13%;
-    top: calc(70 * var(--u));
+    left: 60%;
   }
   .collage--right .words {
     width: 36%;
   }
+  @media (min-width: 761px) {
+    .collage--right.mirror .words {
+      margin-left: 64%;
+    }
+  }
 
-  /* Doll Apollo: the block inset like a frame, the title on paper to its right. */
+  /* ---------- framed: the block inset like a frame, a strip bleeding off the
+     left edge behind it, the title on paper to its right. ---------- */
   .collage--framed {
     --h: 780;
+    --ct: 96;
     --words-top: 120;
     --share: 0.36;
-    --cw: 26%;
+    --cw: 0.26;
     --cw-max: 360px;
-    --ch-max: calc(660 * var(--u));
+    --ch-max: 620;
   }
   .collage--framed .b1 {
     left: 14%;
     top: 0;
     width: 44%;
-    height: calc(700 * var(--u));
+    height: max(calc(700 * var(--u)), var(--hold));
   }
   .collage--framed .b2 {
-    left: 0;
+    left: calc(-1 * var(--bleed));
     top: calc(330 * var(--u));
-    width: 22%;
+    width: calc(var(--bleed) + 20%);
     height: calc(420 * var(--u));
   }
   .collage--framed .b3 {
-    left: 52%;
-    top: calc(600 * var(--u));
+    left: 54%;
+    top: max(calc(600 * var(--u)), calc(var(--hold) - 60px));
     width: 14%;
     height: calc(150 * var(--u));
   }
   .collage--framed .cover {
-    left: 22%;
-    top: calc(96 * var(--u));
+    left: 24%;
   }
   .collage--framed .title {
     margin-left: 61%;
@@ -274,21 +440,67 @@ const crosses = variant === 'page' && textOn === 'ink';
     margin-left: 68%;
     width: 28%;
   }
+  @media (min-width: 761px) {
+    .collage--framed.mirror .title {
+      margin-left: 0;
+    }
+    .collage--framed.mirror .meta {
+      margin-left: var(--col);
+    }
+  }
 
-  /* Home hero words. */
+  /* ---------- home: the featured book. The block runs from the top of the
+     label to the last line of the words; a dark strip crosses its left edge
+     and hangs below it, a scrap crosses its top. ---------- */
+  .collage--home {
+    --h: 600;
+    --ct: 70;
+    --words-top: 0;
+    --share: 0.34;
+    --cw: 0.23;
+    --cw-max: 330px;
+    --ch-max: 470;
+    display: flex;
+  }
+  .collage--home .b1 {
+    left: 48%;
+    right: calc(-1 * var(--bleed));
+    top: 0;
+    bottom: 0;
+  }
+  .collage--home .b2 {
+    left: 44%;
+    width: 7%;
+    top: 46%;
+    bottom: calc(-48 * var(--u));
+  }
+  .collage--home .b3 {
+    left: 90%;
+    top: calc(-30 * var(--u));
+    width: 7%;
+    height: calc(120 * var(--u));
+  }
+  .collage--home .cover {
+    right: 13%;
+  }
+  .collage--home .words {
+    display: flex;
+    flex-direction: column;
+    width: 36%;
+  }
+  /* The label at the top of the block; everything else on its bottom edge. */
+  .foot {
+    margin-top: auto;
+  }
   .collage--home .title {
     font-size: min(clamp(64px, 8vw, 124px), calc(var(--content) * var(--share) / var(--word-em)));
     line-height: 0.92;
     margin-top: var(--space-s);
   }
-  .lines {
-    hyphens: manual;
-    max-width: 19em;
-    font-size: 22px;
-    line-height: 1.5;
-  }
   .collage--home :global(.hero-order) {
     margin-top: calc(var(--space-s) - 10px);
+    /* The last line sits on the block's bottom edge. */
+    margin-bottom: -0.3em;
   }
 
   /*
@@ -301,6 +513,9 @@ const crosses = variant === 'page' && textOn === 'ink';
       min-height: 0;
       margin-top: var(--space-s);
     }
+    .collage--home {
+      display: block;
+    }
     .stage {
       position: relative;
       inset: auto;
@@ -312,6 +527,8 @@ const crosses = variant === 'page' && textOn === 'ink';
       right: auto;
       top: auto;
       bottom: auto;
+      width: auto;
+      height: auto;
     }
     .collage .cover {
       position: relative;
@@ -320,16 +537,18 @@ const crosses = variant === 'page' && textOn === 'ink';
       top: auto;
       width: min(48%, calc(340px * var(--ratio)));
     }
-    .words,
-    .collage--right .words {
-      padding-top: 0;
+    .collage .words {
+      display: block;
+      padding: 0;
       width: auto;
+      margin-left: 0;
     }
-    .title,
-    .collage--left .title,
-    .collage--framed .title {
+    .collage .title {
       margin-left: 0;
       margin-top: var(--space-s);
+      width: auto;
+      max-width: none;
+      text-align: left;
       /* No wider than its longest word, and no more than about two lines. */
       font-size: min(
         92px,
@@ -340,10 +559,8 @@ const crosses = variant === 'page' && textOn === 'ink';
     .crosses .title {
       margin-top: -0.42em;
     }
-    .meta,
-    .collage--left .meta,
-    .collage--framed .meta {
-      margin-left: 0;
+    .collage .meta {
+      margin: 0;
       width: auto;
       font-size: 17px;
     }
@@ -362,8 +579,8 @@ const crosses = variant === 'page' && textOn === 'ink';
     .collage--home .label {
       margin-top: var(--space-s);
     }
-    .lines {
-      font-size: 19px;
+    .collage--home :global(.hero-order) {
+      margin-bottom: 0;
     }
 
     .collage--left .b1 {
@@ -371,58 +588,114 @@ const crosses = variant === 'page' && textOn === 'ink';
       top: 0;
       bottom: 0;
       width: 84%;
-      height: auto;
     }
     .collage--left .b2 {
       right: 0;
-      bottom: 24px;
-      width: 34%;
-      height: 110px;
+      top: 0;
+      width: 30%;
+      height: 70px;
     }
     .collage--left .b3 {
       left: 84%;
-      top: 60px;
+      top: 90px;
       width: 8px;
-      height: 200px;
+      height: 170px;
     }
     .collage--left .cover {
       margin-left: 14%;
     }
 
-    .collage--right .b1 {
-      right: 0;
+    .collage--tower .b1 {
+      left: 64%;
+      right: -20px;
       top: 0;
       bottom: 0;
-      width: 80%;
-      height: auto;
     }
-    .collage--right .b2 {
+    .collage--tower .b2 {
+      left: -20px;
+      top: 120px;
+      width: calc(20px + 30%);
+      height: 56px;
+    }
+    .collage--tower .b3 {
+      left: -20px;
+      top: 0;
+      width: calc(20px + 34%);
+      height: 8px;
+    }
+    .collage--tower .cover {
+      margin-left: 40%;
+    }
+
+    .collage--band .b1 {
+      left: -20px;
+      right: 10%;
+      top: 100px;
+      height: 96px;
+    }
+    .collage--band .b2 {
+      left: 12%;
+      top: 36px;
+      width: 9%;
+      height: 210px;
+    }
+    .collage--band .b3 {
+      left: 28%;
+      top: 18px;
+      width: 16%;
+      height: 46px;
+    }
+    .collage--band .cover {
+      margin-left: 52%;
+      width: min(42%, calc(300px * var(--ratio)));
+    }
+
+    .collage--right .b1,
+    .collage--home .b1 {
+      right: -20px;
+      top: 0;
+      bottom: 0;
+      width: calc(20px + 80%);
+    }
+    .collage--right .b2,
+    .collage--home .b2 {
       left: 0;
       bottom: 24px;
-      width: 38%;
+      width: 26%;
       height: 110px;
     }
-    .collage--right .cover {
+    .collage--right .b3,
+    .collage--home .b3 {
+      right: 6%;
+      top: -10px;
+      width: 24%;
+      height: 24px;
+    }
+    .collage--right .cover,
+    .collage--home .cover {
       margin-left: 34%;
     }
 
+    /* The frame holds the cover with 40px to spare below. */
+    .collage--framed .stage {
+      padding-bottom: 40px;
+    }
     .collage--framed .b1 {
       left: 8%;
       top: 0;
       bottom: 0;
       width: 80%;
-      height: auto;
     }
     .collage--framed .b2 {
-      left: 0;
-      top: 200px;
-      width: 22%;
+      left: -20px;
+      top: 180px;
+      width: calc(20px + 14%);
       height: 150px;
     }
     .collage--framed .b3 {
       right: 0;
       top: 40px;
-      width: 12%;
+      width: 10%;
       height: 90px;
     }
     .collage--framed .cover {

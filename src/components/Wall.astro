@@ -1,7 +1,8 @@
 ---
 // Books as overlapping colour tiles, never a uniform grid. Offsets and stacking
 // vary by position from a fixed pattern; each book sets only its tile size.
-// On a phone the wall becomes an offset pile, alternating left and right.
+// Below 900px (where tiles of these sizes would cover each other's titles) the
+// wall becomes an offset pile, alternating left and right.
 import WallTile from './WallTile.astro';
 import type { Book } from '../lib/books';
 
@@ -35,7 +36,7 @@ const { books, label = 'Books' } = Astro.props;
   .wall > :global(:nth-child(6n + 5)) { margin-top: 72px; }
   .wall > :global(:nth-child(6n + 6)) { margin-top: 8px; }
 
-  @media (max-width: 760px) {
+  @media (max-width: 900px) {
     .wall {
       flex-direction: column;
       flex-wrap: nowrap;

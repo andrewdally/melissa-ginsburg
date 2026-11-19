@@ -10,7 +10,8 @@ color: "#2A7059"
 color2: "#022420"
 color3: "#54A78D"
 textOn: paper
-collage: right
+collage: tower
+mirror: true
 tile: wide
 buy:
   - label: Four Way Books

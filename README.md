@@ -35,15 +35,16 @@ Each book file sets its own look; no page has CSS of its own.
 | `releaseDate` | Only for a book not out yet: the page says "Preorder from" and gives the date. |
 | `featured` | `true` for the one book that leads the home page. |
 | `cover`, `coverAlt` | The cover image, and a short description of it for people who can't see it. |
-| `color` | The main colour block, sampled from the cover. |
+| `color` | The main colour block, sampled from the cover. If it's too close to the paper to stand out (under 1.3:1), the build stops: lead with the book's darker colour instead. A cover whose edge is the same colour as this block gets a fine ink outline automatically. |
 | `color2` | A smaller accent block, and the second colour in the book's small colour scrap. |
-| `color3` | Optional: a thin sliver or third scrap. |
+| `color3` | Optional: a thin sliver or third scrap. In the `left` collage the sliver runs behind the title, so ink must read on it. |
 | `textOn` | `ink` or `paper`: the colour of words set on `color`. Leave it out to use whichever reads better. The build stops with a message if the words wouldn't be readable (4.5:1 contrast). |
-| `collage` | The top of the book page: `left` (the title crosses the colour, as for *Runoff*), `right` (the colour on the right, the title on paper at the left), or `framed` (as for *Doll Apollo*). `left` only works where ink reads on `color`; leave it out to get `left` for a light colour and `framed` for a dark one. |
+| `collage` | The top of the book page: `left` (the title crosses the colour, as for *Runoff*), `tower` (a tall narrow block off the edge of the page, as for *Doll Apollo*), `band` (a wide shallow band with the cover standing on it, as for *The House Uptown*), `right` (as for *Sunset City*) or `framed` (as for *Apollo*). `left` only works where ink reads on `color`; leave it out to get `left` for a light colour and `framed` for a dark one. Give books next to each other on the Books page different collages. |
+| `mirror` | `true` to flip the collage left to right. |
 | `tile` | The book's tile on the wall of books: `large`, `tall`, `wide` (the default) or `small` (the default for chapbooks). |
 | `excerpt` | A few lines from the book. Line breaks are kept; a blank line starts a new stanza. |
 | `excerptStagger` | `true` to indent every other line of the excerpt. |
-| `buy` | Order links, each a `label` and `url`. The home page uses the first one. |
+| `buy` | Order links, each a `label` and `url`, best first. The top of the book page shows the first three (ideally an independent shop, Square Books for signed copies, and the publisher), and the rest follow the description as "Also from"; the home page uses the first one. |
 | `format`, `pages`, `price`, `isbn`, `honors` | Publication details, shown in the margin beside the description. Write the ISBN with its hyphens. |
 | `praise` | Blurbs: `quote`, `name`, and optional `credit` and `url`. Mark one `featured: true` for the large pull quote; give it a `pull` (a line copied exactly from its quote) to set just that line large, with the whole blurb listed below. |
 | `press` | Interviews and conversations: `title`, `source`, `url`, and an optional `quote`. |
@@ -60,9 +61,6 @@ npm run preview   # serve the built site
 
 In `npm run dev`, add `?grid` to any address to draw the 12-column grid over the page.
 Text should start only at the outer margin, column 2 or column 6.
-
-A GitHub Action (`Check links`) tests every outside link on the built site, on each
-change and weekly. It reports dead links; it doesn't stop the site from publishing.
 
 Old addresses from the previous site (`/doll-apollo`, `/events`, …) redirect to their
 new homes; see `redirects` in `astro.config.mjs`.

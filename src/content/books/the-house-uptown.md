@@ -10,7 +10,7 @@ color: "#292E4C"
 color2: "#E8572A"
 color3: "#1A181D"
 textOn: paper
-collage: right
+collage: band
 tile: tall
 buy:
   - label: Square Books (signed copies)

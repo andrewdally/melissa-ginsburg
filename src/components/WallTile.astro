@@ -78,12 +78,18 @@ const style = `--c1: ${color}; --on: ${textColor(textOn)};${color2 ? ` --c2: ${c
   .wide { --w: 380px; --h: 280px; --t: 56px; }
   .small { --w: 290px; --h: 240px; --t: 54px; }
 
-  .v0 .back { left: 40px; top: -26px; width: 30%; height: 56%; }
-  .v1 .back { right: -22px; top: 70px; width: 22%; height: 40%; }
-  .v2 .back { left: -24px; bottom: -28px; width: 50%; height: 40%; }
-  .v3 .back { left: 24px; bottom: -26px; width: 64%; height: 22%; }
+  /* The accent colour lies behind a left-hand corner, offset diagonally: never
+     a strip along an edge, which reads as a folder tab. (On the right, the next
+     tile would cover all but such a strip.) It reaches no more than 18px to the
+     left, inside the 20px by which tiles overlap, so it can't touch the title
+     of the tile before. */
+  .v0 .back { left: -18px; top: -22px; width: 40%; height: 46%; }
+  .v1 .back { left: -18px; bottom: -24px; width: 46%; height: 36%; }
+  .v2 .back { left: -18px; top: -24px; width: 34%; height: 58%; }
+  .v3 .back { left: -18px; bottom: -22px; width: 58%; height: 30%; }
 
-  @media (max-width: 760px) {
+  /* Below 900px the wall becomes a pile; see Wall.astro. */
+  @media (max-width: 900px) {
     .face {
       padding: 16px 18px;
     }
@@ -103,9 +109,10 @@ const style = `--c1: ${color}; --on: ${textColor(textOn)};${color2 ? ` --c2: ${c
       width: calc(var(--pw) * 100%);
       z-index: calc(100 - var(--i));
     }
-    .v0 .back { left: 30px; top: -16px; width: 26%; height: 50%; }
-    .v1 .back { right: -14px; top: 40px; width: 18%; height: 40%; }
-    .v2 .back { left: -14px; bottom: -18px; width: 46%; height: 30%; }
-    .v3 .back { left: 20px; bottom: -16px; width: 60%; height: 20%; }
+    /* Down the pile, scraps peek out at the sides, clear of the next title. */
+    .v0 .back { right: -14px; top: -12px; width: 34%; height: 40%; }
+    .v1 .back { left: -14px; top: -12px; width: 36%; height: 44%; }
+    .v2 .back { right: -14px; top: -12px; width: 40%; height: 38%; }
+    .v3 .back { left: -14px; top: -12px; width: 34%; height: 42%; }
   }
 </style>

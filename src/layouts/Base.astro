@@ -17,9 +17,17 @@ interface Props {
   image?: ImageMetadata;
   /** The home page: the name is set large under the nav, and the footer is one line. */
   home?: boolean;
+  /** Leave the agent's line out of the footer (About gives it in full). */
+  agentInFooter?: boolean;
 }
 
-const { title, description = site.description, image = melissa, home = false } = Astro.props;
+const {
+  title,
+  description = site.description,
+  image = melissa,
+  home = false,
+  agentInFooter = true,
+} = Astro.props;
 const fullTitle = title ? `${title} · ${site.name}` : site.name;
 const ogImage = await getImage({ src: image, width: 1200, format: 'jpg' });
 const ogImageUrl = new URL(ogImage.src, Astro.site).href;
@@ -111,17 +119,19 @@ const contacts = [
         ) : (
           <>
             <p class="footer-line">{site.footerNote}</p>
-            <p class="footer-contact">
-              Agent: {site.agent.name}, {site.agent.agency}
-              {contacts.map((link) => (
-                <>
-                  <span class="sep" aria-hidden="true">
-                    &nbsp;·&nbsp;
-                  </span>
-                  <a href={link.url}>{link.label}</a>
-                </>
-              ))}
-            </p>
+            {agentInFooter && (
+              <p class="footer-contact">
+                Agent: {site.agent.name}, {site.agent.agency}
+                {contacts.map((link) => (
+                  <>
+                    <span class="sep" aria-hidden="true">
+                      &nbsp;·&nbsp;
+                    </span>
+                    <a href={link.url}>{link.label}</a>
+                  </>
+                ))}
+              </p>
+            )}
           </>
         )
       }
