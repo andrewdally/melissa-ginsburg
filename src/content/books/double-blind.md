@@ -7,11 +7,14 @@ cover: ../../assets/covers/double-blind.jpg
 coverAlt: A mustard-yellow fox drawn as a shooting target, with rings and scores, on white
 color: "#D59E1A"
 color2: "#221E19"
+color3: "#EFE3C2"
 textOn: ink
 collage: left
 mirror: true
 shape: circle
 tile: small
+scrapPosition: top-right
+scrapLayer: front
 buy:
   - label: Dancing Girl Press
     url: https://dulcetshop.myshopify.com/products/double-blind-melissa-ginsburg

@@ -13,6 +13,8 @@ textOn: paper
 collage: door
 shape: circle
 tile: tall
+scrapPosition: left
+scrapLayer: front
 buy:
   - label: Square Books, signed
     url: https://www.squarebooks.com/book/9781250784186

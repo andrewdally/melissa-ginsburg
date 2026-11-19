@@ -1,7 +1,8 @@
 ---
 // A book on the collage wall: a block of its main colour with the title set on
-// it, and its accent colour as a second piece, either behind a corner or in
-// front over a top corner, clear of the title. The whole tile is the link.
+// it (bottom left), and a second piece of its colours, in front of the tile or
+// behind it, at a position set per book (scrapPosition). Front pieces stay
+// clear of the title and the kind/year line. The whole tile is the link.
 import { kindAndYear, type Book } from '../lib/books';
 import { textColor } from '../lib/color';
 import { fitStyle } from '../lib/fit';
@@ -13,18 +14,52 @@ interface Props {
 }
 
 const { book, index } = Astro.props;
-const { title, color, color2, textOn, tile, shape, scrapLayer } = book.data;
-// Circles always lie in front; otherwise the book's choice, or every other tile.
-const front = shape === 'circle' || (scrapLayer ?? (index % 2 === 1 ? 'front' : 'back')) === 'front';
-const style = `--c1: ${color}; --on: ${textColor(textOn)};${color2 ? ` --c2: ${color2};` : ''}`;
+const { title, color, color2, color3, textOn, tile, shape, scrapPosition, scrapLayer, scrapColor } = book.data;
+const pieceColor = scrapColor === 'color3' ? (color3 ?? color2) : color2;
+const round = shape === 'circle';
+
+// A new book without its own settings takes the next in this cycle.
+const CYCLE = [
+  ['top-right', 'front'],
+  ['bottom-right', 'back'],
+  ['left', 'front'],
+  ['top-right', 'back'],
+] as const;
+const position = scrapPosition ?? CYCLE[index % 4][0];
+const layer = round ? 'front' : (scrapLayer ?? (scrapPosition ? 'back' : CYCLE[index % 4][1]));
+
+// The piece's size, as a share of the tile's width.
+const SIZE: Record<string, [rect: number, circle: number]> = {
+  'top-right': [0.45, 0.4],
+  'bottom-right': [0.4, 0.45],
+  left: [0.4, 0.45],
+  'top-left': [0.4, 0.4],
+  above: [0.35, 0.35],
+  right: [0.4, 0.4],
+};
+const pct = SIZE[position][round ? 1 : 0];
+
+// A piece behind the tile on its right side would be hidden by the next tile
+// (which overlaps this one by 20px), so the tile is raised above the next one.
+const raise = layer === 'back' && ['right', 'bottom-right', 'top-right', 'above'].includes(position);
+
+const style = [
+  `--c1: ${color}`,
+  `--on: ${textColor(textOn)}`,
+  pieceColor && `--c2: ${pieceColor}`,
+  `--pct: ${pct}`,
+  `--i: ${index}`,
+]
+  .filter(Boolean)
+  .join('; ');
 ---
 
 <a
-  class:list={['tile', tile, `v${index % 4}`, { front: front && !!color2 }]}
+  class:list={['tile', tile, `at-${position}`, layer, { round, raise }]}
   href={url(`/books/${book.id}`)}
-  style={`${style} --i: ${index};`}
+  style={style}
 >
-  {color2 && <span class:list={['back', { round: shape === 'circle' }]} aria-hidden="true" />}
+  {pieceColor && <span class="piece" aria-hidden="true" />}
   <span class="face">
     <span class="display t" style={fitStyle(title)}>{title}</span>
     <span class="k">{kindAndYear(book)}</span>
@@ -32,7 +67,18 @@ const style = `--c1: ${color}; --on: ${textColor(textOn)};${color2 ? ` --c2: ${c
 </a>
 
 <style>
+  /*
+   * Stacking. The tile itself doesn't stack (no z-index); its face and piece
+   * take their places in the wall's stacking (Wall.astro isolates it). Across a
+   * row each face lies over the one before. A piece behind lies just under its
+   * own face; a raised tile's face and piece lie over the next tile. Pieces in
+   * front lie over everything.
+   */
   .tile {
+    --tw: var(--w);
+    /* The piece: its share of the tile's width, never more than most of its height. */
+    --s: min(calc(var(--pct) * var(--tw)), calc(var(--h) * 0.62));
+    --fz: calc(10 + var(--i) * 10);
     position: relative;
     display: block;
     flex: none;
@@ -42,12 +88,13 @@ const style = `--c1: ${color}; --on: ${textColor(textOn)};${color2 ? ` --c2: ${c
     padding: 0;
     text-decoration: none;
     color: var(--on);
-    /* Across a row, each tile lies over the one before; titles sit left. */
-    z-index: calc(1 + var(--i));
+  }
+  .tile.raise {
+    --fz: calc(23 + var(--i) * 10);
   }
   .face {
     position: relative;
-    z-index: 1;
+    z-index: var(--fz);
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
@@ -55,10 +102,22 @@ const style = `--c1: ${color}; --on: ${textColor(textOn)};${color2 ? ` --c2: ${c
     padding: 22px 24px;
     background: var(--c1);
   }
-  .back {
+  .piece {
     position: absolute;
-    z-index: 0;
+    z-index: calc(var(--fz) - 5);
+    width: var(--s);
+    height: calc(var(--s) * 0.85);
     background: var(--c2);
+  }
+  .raise .piece {
+    z-index: calc(var(--fz) - 1);
+  }
+  .front .piece {
+    z-index: 1000;
+  }
+  .round .piece {
+    height: var(--s);
+    border-radius: 50%;
   }
   .t {
     font-size: min(var(--t), calc((var(--w) - 48px) / var(--word-em)));
@@ -76,60 +135,82 @@ const style = `--c1: ${color}; --on: ${textColor(textOn)};${color2 ? ` --c2: ${c
     line-height: 1.4;
   }
 
-  .large { --w: 400px; --h: 330px; --t: 62px; }
-  .tall { --w: 310px; --h: 400px; --t: 54px; }
-  .wide { --w: 380px; --h: 280px; --t: 56px; }
+  .large { --w: 380px; --h: 330px; --t: 62px; }
+  .tall { --w: 300px; --h: 400px; --t: 54px; }
+  .wide { --w: 370px; --h: 280px; --t: 56px; }
   .small { --w: 290px; --h: 240px; --t: 54px; }
 
-  /* The accent colour lies behind a left-hand corner, offset diagonally: never
-     a strip along an edge, which reads as a folder tab. (On the right, the next
-     tile would cover all but such a strip.) It reaches no more than 18px to the
-     left, inside the 20px by which tiles overlap, so it can't touch the title
-     of the tile before. */
-  .v0 .back { left: -18px; top: -22px; width: 40%; height: 46%; }
-  .v1 .back { left: -18px; bottom: -24px; width: 46%; height: 36%; }
-  .v2 .back { left: -18px; top: -24px; width: 34%; height: 58%; }
-  .v3 .back { left: -18px; bottom: -22px; width: 58%; height: 36%; }
-  /* Where the cover has a circle, the scrap is one: about half the tile's
-     width, at the same corner. */
-  .tile .back.round {
-    width: 50%;
-    height: auto;
-    aspect-ratio: 1;
-    border-radius: 50%;
-  }
-
-  /* In front: over the top left corner, away from the title (which sits at
-     the bottom), reaching up and out past the tile's edges. On the left, the
-     tile before lies underneath, so nothing covers the piece. */
-  .front .back {
-    z-index: 2;
-    right: auto;
-    bottom: auto;
-    left: -18px;
+  /* Positions. Pieces reach out 18-20px past a side and 22px past the top or
+     bottom, so they stick out across two edges and never line up with the
+     tile's. */
+  .at-top-right .piece {
+    right: -18px;
     top: -22px;
-    width: 34%;
-    height: 38%;
   }
-  .front .back.round {
-    width: var(--cd);
-    height: auto;
+  .at-top-right.round .piece {
     top: 0;
     transform: translateY(-30%);
   }
-  .large { --cd: 44%; }
-  .tall { --cd: 46%; }
-  .wide { --cd: 42%; }
-  .small { --cd: 38%; }
+  .at-top-left .piece {
+    left: -18px;
+    top: -22px;
+  }
+  .at-bottom-right .piece {
+    right: -18px;
+    bottom: -22px;
+  }
+  /* A circle in front at the bottom right hangs half below the tile, away
+     from the end of a long title. */
+  .at-bottom-right.round .piece {
+    right: 0;
+    bottom: 0;
+    transform: translateY(60%);
+  }
+  /* On the left edge, centred a third of the way down. */
+  .at-left .piece {
+    left: -18px;
+    top: calc(var(--h) * 0.33 - var(--s) / 2);
+  }
+  /* Rising above the tile at its top right. */
+  .at-above .piece {
+    right: -20px;
+    top: calc(var(--s) * -0.35);
+  }
+  /* A tucked edge: mostly behind the tile, a strip showing at the right,
+     high enough to clear the next tile's title. */
+  .at-right .piece {
+    right: -14px;
+    top: 8%;
+    height: 28%;
+  }
 
-  /* A scrap below a tile counts toward its height in the row, so the wall ends
-     at its lowest edge and the gap below it is measured from there. */
-  .v1:has(.back) { margin-bottom: 24px; }
-  .v3:has(.back) { margin-bottom: 22px; }
-  .tile.front:has(.back) { margin-bottom: 0; }
+  /* What hangs below a tile counts toward its height in the row, so the wall
+     ends at its lowest edge and the gap below it is measured from there. */
+  .at-bottom-right {
+    margin-bottom: 22px;
+  }
+  .at-bottom-right.round {
+    margin-bottom: calc(var(--s) * 0.6);
+  }
 
   /* Below 900px the wall becomes a pile; see Wall.astro. */
   @media (max-width: 900px) {
+    .tile {
+      --tw: calc(var(--pw) * (var(--content) - 28px));
+      /* Down the pile, each tile lies over the top of the next. */
+      --fz: calc(900 - var(--i) * 10);
+      width: calc(var(--pw) * 100%);
+      margin-bottom: 0;
+    }
+    .tile.raise {
+      --fz: calc(900 - var(--i) * 10);
+    }
+    .tile.raise .piece {
+      z-index: calc(var(--fz) - 5);
+    }
+    .front .piece {
+      z-index: 2000;
+    }
     .face {
       padding: 16px 18px;
     }
@@ -144,31 +225,35 @@ const style = `--c1: ${color}; --on: ${textColor(textOn)};${color2 ? ` --c2: ${c
     .tall { --pw: 0.72; --h: 240px; --t: 42px; }
     .wide { --pw: 0.82; --h: 190px; --t: 42px; }
     .small { --pw: 0.68; --h: 170px; --t: 40px; }
-    /* Down the pile, each tile lies over the top of the next; titles sit low. */
-    .tile {
-      width: calc(var(--pw) * 100%);
-      z-index: calc(100 - var(--i));
+    /* Pieces reach 14px past a side and 12px past the top or bottom. */
+    .at-top-right .piece,
+    .at-above .piece {
+      right: -14px;
+      top: -12px;
     }
-    .v1:has(.back),
-    .v3:has(.back) {
-      margin-bottom: 0;
-    }
-    /* Within the tile's height, so it never hangs below the pile. */
-    .tile .back.round {
-      width: auto;
-      height: 70%;
-    }
-    /* Down the pile, scraps peek out at the sides, clear of the next title. */
-    .tile .back { left: auto; right: auto; bottom: auto; }
-    .v0 .back { right: -14px; top: -12px; width: 34%; height: 40%; }
-    .v1 .back { left: -14px; top: -12px; width: 36%; height: 44%; }
-    .v2 .back { right: -14px; top: -12px; width: 40%; height: 38%; }
-    .v3 .back { left: -14px; top: -12px; width: 34%; height: 42%; }
-    .front .back.round {
-      height: 46%;
-      width: auto;
+    .at-top-right.round .piece {
       top: 0;
       transform: translateY(-25%);
+    }
+    .at-top-left .piece {
+      left: -14px;
+    }
+    .at-left .piece {
+      left: -14px;
+    }
+    .at-top-left .piece {
+      top: -12px;
+    }
+    .at-bottom-right .piece {
+      right: -14px;
+      bottom: -12px;
+    }
+    .at-bottom-right.round .piece {
+      bottom: 0;
+      transform: translateY(35%);
+    }
+    .at-right .piece {
+      right: -14px;
     }
   }
 </style>

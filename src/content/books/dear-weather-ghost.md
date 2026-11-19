@@ -13,6 +13,8 @@ textOn: paper
 collage: tower
 mirror: true
 tile: wide
+scrapPosition: above
+scrapLayer: back
 buy:
   - label: Four Way Books
     url: https://fourwaybooks.com/site/dear-weather-ghost

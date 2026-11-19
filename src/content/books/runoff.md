@@ -15,6 +15,9 @@ color3: "#FFE14A"
 textOn: ink
 collage: left
 tile: large
+scrapPosition: right
+scrapLayer: back
+scrapColor: color3
 excerptStagger: true
 buy:
   - label: Milkweed

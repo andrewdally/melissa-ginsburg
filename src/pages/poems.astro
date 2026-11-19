@@ -30,9 +30,11 @@ const featured = poems.find((poem) => poem.excerpt);
     }
 
     <section class:list={['grid', 'magazines', featured?.excerpt ? 'section' : 'first']} aria-labelledby="in-magazines">
-      <Edge layout="poems" />
+      <Edge layout="poems" only="phone" />
       <h2 class="col-wide label run-label" id="in-magazines">Poems in magazines</h2>
-      <ul class="col-wide run">
+      <div class="col-wide run-wrap">
+        <Edge layout="poems" only="wide" />
+      <ul class="run">
         {
           poems.map((poem, i) => (
             <li>
@@ -46,6 +48,7 @@ const featured = poems.find((poem) => poem.excerpt);
           ))
         }
       </ul>
+      </div>
     </section>
 
     <section class="section" aria-labelledby="elsewhere">
@@ -77,6 +80,10 @@ const featured = poems.find((poem) => poem.excerpt);
     margin-bottom: var(--space-s);
   }
   /* One long run of poems, as on the old site. */
+  .run-wrap {
+    position: relative;
+  }
+  .run-wrap,
   .run {
     font-size: clamp(20px, 1.9vw, 25px);
     line-height: 1.6;

@@ -12,6 +12,8 @@ textOn: paper
 collage: framed
 shape: circle
 tile: small
+scrapPosition: bottom-right
+scrapLayer: front
 buy:
   - label: Condensery Press
     url: https://www.condenserypress.com/product/apollo

@@ -12,6 +12,8 @@ color3: "#C6AA91"
 textOn: paper
 collage: tower
 tile: wide
+scrapPosition: top-right
+scrapLayer: front
 buy:
   - label: LSU Press
     url: https://lsupress.org/books/detail/doll-apollo/

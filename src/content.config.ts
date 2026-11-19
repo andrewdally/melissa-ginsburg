@@ -18,7 +18,10 @@ const MIN_CONTRAST = 4.5;
 const MIN_FROM_PAPER = 1.3;
 
 /** Collage presets; see Collage.astro. */
-export const COLLAGES = ['left', 'right', 'framed', 'tower', 'band', 'door'] as const;
+export const COLLAGES = ['left', 'right', 'framed', 'tower', 'band', 'door', 'column'] as const;
+
+/** Where a tile's second piece sits on the wall; see WallTile.astro. */
+export const SCRAP_POSITIONS = ['top-right', 'bottom-right', 'left', 'top-left', 'right', 'above'] as const;
 
 const books = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/books' }),
@@ -48,14 +51,18 @@ const books = defineCollection({
         color3: optional(color),
         /** Text set on `color`: "ink" or "paper". Leave blank to pick whichever reads better. */
         textOn: optional(z.enum(['ink', 'paper'])),
-        /** Layout of the top of the book page: "left", "right", "framed", "tower", "band" or "door". */
+        /** Layout of the top of the book page: "left", "right", "framed", "tower", "band", "door" or "column". */
         collage: optional(z.enum(COLLAGES)),
         /** Flip the collage left to right. */
         mirror: z.boolean().default(false),
         /** "circle" only where the cover has one (a moon, a light, a target): the color2 piece becomes a circle. */
         shape: z.enum(['rect', 'circle']).default('rect'),
-        /** Whether the tile's second piece lies "front" (over a top corner) or "back" (behind). Blank: alternating along the wall; a circle is always in front. */
+        /** Where the tile's second piece sits on the wall. Blank: by position along the wall. */
+        scrapPosition: optional(z.enum(SCRAP_POSITIONS)),
+        /** Whether that piece lies "front" (over the tile) or "back" (behind it). Blank: by position; a circle is always in front. */
         scrapLayer: optional(z.enum(['front', 'back'])),
+        /** Which colour the wall piece takes: color2 (the default) or color3. */
+        scrapColor: z.enum(['color2', 'color3']).default('color2'),
         /** Tile size on the collage wall: "large", "tall", "wide" or "small". */
         tile: optional(z.enum(['large', 'tall', 'wide', 'small'])),
         /** Indent every other line of the excerpt. */
