@@ -30,6 +30,8 @@
   --space-s: 24px;
   --space-m: 56px;
   --space-l: 120px;
+  /* Between the home page's major sections. */
+  --space-xl: 160px;
 }
 
 @media (max-width: 760px) {
@@ -38,6 +40,7 @@
     --space-s: 16px;
     --space-m: 40px;
     --space-l: 80px;
+    --space-xl: 96px;
   }
 }
 
@@ -52,9 +55,13 @@ html {
   background: var(--paper);
 }
 
-/* The paper is the page itself (html), so a backdrop can lie between it and the
-   text; see Tints.astro. */
+/* The paper is the page itself (html), so colour pieces can lie between it and
+   the text (z-index: -1); see Edge.astro. The body is a full-height column, so
+   the footer sits at the bottom of the window on a short page. */
 body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
   margin: 0;
   color: var(--ink);
   font-family: var(--text);
@@ -73,6 +80,7 @@ body {
 
 /* Collage blocks may bleed off the page edge; the page never scrolls sideways. */
 main {
+  flex: 1 0 auto;
   overflow-x: clip;
 }
 
@@ -170,6 +178,7 @@ a:hover {
 /* ---------- Grid ---------- */
 
 .frame {
+  width: 100%;
   max-width: var(--max);
   margin-inline: auto;
   padding-inline: var(--margin);
@@ -208,6 +217,11 @@ a:hover {
   .col-full {
     grid-column: 1 / -1;
   }
+}
+
+/* The home page's major sections stand further apart. */
+.major {
+  margin-top: var(--space-xl);
 }
 
 /* Sections are separated by the largest step of the spacing scale; the first

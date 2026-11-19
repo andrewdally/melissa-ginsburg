@@ -27,7 +27,8 @@ const { books, label = 'Books' } = Astro.props;
     flex-wrap: wrap;
     align-items: flex-start;
     row-gap: var(--space-m);
-    padding-left: 38px;
+    /* Room for pieces in front, which reach 22px over a tile's top. */
+    padding: 22px 0 0 38px;
   }
   .wall > :global(*) {
     margin-left: -20px;

@@ -3,7 +3,7 @@ import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import NewsRow from '../components/NewsRow.astro';
 import Row from '../components/Row.astro';
-import Tints from '../components/Tints.astro';
+import Edge from '../components/Edge.astro';
 
 const news = (await getCollection('news')).sort(
   (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
@@ -11,18 +11,18 @@ const news = (await getCollection('news')).sort(
 ---
 
 <Base title="News" description="Readings, events, and news from Melissa Ginsburg.">
-  <Tints slot="backdrop" layout="news" />
   <div class="frame">
     <h1 class="visually-hidden">News</h1>
     {
       news.length > 0 ? (
         <ul class="list">
-          {news.map((item) => (
-            <NewsRow item={item} />
+          {news.map((item, i) => (
+            <NewsRow item={item}>{i === 0 && <Edge slot="decor" layout="news" />}</NewsRow>
           ))}
         </ul>
       ) : (
         <Row class="list">
+          <Edge slot="decor" layout="news" />
           <p>Nothing new just now.</p>
         </Row>
       )
@@ -36,5 +36,11 @@ const news = (await getCollection('news')).sort(
     display: flex;
     flex-direction: column;
     gap: var(--space-m);
+  }
+  /* Room above for the colour pieces on a phone. */
+  @media (max-width: 760px) {
+    .list {
+      margin-top: calc(var(--space-m) + 96px);
+    }
   }
 </style>

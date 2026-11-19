@@ -129,17 +129,20 @@ const ratio = photo ? (photo.width / photo.height).toFixed(4) : '0.67';
   }
   .a2 {
     background: var(--a2);
-    left: 30%;
-    width: max(72px, 8%);
+    /* At least a third of the main block's width (it widens with the window);
+       its right edge stays clear of the bio. */
+    --a2w: max(10%, calc((var(--content) * 0.26 + var(--bleed)) / 3));
+    left: calc(40% - var(--a2w));
+    width: var(--a2w);
     top: calc(var(--photo-top) + var(--photo-h) - 40 * var(--u));
     height: calc(250 * var(--u));
   }
   .a3 {
     background: var(--a3);
     left: calc(15% - 50 * var(--u));
-    width: calc(120 * var(--u));
+    width: max(90px, calc(120 * var(--u)));
     top: calc(var(--photo-top) + var(--photo-h) - 70 * var(--u));
-    height: calc(120 * var(--u));
+    height: max(90px, calc(120 * var(--u)));
   }
   .photo {
     position: absolute;
@@ -207,10 +210,10 @@ const ratio = photo ? (photo.width / photo.height).toFixed(4) : '0.67';
     }
     .a2 {
       left: 54%;
-      width: 14%;
+      width: 24%;
+      height: max(110px, calc(var(--content) * 0.22));
       top: auto;
       bottom: 20px;
-      height: 110px;
     }
     .a3 {
       left: calc(14% - 24px);

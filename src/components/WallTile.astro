@@ -1,6 +1,7 @@
 ---
 // A book on the collage wall: a block of its main colour with the title set on
-// it, and its accent colour peeking out from behind. The whole tile is the link.
+// it, and its accent colour as a second piece, either behind a corner or in
+// front over a top corner, clear of the title. The whole tile is the link.
 import { kindAndYear, type Book } from '../lib/books';
 import { textColor } from '../lib/color';
 import { fitStyle } from '../lib/fit';
@@ -12,12 +13,14 @@ interface Props {
 }
 
 const { book, index } = Astro.props;
-const { title, color, color2, textOn, tile, shape } = book.data;
+const { title, color, color2, textOn, tile, shape, scrapLayer } = book.data;
+// Circles always lie in front; otherwise the book's choice, or every other tile.
+const front = shape === 'circle' || (scrapLayer ?? (index % 2 === 1 ? 'front' : 'back')) === 'front';
 const style = `--c1: ${color}; --on: ${textColor(textOn)};${color2 ? ` --c2: ${color2};` : ''}`;
 ---
 
 <a
-  class:list={['tile', tile, `v${index % 4}`]}
+  class:list={['tile', tile, `v${index % 4}`, { front: front && !!color2 }]}
   href={url(`/books/${book.id}`)}
   style={`${style} --i: ${index};`}
 >
@@ -86,7 +89,7 @@ const style = `--c1: ${color}; --on: ${textColor(textOn)};${color2 ? ` --c2: ${c
   .v0 .back { left: -18px; top: -22px; width: 40%; height: 46%; }
   .v1 .back { left: -18px; bottom: -24px; width: 46%; height: 36%; }
   .v2 .back { left: -18px; top: -24px; width: 34%; height: 58%; }
-  .v3 .back { left: -18px; bottom: -22px; width: 58%; height: 30%; }
+  .v3 .back { left: -18px; bottom: -22px; width: 58%; height: 36%; }
   /* Where the cover has a circle, the scrap is one: about half the tile's
      width, at the same corner. */
   .tile .back.round {
@@ -96,10 +99,34 @@ const style = `--c1: ${color}; --on: ${textColor(textOn)};${color2 ? ` --c2: ${c
     border-radius: 50%;
   }
 
+  /* In front: over the top left corner, away from the title (which sits at
+     the bottom), reaching up and out past the tile's edges. On the left, the
+     tile before lies underneath, so nothing covers the piece. */
+  .front .back {
+    z-index: 2;
+    right: auto;
+    bottom: auto;
+    left: -18px;
+    top: -22px;
+    width: 34%;
+    height: 38%;
+  }
+  .front .back.round {
+    width: var(--cd);
+    height: auto;
+    top: 0;
+    transform: translateY(-30%);
+  }
+  .large { --cd: 44%; }
+  .tall { --cd: 46%; }
+  .wide { --cd: 42%; }
+  .small { --cd: 38%; }
+
   /* A scrap below a tile counts toward its height in the row, so the wall ends
      at its lowest edge and the gap below it is measured from there. */
   .v1:has(.back) { margin-bottom: 24px; }
   .v3:has(.back) { margin-bottom: 22px; }
+  .tile.front:has(.back) { margin-bottom: 0; }
 
   /* Below 900px the wall becomes a pile; see Wall.astro. */
   @media (max-width: 900px) {
@@ -137,5 +164,11 @@ const style = `--c1: ${color}; --on: ${textColor(textOn)};${color2 ? ` --c2: ${c
     .v1 .back { left: -14px; top: -12px; width: 36%; height: 44%; }
     .v2 .back { right: -14px; top: -12px; width: 40%; height: 38%; }
     .v3 .back { left: -14px; top: -12px; width: 34%; height: 42%; }
+    .front .back.round {
+      height: 46%;
+      width: auto;
+      top: 0;
+      transform: translateY(-25%);
+    }
   }
 </style>
