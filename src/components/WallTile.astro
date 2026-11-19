@@ -135,16 +135,16 @@ const style = [
     line-height: 1.4;
   }
 
-  .large { --w: 400px; --h: 330px; --t: 62px; }
-  .tall { --w: 310px; --h: 400px; --t: 54px; }
-  .wide { --w: 380px; --h: 280px; --t: 56px; }
+  .large { --w: 380px; --h: 330px; --t: 62px; }
+  .tall { --w: 300px; --h: 400px; --t: 54px; }
+  .wide { --w: 370px; --h: 280px; --t: 56px; }
   .small { --w: 290px; --h: 240px; --t: 54px; }
 
-  /* Positions. Pieces reach out 18px past the left side (into the 20px by
-     which tiles overlap) and 22px past the top or bottom; on the right they
-     stay within the tile, which may end a row at the margin. */
+  /* Positions. Pieces reach out 18-20px past a side and 22px past the top or
+     bottom, so they stick out across two edges and never line up with the
+     tile's. */
   .at-top-right .piece {
-    right: 0;
+    right: -18px;
     top: -22px;
   }
   .at-top-right.round .piece {
@@ -156,7 +156,7 @@ const style = [
     top: -22px;
   }
   .at-bottom-right .piece {
-    right: 0;
+    right: -18px;
     bottom: -22px;
   }
   /* A circle in front at the bottom right hangs half below the tile, away
@@ -173,8 +173,8 @@ const style = [
   }
   /* Rising above the tile at its top right. */
   .at-above .piece {
-    right: 0;
-    top: calc(var(--s) * -0.45);
+    right: -20px;
+    top: calc(var(--s) * -0.35);
   }
   /* A tucked edge: mostly behind the tile, a strip showing at the right,
      high enough to clear the next tile's title. */

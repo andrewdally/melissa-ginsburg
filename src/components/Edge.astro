@@ -104,7 +104,7 @@ const style = [`--e1: ${readable(color)}`, light && `--e2: ${readable(light)}`, 
   }
   .news .p3 {
     right: calc(-1 * var(--bleed));
-    top: var(--top);
+    top: calc(var(--top) + 32px);
   }
 
   /* Poems (placed in the run itself, which sets the line height): a sheet
@@ -132,7 +132,7 @@ const style = [`--e1: ${readable(color)}`, light && `--e2: ${readable(light)}`, 
   }
   .poems .p3 {
     left: calc(-1 * (var(--gutter) + var(--col) + var(--bleed)));
-    top: calc(100% - 160px);
+    top: calc(100% - 200px);
   }
 
   @media (max-width: 760px) {
@@ -192,7 +192,7 @@ const style = [`--e1: ${readable(color)}`, light && `--e2: ${readable(light)}`, 
       right: auto;
       width: 90px;
       top: 0;
-      height: 72px;
+      height: 64px;
     }
   }
 </style>

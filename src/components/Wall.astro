@@ -20,9 +20,8 @@ const { books, label = 'Books' } = Astro.props;
 
 <style>
   /* Each tile overlaps the one before by 20px. A tile's second piece may
-     reach 18px past its left side and up above it; the wall is padded so
-     every piece stays inside the outer margins. (On the right, pieces stay
-     within the tile, since a tile may end a row at the margin.) The wall is its
+     reach 18-20px past its left or right side and up above it; the wall is
+     padded so every piece stays inside the outer margins. The wall is its
      own stacking context for the tiles' faces and pieces (WallTile.astro). */
   .wall {
     isolation: isolate;
@@ -30,7 +29,7 @@ const { books, label = 'Books' } = Astro.props;
     flex-wrap: wrap;
     align-items: flex-start;
     row-gap: var(--space-m);
-    padding: 24px 0 0 38px;
+    padding: 24px 20px 0 38px;
   }
   .wall > :global(*) {
     margin-left: -20px;
