@@ -10,10 +10,10 @@ color: "#292E4C"
 color2: "#E8572A"
 color3: "#1A181D"
 textOn: paper
-collage: band
+collage: door
 tile: tall
 buy:
-  - label: Square Books (signed copies)
+  - label: Square Books, signed
     url: https://www.squarebooks.com/book/9781250784186
   - label: Bookshop.org
     url: https://bookshop.org/book/9781250784186

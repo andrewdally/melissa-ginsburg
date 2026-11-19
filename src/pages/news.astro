@@ -3,6 +3,7 @@ import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import NewsRow from '../components/NewsRow.astro';
 import Row from '../components/Row.astro';
+import Tints from '../components/Tints.astro';
 
 const news = (await getCollection('news')).sort(
   (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
@@ -10,6 +11,7 @@ const news = (await getCollection('news')).sort(
 ---
 
 <Base title="News" description="Readings, events, and news from Melissa Ginsburg.">
+  <Tints slot="backdrop" layout="news" />
   <div class="frame">
     <h1 class="visually-hidden">News</h1>
     {

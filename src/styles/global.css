@@ -52,10 +52,11 @@ html {
   background: var(--paper);
 }
 
+/* The paper is the page itself (html), so a backdrop can lie between it and the
+   text; see Tints.astro. */
 body {
   margin: 0;
   color: var(--ink);
-  background: var(--paper);
   font-family: var(--text);
   font-size: 19.5px;
   line-height: 1.65;
@@ -209,9 +210,13 @@ a:hover {
   }
 }
 
-/* Sections are separated by the largest step of the spacing scale. */
+/* Sections are separated by the largest step of the spacing scale; the first
+   one on a page sits a step below the header. */
 .section {
   margin-top: var(--space-l);
+}
+.first {
+  margin-top: var(--space-m);
 }
 
 /* ---------- Type ---------- */
@@ -255,6 +260,25 @@ a:hover {
    both sides with no-break spaces, so no line starts or ends with one. */
 .sep {
   white-space: nowrap;
+}
+/* A short row of links ("Contact · Instagram"): on a phone, wider apart, so
+   each 44px-tall link is its own target. */
+@media (max-width: 760px) {
+  .links .sep {
+    padding-inline: 0.5em;
+  }
+}
+
+/* A heading over a run of the page, at the outer margin ("Also by Melissa"). */
+.heading {
+  font-family: var(--display);
+  font-size: 46px;
+  line-height: 1;
+}
+@media (max-width: 760px) {
+  .heading {
+    font-size: 34px;
+  }
 }
 
 /* ---------- Grid overlay (dev only: add ?grid to the address) ---------- */

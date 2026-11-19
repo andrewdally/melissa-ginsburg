@@ -1,49 +1,77 @@
 ---
 import Base from '../layouts/Base.astro';
+import Excerpt from '../components/Excerpt.astro';
 import Row from '../components/Row.astro';
+import Tints from '../components/Tints.astro';
 import data from '../data/poems.json';
+
+type Poem = { title: string; venue: string; url: string; excerpt?: string };
+const poems: Poem[] = data.poems;
+// A few lines from a recent poem open the page: the first poem in the list
+// that has an excerpt.
+const featured = poems.find((poem) => poem.excerpt);
 ---
 
 <Base title="Poems &c." description="Poems by Melissa Ginsburg in magazines and online, and other writing.">
+  <Tints slot="backdrop" layout="poems" />
   <div class="frame">
     <h1 class="visually-hidden">Poems &amp;c.</h1>
 
-    <div class="grid top">
+    {
+      featured?.excerpt && (
+        <figure class="opening">
+          <Excerpt text={featured.excerpt} class="first" />
+          <figcaption class="grid from">
+            <span class="col-wide">
+              From <a href={featured.url}>{featured.title}</a>, <i>{featured.venue}</i>
+            </span>
+          </figcaption>
+        </figure>
+      )
+    }
+
+    <section class:list={['grid', featured?.excerpt ? 'section' : 'first']} aria-labelledby="in-magazines">
       <h2 class="col-wide label run-label" id="in-magazines">Poems in magazines</h2>
-      <ul class="col-wide run" aria-labelledby="in-magazines">
+      <ul class="col-wide run">
         {
-          data.poems.map((poem, i) => (
+          poems.map((poem, i) => (
             <li>
               <a href={poem.url}>{poem.title}</a>, <i class="venue">{poem.venue}</i>
-              {i < data.poems.length - 1 && (
+              {i < poems.length - 1 && (
                 <span class="sep" aria-hidden="true">
-                  &nbsp;/&nbsp;
+                  &#8202;/&#8202;
                 </span>
               )}
             </li>
           ))
         }
       </ul>
-    </div>
+    </section>
 
-    <ul class="section elsewhere" aria-label="Other writing">
-      {
-        data.elsewhere.map((item) => (
-          <Row as="li">
-            <Fragment slot="note">{item.venue}</Fragment>
-            <p>
-              <a href={item.url}>{item.title}</a>
-            </p>
-          </Row>
-        ))
-      }
-    </ul>
+    <section class="section" aria-labelledby="elsewhere">
+      <div class="grid">
+        <h2 class="col-wide label run-label" id="elsewhere">Prose, video, conversation</h2>
+      </div>
+      <ul class="elsewhere">
+        {
+          data.elsewhere.map((item) => (
+            <Row as="li">
+              <Fragment slot="note">{item.venue}</Fragment>
+              <p>
+                <a href={item.url}>{item.title}</a>
+              </p>
+            </Row>
+          ))
+        }
+      </ul>
+    </section>
   </div>
 </Base>
 
 <style>
-  .top {
-    margin-top: var(--space-m);
+  .from {
+    margin-top: var(--space-s);
+    font-size: 17px;
   }
   .run-label {
     margin-bottom: var(--space-s);
@@ -62,13 +90,15 @@ import data from '../data/poems.json';
   .run li {
     display: inline;
   }
+  /* Where it appeared, not a link: a quieter italic. */
   .venue {
-    color: var(--muted);
+    color: #5f574d;
   }
-  /* Caslon's slash is nearly upright; room on each side keeps it from reading as a rule. */
+  /* Caslon's slash is nearly upright; hair spaces and a little room on each
+     side keep it from reading as a rule. */
   .sep {
     color: var(--muted);
-    padding-inline: 0.3em;
+    margin-inline: 0.3em;
   }
   .elsewhere {
     display: flex;

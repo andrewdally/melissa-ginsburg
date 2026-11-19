@@ -2,6 +2,7 @@
 import { getEntry, render } from 'astro:content';
 import { Image } from 'astro:assets';
 import Base from '../layouts/Base.astro';
+import Row from '../components/Row.astro';
 import site from '../data/site.json';
 import mac from '../assets/mac.png';
 
@@ -9,52 +10,82 @@ const about = await getEntry('pages', 'about');
 if (!about) throw new Error('Missing src/content/pages/about.md');
 const { Content } = await render(about);
 const { photo, photoAlt } = about.data;
+// The page's colours come from the photo, sampled into site.json.
+const { main, second, third } = site.aboutColors;
+const ratio = photo ? (photo.width / photo.height).toFixed(4) : '0.67';
 ---
 
-<Base title="About" image={photo} agentInFooter={false}>
+<Base title="About" image={photo}>
   <div class="frame">
     <h1 class="visually-hidden">About</h1>
-    <div class="grid top">
+
+    <section
+      class:list={['grid', 'first', 'portrait', { 'no-photo': !photo }]}
+      style={`--a1: ${main}; --a2: ${second}; --a3: ${third}; --ratio: ${ratio}`}
+      aria-label="Melissa Ginsburg"
+    >
       {
         photo && (
-          <div class="col-photo photo">
-            <Image
-              src={photo}
-              alt={photoAlt ?? 'Melissa Ginsburg'}
-              widths={[340, 680]}
-              sizes="(max-width: 760px) 90vw, 340px"
-              loading="eager"
-            />
+          <div class="stage">
+            <div class="blk a1" aria-hidden="true" />
+            <div class="blk a2" aria-hidden="true" />
+            <div class="blk a3" aria-hidden="true" />
+            <div class="photo">
+              <Image
+                src={photo}
+                alt={photoAlt ?? 'Melissa Ginsburg'}
+                widths={[300, 600]}
+                sizes="(max-width: 760px) 56vw, 300px"
+                loading="eager"
+              />
+            </div>
           </div>
         )
       }
-      <div class="col-read">
-        <div class="prose bio">
-          <Content />
-        </div>
-
-        <div class="contact">
-          {
-            site.email && (
-              <p>
-                Write to Melissa Ginsburg at <a href={`mailto:${site.email}`}>{site.email}</a>.
-              </p>
-            )
-          }
-          <p>
-            For rights, readings, and other inquiries, contact her agent, {site.agent.name}, at{' '}
-            {site.agent.agency}:&nbsp;<a href={`mailto:${site.agent.email}`}>{site.agent.email}</a>.
-          </p>
-          {
-            site.links.map((link) => (
-              <p>
-                <a href={link.url}>{link.label}</a>
-              </p>
-            ))
-          }
-        </div>
+      <div class="col-read prose bio">
+        <Content />
       </div>
-    </div>
+    </section>
+
+    <section class="section contact" id="contact" aria-label="Contact">
+      {
+        site.email && (
+          <Row>
+            <Fragment slot="note">Write to Melissa</Fragment>
+            <p>
+              <a href={`mailto:${site.email}`}>{site.email}</a>
+            </p>
+          </Row>
+        )
+      }
+      <Row>
+        <Fragment slot="note">Rights, readings, and other inquiries</Fragment>
+        <p>
+          {site.agent.name}, {site.agent.agency}
+          <br />
+          <a href={`mailto:${site.agent.email}`}>{site.agent.email}</a>
+        </p>
+      </Row>
+      {
+        site.links.length > 0 && (
+          <Row>
+            <Fragment slot="note">Elsewhere</Fragment>
+            <p class="links">
+              {site.links.map((link, i) => (
+                <>
+                  {i > 0 && (
+                    <span class="sep" aria-hidden="true">
+                      &nbsp;·&nbsp;
+                    </span>
+                  )}
+                  <a href={link.url}>{link.label}</a>
+                </>
+              ))}
+            </p>
+          </Row>
+        )
+      }
+    </section>
   </div>
 
   <div slot="footer" class="grid support">
@@ -66,17 +97,86 @@ const { photo, photoAlt } = about.data;
 </Base>
 
 <style>
-  .top {
-    margin-top: var(--space-m);
+  /*
+   * A collage from the photo, not a copy of a book preset: the main blue runs
+   * off the left edge of the page, the photo half off its right edge, a pale
+   * blue block hangs below the photo's right side, a brown strip runs under it
+   * all. The bio starts at column 6 beside it.
+   */
+  .portrait {
+    --bleed: calc(var(--margin) + (100vw - min(100vw, var(--max))) / 2);
+    --photo-w: calc(var(--content) * 0.22);
+    --photo-h: calc(var(--photo-w) / var(--ratio));
+    --photo-top: calc(64 * var(--u));
+    position: relative;
     align-items: start;
+    /* Down to the end of the pale block, the lowest edge. */
+    min-height: calc(var(--photo-top) + var(--photo-h) + 210 * var(--u));
+  }
+  .stage {
+    position: absolute;
+    inset: 0;
+  }
+  .blk {
+    position: absolute;
+  }
+  .a1 {
+    background: var(--a1);
+    left: calc(-1 * var(--bleed));
+    width: calc(var(--bleed) + 26%);
+    top: 0;
+    height: max(calc(640 * var(--u)), calc(var(--photo-top) + var(--photo-h) + 64 * var(--u)));
+  }
+  .a2 {
+    background: var(--a2);
+    left: 30%;
+    width: 8%;
+    top: calc(var(--photo-top) + var(--photo-h) - 40 * var(--u));
+    height: calc(250 * var(--u));
+  }
+  .a3 {
+    background: var(--a3);
+    left: 4%;
+    width: 30%;
+    top: calc(var(--photo-top) + var(--photo-h) + 180 * var(--u));
+    height: 10px;
+  }
+  .photo {
+    position: absolute;
+    left: 15%;
+    top: var(--photo-top);
+    width: var(--photo-w);
   }
   .photo :global(img) {
     width: 100%;
-    max-width: 340px;
+    height: auto;
   }
+  .bio {
+    position: relative;
+    padding-top: calc(40 * var(--u));
+  }
+  .no-photo {
+    min-height: 0;
+  }
+
+  /* The first sentence large, in Display; the rest at reading size. */
+  .bio :global(p:first-child) {
+    font-family: var(--display);
+    font-size: 40px;
+    line-height: 1.15;
+    text-wrap: balance;
+  }
+  .bio :global(p:nth-child(2)) {
+    margin-top: 32px;
+    text-indent: 0;
+  }
+
   .contact {
-    margin-top: var(--space-m);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-s);
   }
+
   .support {
     margin-top: var(--space-m);
     align-items: center;
@@ -88,12 +188,52 @@ const { photo, photoAlt } = about.data;
     width: 140px;
     mix-blend-mode: multiply;
   }
+
+  /* Phone: the collage above the bio, in flow. */
   @media (max-width: 760px) {
-    .photo {
-      margin-bottom: var(--space-m);
+    .portrait {
+      min-height: 0;
     }
-    .photo :global(img) {
-      max-width: 280px;
+    .stage {
+      position: relative;
+      inset: auto;
+      padding: 20px 0 52px;
+    }
+    .a1 {
+      top: 0;
+      height: auto;
+      bottom: 40px;
+      width: calc(var(--bleed) + 62%);
+    }
+    .a2 {
+      left: 54%;
+      width: 14%;
+      top: auto;
+      bottom: 20px;
+      height: 110px;
+    }
+    .a3 {
+      left: 0;
+      width: 50%;
+      top: auto;
+      bottom: 0;
+      height: 8px;
+    }
+    .photo {
+      position: relative;
+      left: auto;
+      top: auto;
+      margin-left: 14%;
+      width: 52%;
+    }
+    .bio {
+      padding-top: var(--space-m);
+    }
+    .bio :global(p:first-child) {
+      font-size: 30px;
+    }
+    .bio :global(p:nth-child(2)) {
+      margin-top: 24px;
     }
   }
 </style>

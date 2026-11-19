@@ -1,0 +1,157 @@
+---
+// A faint cut-paper ground for the list pages (News, Poems &c.): three flat,
+// hard-edged blocks in tints of the featured book's colours, behind everything.
+// The tints are worked out here from the featured book, so they change when it
+// does. Ink must read on every one at 12:1 or more; a tint that falls short is
+// thinned until it passes.
+import { INK, contrast, tint } from '../lib/color';
+import { getFeaturedBook } from '../lib/books';
+
+interface Props {
+  /** Each page has its own arrangement. */
+  layout: 'news' | 'poems';
+}
+
+const MIN_INK = 12;
+const { layout } = Astro.props;
+const { color, color2, color3 } = (await getFeaturedBook()).data;
+
+/** The colour at `amount`, or less if ink wouldn't read on it at 12:1. */
+function ground(c: string, amount: number) {
+  for (let a = amount; a > 0; a -= 0.01) {
+    const t = tint(c, a);
+    if (contrast(t, INK) >= MIN_INK) return t;
+  }
+  return tint(c, 0);
+}
+
+// The main colour at 18%; of the accents, the lighter at 30%, the darker at 8%.
+const accents = [color2, color3]
+  .filter((c): c is string => !!c)
+  .sort((a, b) => contrast(b, INK) - contrast(a, INK));
+const tints = [
+  ground(color, 0.18),
+  accents[0] ? ground(accents[0], 0.3) : undefined,
+  accents[1] ? ground(accents[1], 0.08) : undefined,
+];
+const style = tints.map((t, i) => (t ? `--t${i + 1}: ${t}` : '')).filter(Boolean).join('; ');
+---
+
+<div class:list={['tints', layout]} style={style} aria-hidden="true">
+  <div class="area">
+    <i class="t1"></i>
+    {tints[1] && <i class="t2" />}
+    {tints[2] && <i class="t3" />}
+  </div>
+</div>
+
+<style>
+  /* Behind the page (the body has no background of its own), and never in the
+     way: a block may run off the side of the window without scrolling it. */
+  .tints {
+    position: absolute;
+    z-index: -1;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 0;
+    overflow-x: clip;
+    pointer-events: none;
+  }
+  .area {
+    --bleed: calc(var(--margin) + (100vw - min(100vw, var(--max))) / 2);
+    position: relative;
+    max-width: calc(var(--max) - 2 * var(--margin));
+    margin-inline: var(--margin);
+  }
+  @media (min-width: 1441px) {
+    .area {
+      margin-inline: auto;
+    }
+  }
+  i {
+    position: absolute;
+    display: block;
+  }
+  .t1 {
+    background: var(--t1);
+  }
+  .t2 {
+    background: var(--t2);
+  }
+  .t3 {
+    background: var(--t3);
+  }
+
+  /* News: a large block from the top-right edge, a tall strip at the left, a
+     small block between them. */
+  .news .t1 {
+    left: 56%;
+    right: calc(-1 * var(--bleed));
+    top: 0;
+    height: calc(560 * var(--u));
+  }
+  .news .t2 {
+    left: 2%;
+    top: calc(330 * var(--u));
+    width: 7%;
+    height: calc(520 * var(--u));
+  }
+  .news .t3 {
+    left: 54%;
+    top: calc(470 * var(--u));
+    width: 15%;
+    height: calc(170 * var(--u));
+  }
+
+  /* Poems: a wide band from the left edge behind the middle of the run, a tall
+     strip at the right, a small block over the band's end. */
+  .poems .t1 {
+    left: calc(-1 * var(--bleed));
+    width: calc(var(--bleed) + 62%);
+    top: calc(420 * var(--u));
+    height: calc(240 * var(--u));
+  }
+  .poems .t2 {
+    left: 83%;
+    top: calc(60 * var(--u));
+    width: 11%;
+    height: calc(600 * var(--u));
+  }
+  .poems .t3 {
+    left: 54%;
+    top: calc(600 * var(--u));
+    width: 18%;
+    height: calc(150 * var(--u));
+  }
+
+  /* Phone: two blocks at most, both off an edge, behind the top of the page. */
+  @media (max-width: 760px) {
+    .t3 {
+      display: none;
+    }
+    .news .t1 {
+      left: 50%;
+      top: 0;
+      height: 260px;
+    }
+    .news .t2 {
+      left: calc(-1 * var(--bleed));
+      top: 150px;
+      width: calc(var(--bleed) + 9%);
+      height: 280px;
+    }
+    .poems .t1 {
+      top: 210px;
+      width: calc(var(--bleed) + 70%);
+      height: 130px;
+    }
+    .poems .t2 {
+      left: 82%;
+      right: calc(-1 * var(--bleed));
+      width: auto;
+      top: 0;
+      height: 320px;
+    }
+  }
+</style>

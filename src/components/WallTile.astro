@@ -87,6 +87,10 @@ const style = `--c1: ${color}; --on: ${textColor(textOn)};${color2 ? ` --c2: ${c
   .v1 .back { left: -18px; bottom: -24px; width: 46%; height: 36%; }
   .v2 .back { left: -18px; top: -24px; width: 34%; height: 58%; }
   .v3 .back { left: -18px; bottom: -22px; width: 58%; height: 30%; }
+  /* A scrap below a tile counts toward its height in the row, so the wall ends
+     at its lowest edge and the gap below it is measured from there. */
+  .v1:has(.back) { margin-bottom: 24px; }
+  .v3:has(.back) { margin-bottom: 22px; }
 
   /* Below 900px the wall becomes a pile; see Wall.astro. */
   @media (max-width: 900px) {
@@ -109,7 +113,12 @@ const style = `--c1: ${color}; --on: ${textColor(textOn)};${color2 ? ` --c2: ${c
       width: calc(var(--pw) * 100%);
       z-index: calc(100 - var(--i));
     }
+    .v1:has(.back),
+    .v3:has(.back) {
+      margin-bottom: 0;
+    }
     /* Down the pile, scraps peek out at the sides, clear of the next title. */
+    .tile .back { left: auto; right: auto; bottom: auto; }
     .v0 .back { right: -14px; top: -12px; width: 34%; height: 40%; }
     .v1 .back { left: -14px; top: -12px; width: 36%; height: 44%; }
     .v2 .back { right: -14px; top: -12px; width: 40%; height: 38%; }

@@ -5,6 +5,7 @@ import type { ImageMetadata } from 'astro';
 import site from '../data/site.json';
 import melissa from '../assets/melissa.jpg';
 import { url, withoutBase } from '../lib/url';
+import { textEm } from '../lib/fit';
 import displayFont from '@fontsource/libre-caslon-display/files/libre-caslon-display-latin-400-normal.woff2?url';
 import textFont from '@fontsource/libre-caslon-text/files/libre-caslon-text-latin-400-normal.woff2?url';
 import italicFont from '@fontsource/libre-caslon-text/files/libre-caslon-text-latin-400-italic.woff2?url';
@@ -15,19 +16,11 @@ interface Props {
   description?: string;
   /** Image for link previews (a book cover, say). Defaults to Melissa's photo. */
   image?: ImageMetadata;
-  /** The home page: the name is set large under the nav, and the footer is one line. */
+  /** The home page: the name is set large under the nav. */
   home?: boolean;
-  /** Leave the agent's line out of the footer (About gives it in full). */
-  agentInFooter?: boolean;
 }
 
-const {
-  title,
-  description = site.description,
-  image = melissa,
-  home = false,
-  agentInFooter = true,
-} = Astro.props;
+const { title, description = site.description, image = melissa, home = false } = Astro.props;
 const fullTitle = title ? `${title} · ${site.name}` : site.name;
 const ogImage = await getImage({ src: image, width: 1200, format: 'jpg' });
 const ogImageUrl = new URL(ogImage.src, Astro.site).href;
@@ -42,14 +35,15 @@ const nav = [
 ];
 const path = pagePath.replace(/\/$/, '');
 const isCurrent = (href: string) => path === href || path.startsWith(`${href}/`);
-const contacts = [
-  { label: site.agent.email, url: `mailto:${site.agent.email}` },
-  ...site.links,
-];
+// One footer everywhere. "Contact" is the About page's contact section.
+const footerLinks = [{ label: 'Contact', url: url('/about#contact') }, ...site.links];
+// The header name's width at 1em, so a collage that runs up behind the header
+// can keep clear of it.
+const nameEm = textEm(site.name).toFixed(3);
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="en" style={`--name-em: ${nameEm}`}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -80,22 +74,36 @@ const contacts = [
   </head>
   <body>
     <a class="skip" href="#main">Skip to content</a>
+    <slot name="backdrop" />
 
     <header class:list={['frame', 'site-header', { home }]}>
-      {!home && <a class="display site-name" href={url('/')}>{site.name}</a>}
-      <nav aria-label="Main">
-        <ul class="label nav">
-          {
-            nav.map((item) => (
-              <li>
-                <a href={url(item.href)} aria-current={isCurrent(item.href) ? 'page' : undefined}>
-                  {item.label}
-                </a>
-              </li>
-            ))
-          }
-        </ul>
-      </nav>
+      <div class="bar">
+        {
+          home ? (
+            // Holds the nav at the height it has on every other page.
+            <span class="display site-name spacer" aria-hidden="true">
+              {site.name}
+            </span>
+          ) : (
+            <a class="display site-name" href={url('/')}>
+              {site.name}
+            </a>
+          )
+        }
+        <nav aria-label="Main">
+          <ul class="label nav">
+            {
+              nav.map((item) => (
+                <li>
+                  <a href={url(item.href)} aria-current={isCurrent(item.href) ? 'page' : undefined}>
+                    {item.label}
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </nav>
+      </div>
       {
         home && (
           <>
@@ -111,30 +119,23 @@ const contacts = [
     </main>
 
     <footer class="frame site-footer">
-      {
-        home ? (
-          <p class="footer-line">
-            {site.name}, {site.location}
-          </p>
-        ) : (
-          <>
-            <p class="footer-line">{site.footerNote}</p>
-            {agentInFooter && (
-              <p class="footer-contact">
-                Agent: {site.agent.name}, {site.agent.agency}
-                {contacts.map((link) => (
-                  <>
-                    <span class="sep" aria-hidden="true">
-                      &nbsp;·&nbsp;
-                    </span>
-                    <a href={link.url}>{link.label}</a>
-                  </>
-                ))}
-              </p>
-            )}
-          </>
-        )
-      }
+      <div class="footer-rule">
+        <p class="footer-line">{site.footerNote}</p>
+        <p class="footer-links links">
+          {
+            footerLinks.map((link, i) => (
+              <>
+                {i > 0 && (
+                  <span class="sep" aria-hidden="true">
+                    &nbsp;·&nbsp;
+                  </span>
+                )}
+                <a href={link.url}>{link.label}</a>
+              </>
+            ))
+          }
+        </p>
+      </div>
       <slot name="footer" />
     </footer>
 
@@ -151,27 +152,33 @@ const contacts = [
 </html>
 
 <style>
+  /* The name and the nav share one baseline; on the home page an unseen copy of
+     the name holds the nav at the same height. */
   .site-header {
+    padding-top: 12px;
+  }
+  .bar {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
-    align-items: baseline;
+    align-items: last baseline;
     column-gap: var(--space-s);
-    padding-top: 12px;
-  }
-  .site-header.home {
-    display: block;
   }
   .site-name {
-    font-size: 26px;
-    line-height: 1.2;
+    font-size: 36px;
+    line-height: 1.15;
     text-decoration: none;
+  }
+  .spacer {
+    visibility: hidden;
   }
   .nav {
     display: flex;
     flex-wrap: wrap;
     justify-content: flex-end;
     column-gap: 22px;
+    font-size: 12px;
+    letter-spacing: 0.14em;
   }
   /* Padding, not size, gives each word a 44px tap height. */
   .nav a {
@@ -207,31 +214,35 @@ const contacts = [
     margin-top: var(--space-l);
     padding-bottom: var(--space-m);
   }
-  .site-footer > :first-child {
+  .footer-rule {
     padding-top: var(--space-s);
     border-top: 1px solid var(--rule);
+    font-size: 15px;
+    line-height: 1.75;
   }
   .footer-line {
-    font-size: 15px;
     font-style: italic;
-    line-height: 1.75;
-  }
-  .footer-contact {
-    font-size: 15px;
-    line-height: 1.75;
   }
 
   @media (max-width: 760px) {
-    .site-header:not(.home) {
-      display: block;
+    .bar {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    .spacer {
+      display: none;
     }
     .site-name {
-      font-size: 24px;
+      font-size: 30px;
+      padding-block: 5px;
     }
+    /* The nav's tap height reaches below its words; the page is spaced from the
+       words. */
     .site-header:not(.home) .nav {
-      justify-content: flex-start;
+      margin-bottom: -14px;
     }
     .nav {
+      justify-content: flex-start;
       column-gap: 18px;
     }
     .name {
@@ -242,8 +253,7 @@ const contacts = [
       margin-top: 16px;
       font-size: 19px;
     }
-    .footer-line,
-    .footer-contact {
+    .footer-rule {
       font-size: 14px;
     }
   }

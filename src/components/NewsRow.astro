@@ -18,7 +18,7 @@ const link = item.data.link && !skip.includes(item.data.link) ? item.data.link :
 
 <Row as="li">
   <time slot="note" datetime={isoDate(date)}>{formatDate(date)}</time>
-  <h2 class="news-title" set:html={inline(title)} />
+  {title && <h2 class="news-title" set:html={inline(title)} />}
   <div class="prose">
     <Content />
   </div>

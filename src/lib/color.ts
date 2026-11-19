@@ -21,3 +21,14 @@ export function bestTextOn(color: string): 'ink' | 'paper' {
 }
 
 export const textColor = (on: 'ink' | 'paper') => (on === 'ink' ? INK : PAPER);
+
+const hex = (n: number) => Math.round(n).toString(16).padStart(2, '0');
+
+/** A colour mixed with the paper: `amount` of the colour, the rest paper. */
+export function tint(color: string, amount: number) {
+  const channel = (c: string, i: number) => parseInt(c.slice(i, i + 2), 16);
+  return `#${[1, 3, 5]
+    .map((i) => hex(channel(color, i) * amount + channel(PAPER, i) * (1 - amount)))
+    .join('')
+    .toUpperCase()}`;
+}
