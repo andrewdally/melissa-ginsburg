@@ -1,5 +1,4 @@
 ---
-title: "*Runoff* is available for preorder"
 date: 2026-11-18
 book: runoff
 link: https://milkweed.org/book/runoff

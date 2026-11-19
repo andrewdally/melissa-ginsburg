@@ -6,10 +6,11 @@ publisher: Dancing Girl Press
 cover: ../../assets/covers/double-blind.jpg
 coverAlt: A mustard-yellow fox drawn as a shooting target, with rings and scores, on white
 color: "#D59E1A"
-color2: "#EFE3C2"
+color2: "#221E19"
 textOn: ink
 collage: left
 mirror: true
+shape: circle
 tile: small
 buy:
   - label: Dancing Girl Press

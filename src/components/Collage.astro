@@ -25,8 +25,10 @@ interface Props {
 }
 
 const { book, variant = 'page' } = Astro.props;
-const { title, kind, publisher, cover, coverAlt, color, color2, color3, textOn, excerpt, excerptStagger } =
+const { title, kind, publisher, cover, coverAlt, color, color2, color3, textOn, excerpt, excerptStagger, shape } =
   book.data;
+// A circle (only where the cover has one) tucks partly behind the main block.
+const circle = shape === 'circle' && !!color2;
 // The home hero always uses its own layout, whatever the book's own preset.
 const preset = variant === 'home' ? 'home' : book.data.collage;
 const mirror = variant === 'page' && book.data.mirror;
@@ -52,12 +54,19 @@ const hairline = await coverMatches(cover, color);
 const lead = variant === 'home' && excerpt ? excerpt.trim().split('\n').filter((l) => l.trim()).slice(0, 2).join('\n') : '';
 // The title may cross onto the colour only where ink reads on it.
 const crosses = variant === 'page' && textOn === 'ink';
+// "door" stacks the title: the last word on a line of its own.
+const words = title.split(/\s+/);
+const stacked = preset === 'door' && words.length > 1;
+const firstLine = words.slice(0, -1).join(' ');
+const lastWord = words[words.length - 1];
+const stackEm = stacked ? Math.max(textEm(firstLine), textEm(lastWord)) : textEm(title);
 ---
 
-<div class:list={['collage', `collage--${preset}`, `collage--${variant}`, { crosses, mirror }]} style={style}>
+<div class:list={['collage', `collage--${preset}`, `collage--${variant}`, { crosses, mirror, circle }]} style={style}>
   <div class="stage">
+    {circle && <div class="blk b2 round" aria-hidden="true" />}
     <div class="blk b1" aria-hidden="true"></div>
-    {color2 && <div class="blk b2" aria-hidden="true" />}
+    {color2 && !circle && <div class="blk b2" aria-hidden="true" />}
     {color3 && <div class="blk b3" aria-hidden="true" />}
     <div class:list={['cover', { hairline }]}>
       {
@@ -76,8 +85,16 @@ const crosses = variant === 'page' && textOn === 'ink';
     {
       variant === 'page' ? (
         <>
-          <h1 class="display title" style={fitStyle(title)}>
-            {title}
+          <h1 class="display title" style={`${fitStyle(title)}; --stack-em: ${stackEm.toFixed(3)}`}>
+            {stacked ? (
+              <>
+                {firstLine}
+                <br />
+                {lastWord}
+              </>
+            ) : (
+              title
+            )}
           </h1>
           <div class="meta">
             <p class="kind">{kind}</p>
@@ -91,8 +108,8 @@ const crosses = variant === 'page' && textOn === 'ink';
         </>
       ) : (
         <>
-          <p class="label">{heroLabel(book)}</p>
           <div class="foot">
+            <p class="label">{heroLabel(book)}</p>
             <h2 class="display title" style={fitStyle(title)}>
               <a href={href}>{title}</a>
             </h2>
@@ -126,7 +143,9 @@ const crosses = variant === 'page' && textOn === 'ink';
 
     position: relative;
     margin-top: var(--space-m);
-    min-height: max(calc(var(--h) * var(--u)), calc(var(--hold) + 40px));
+    /* The collage ends at the lowest edge of its lowest block (--low), so the
+       gap below it is measured from there. */
+    min-height: var(--low, max(calc(var(--h) * var(--u)), var(--hold)));
   }
   .stage {
     position: absolute;
@@ -149,6 +168,12 @@ const crosses = variant === 'page' && textOn === 'ink';
   }
   .b3 {
     background: var(--c3);
+  }
+  /* A circle: as wide as it is tall, whatever the preset's box. */
+  .collage .blk.round {
+    height: auto;
+    aspect-ratio: 1;
+    border-radius: 50%;
   }
   .cover {
     position: absolute;
@@ -212,7 +237,7 @@ const crosses = variant === 'page' && textOn === 'ink';
   /* ---------- left: Runoff. A wide block from the left, the title crossing its
      right edge and the sliver behind it. The reference composition. ---------- */
   .collage--left {
-    --h: 760;
+    --h: 730;
     --ct: 84;
     /* A two-line title starts higher. */
     --words-top: calc(270 - (var(--lines) - 1) * 210);
@@ -243,6 +268,15 @@ const crosses = variant === 'page' && textOn === 'ink';
   .collage--left .cover {
     left: 9%;
   }
+  /* The circle lies behind the block's lower right corner. */
+  .collage--left.circle {
+    --h: 760;
+  }
+  .collage--left .round {
+    left: 46%;
+    top: calc(540 * var(--u));
+    width: 16%;
+  }
   .collage--left .title {
     margin-left: 38%;
   }
@@ -263,11 +297,17 @@ const crosses = variant === 'page' && textOn === 'ink';
   }
 
   /* ---------- tower: a tall, narrow block bleeding off the right edge of the
-     page, the cover half off it, a cut strip running out the other side.
+     page, the cover half off it, a small piece over its upper left edge.
      The title on open paper. ---------- */
   .collage--tower {
-    --h: 860;
-    --ct: 150;
+    --h: 840;
+    --low: max(
+      calc(840 * var(--u)),
+      var(--hold),
+      calc(var(--cover-top) + var(--cover-h) + 32px + max(72px, 110 * var(--u))),
+      calc(730 * var(--u) + max(72px, 110 * var(--u)))
+    );
+    --ct: 170;
     --words-top: 150;
     --share: 0.5;
     --cw: 0.26;
@@ -284,13 +324,13 @@ const crosses = variant === 'page' && textOn === 'ink';
     left: 52%;
     top: max(calc(730 * var(--u)), calc(var(--cover-top) + var(--cover-h) + 32px));
     width: 30%;
-    height: calc(110 * var(--u));
+    height: max(72px, calc(110 * var(--u)));
   }
   .collage--tower .b3 {
-    left: calc(-1 * var(--bleed));
-    top: calc(40 * var(--u));
-    width: calc(var(--bleed) + 30%);
-    height: calc(16 * var(--u));
+    left: 70%;
+    top: 0;
+    width: max(72px, 9%);
+    height: max(72px, calc(110 * var(--u)));
   }
   .collage--tower .cover {
     left: 60%;
@@ -308,10 +348,14 @@ const crosses = variant === 'page' && textOn === 'ink';
     }
   }
 
-  /* ---------- band: a wide, shallow band bleeding off the left edge, the cover
-     standing on it, a bar crossing it. Title and details below. ---------- */
+  /* ---------- band: a broad band bleeding off the left edge, the cover half
+     off its right end, a piece over its top edge. Title and details below. ---------- */
+  /* Its highest edge is the cover's, 40 units down: the collage starts that
+     much higher, so the gap above it is a full step. */
   .collage--band {
-    --h: 560;
+    --h: 450;
+    --low: max(calc(450 * var(--u)), calc(var(--cover-top) + var(--cover-h)));
+    margin-top: calc(var(--space-m) - 40 * var(--u));
     --ct: 40;
     --words-top: 520;
     --share: 0.5;
@@ -321,15 +365,16 @@ const crosses = variant === 'page' && textOn === 'ink';
   }
   .collage--band .b1 {
     left: calc(-1 * var(--bleed));
-    width: calc(var(--bleed) + 92%);
+    width: calc(var(--bleed) + 70%);
     top: calc(150 * var(--u));
-    height: calc(220 * var(--u));
+    /* Broad, never a strip, however far it bleeds. */
+    height: max(calc(300 * var(--u)), calc((var(--bleed) + var(--content) * 0.7) * 0.27));
   }
   .collage--band .b2 {
-    left: 30%;
+    left: 24%;
     top: calc(60 * var(--u));
-    width: 4.5%;
-    height: calc(390 * var(--u));
+    width: 12%;
+    height: calc(150 * var(--u));
   }
   .collage--band .b3 {
     left: 88%;
@@ -363,7 +408,8 @@ const crosses = variant === 'page' && textOn === 'ink';
   /* ---------- right: the block on the right, a narrow strip crossing its left
      edge; the words on paper at the left. ---------- */
   .collage--right {
-    --h: 700;
+    --h: 660;
+    --low: max(calc(660 * var(--u)), calc(var(--hold) - 8px + 80 * var(--u)));
     --ct: 110;
     --words-top: 96;
     --share: 0.34;
@@ -404,7 +450,8 @@ const crosses = variant === 'page' && textOn === 'ink';
   /* ---------- framed: the block inset like a frame, a strip bleeding off the
      left edge behind it, the title on paper to its right. ---------- */
   .collage--framed {
-    --h: 780;
+    --h: 750;
+    --low: max(calc(750 * var(--u)), calc(var(--hold) - 60px + 150 * var(--u)));
     --ct: 96;
     --words-top: 120;
     --share: 0.36;
@@ -433,6 +480,12 @@ const crosses = variant === 'page' && textOn === 'ink';
   .collage--framed .cover {
     left: 24%;
   }
+  /* A circle peeks from behind the block's left edge. */
+  .collage--framed .round {
+    left: 3%;
+    top: calc(300 * var(--u));
+    width: 18%;
+  }
   .collage--framed .title {
     margin-left: 61%;
   }
@@ -449,11 +502,78 @@ const crosses = variant === 'page' && textOn === 'ink';
     }
   }
 
-  /* ---------- home: the featured book. The block runs from the top of the
-     label to the last line of the words; a dark strip crosses its left edge
-     and hangs below it, a scrap crosses its top. ---------- */
+  /* ---------- door: a tall, narrow block down from the top of the page like
+     a doorway, the cover set low on it and half off its right edge, a circle
+     tucked behind its left edge level with the light in the cover (60% down),
+     a doorstep at its foot. The title stacked on paper to the right. Where
+     the block would run up behind the header's name, it starts lower. ---------- */
+  .collage--door {
+    --share: 0.4;
+    --cw: 0.2;
+    --cw-max: 300px;
+    --ch-max: 520;
+    --dl: max(calc(var(--content) * 0.24), calc(36px * var(--name-em) + 48px));
+    --dw: calc(var(--content) * 0.24);
+    --dtop: -400px;
+    --door-b: calc(600 * var(--u));
+    --cover-top: max(calc(40 * var(--u)), calc(var(--door-b) - 48px - var(--cover-h)));
+    --title-x: calc(var(--dl) + var(--dw) + var(--cover-w) / 2 + 48px);
+    --avail: calc(var(--content) - var(--title-x));
+    --words-top: 0;
+    --low: max(calc(var(--door-b) - 30 * var(--u) + max(70px, 100 * var(--u))), var(--hold));
+  }
+  @media (min-width: 761px) and (max-width: 1179px) {
+    .collage--door {
+      --dl: calc(var(--content) * 0.12);
+      --dw: calc(var(--content) * 0.26);
+      --dtop: 0px;
+    }
+  }
+  .collage--door .b1 {
+    left: var(--dl);
+    width: var(--dw);
+    top: var(--dtop);
+    height: calc(var(--door-b) - var(--dtop));
+  }
+  /* The light: a circle tucked behind the block's left edge, its middle level
+     with the light on the cover. Never past the outer margin. */
+  .collage--door .b2 {
+    --d: calc(var(--content) * 0.15);
+    left: max(0px, calc(var(--dl) - var(--d) * 0.7));
+    top: calc(var(--cover-top) + var(--cover-h) * 0.6 - var(--d) / 2);
+    width: var(--d);
+    height: var(--d);
+  }
+  /* The doorstep: a near-square at the foot of the block. */
+  .collage--door .b3 {
+    left: calc(var(--dl) + var(--dw) * 0.12);
+    top: calc(var(--door-b) - 30 * var(--u));
+    width: max(68px, calc(96 * var(--u)));
+    height: max(70px, calc(100 * var(--u)));
+  }
+  .collage--door .cover {
+    left: calc(var(--dl) + var(--dw) - var(--cover-w) / 2);
+  }
+  /* Its letters' tops, not its tight line box, sit a full step below the header. */
+  .collage--door .title {
+    padding-top: 0.165em;
+    margin-left: var(--title-x);
+    max-width: var(--avail);
+    font-size: min(clamp(96px, 15.5vw, 236px), calc(var(--avail) / var(--stack-em)));
+  }
+  .collage--door .meta {
+    margin-left: var(--title-x);
+    width: min(var(--avail), 340px);
+  }
+
+  /* ---------- home: the featured book. The block runs down to the last line
+     of the words; a small square is tucked into its lower left corner and
+     hangs below it, a scrap crosses its top. The collage's box takes in the
+     square, so the gap below is measured from its edge. ---------- */
   .collage--home {
-    --h: 600;
+    --h: 648;
+    --hang: calc(48 * var(--u));
+    --low: max(calc(648 * var(--u)), calc(var(--hold) + var(--hang)));
     --ct: 70;
     --words-top: 0;
     --share: 0.34;
@@ -461,23 +581,26 @@ const crosses = variant === 'page' && textOn === 'ink';
     --cw-max: 330px;
     --ch-max: 470;
     display: flex;
+    padding-bottom: var(--hang);
   }
   .collage--home .b1 {
     left: 48%;
     right: calc(-1 * var(--bleed));
     top: 0;
+    bottom: var(--hang);
+  }
+  /* A small square tucked into the block's lower left corner. */
+  .collage--home .b2 {
+    left: calc(48% - 50 * var(--u));
+    width: calc(110 * var(--u));
+    height: calc(110 * var(--u));
     bottom: 0;
   }
-  .collage--home .b2 {
-    left: 44%;
-    width: 7%;
-    top: 46%;
-    bottom: calc(-48 * var(--u));
-  }
+  /* 24px below the tagline, at every width. */
   .collage--home .b3 {
     left: 90%;
-    top: calc(-30 * var(--u));
-    width: 7%;
+    top: -32px;
+    width: max(64px, 7%);
     height: calc(120 * var(--u));
   }
   .collage--home .cover {
@@ -488,14 +611,16 @@ const crosses = variant === 'page' && textOn === 'ink';
     flex-direction: column;
     width: 36%;
   }
-  /* The label at the top of the block; everything else on its bottom edge. */
+  /* Label, title, lines and link in one group, on the block's bottom edge. */
   .foot {
     margin-top: auto;
+  }
+  .collage--home .label {
+    margin-bottom: 20px;
   }
   .collage--home .title {
     font-size: min(clamp(64px, 8vw, 124px), calc(var(--content) * var(--share) / var(--word-em)));
     line-height: 0.92;
-    margin-top: var(--space-s);
   }
   .collage--home :global(.hero-order) {
     margin-top: calc(var(--space-s) - 10px);
@@ -582,6 +707,9 @@ const crosses = variant === 'page' && textOn === 'ink';
     .collage--home :global(.hero-order) {
       margin-bottom: 0;
     }
+    .collage--home {
+      padding-bottom: 0;
+    }
 
     .collage--left .b1 {
       left: 0;
@@ -617,11 +745,14 @@ const crosses = variant === 'page' && textOn === 'ink';
       width: calc(20px + 30%);
       height: 56px;
     }
+    .collage--tower .stage {
+      padding-top: 56px;
+    }
     .collage--tower .b3 {
-      left: -20px;
+      left: 46%;
       top: 0;
-      width: calc(20px + 34%);
-      height: 8px;
+      width: 24%;
+      height: 44px;
     }
     .collage--tower .cover {
       margin-left: 40%;
@@ -631,13 +762,13 @@ const crosses = variant === 'page' && textOn === 'ink';
       left: -20px;
       right: 10%;
       top: 100px;
-      height: 96px;
+      height: max(96px, calc(var(--content) * 0.26));
     }
     .collage--band .b2 {
-      left: 12%;
-      top: 36px;
-      width: 9%;
-      height: 210px;
+      left: 8%;
+      top: 50px;
+      width: 22%;
+      height: 80px;
     }
     .collage--band .b3 {
       left: 28%;
@@ -657,23 +788,66 @@ const crosses = variant === 'page' && textOn === 'ink';
       bottom: 0;
       width: calc(20px + 80%);
     }
-    .collage--right .b2,
-    .collage--home .b2 {
+    .collage--right .b2 {
       left: 0;
       bottom: 24px;
       width: 26%;
       height: 110px;
     }
+    /* On the home page, a small square in the block's lower left corner. */
+    .collage--home .b2 {
+      left: calc(20% - 24px);
+      bottom: 16px;
+      width: 48px;
+      height: 48px;
+    }
+    .collage--right .stage,
+    .collage--home .stage {
+      padding-top: 52px;
+    }
     .collage--right .b3,
     .collage--home .b3 {
       right: 6%;
-      top: -10px;
+      top: 0;
       width: 24%;
-      height: 24px;
+      height: 44px;
     }
     .collage--right .cover,
     .collage--home .cover {
       margin-left: 34%;
+    }
+
+    /* The door: from the top of the collage, the threshold under it. */
+    .collage--door .stage {
+      padding-bottom: 40px;
+    }
+    .collage--door .b1 {
+      left: 16%;
+      top: 0;
+      bottom: 28px;
+      width: 38%;
+    }
+    .collage--door .b2 {
+      left: 2%;
+      top: 46%;
+      width: 26%;
+    }
+    .collage--door .b3 {
+      left: 15%;
+      bottom: 0;
+      width: 13%;
+      height: 48px;
+    }
+    .collage--door .cover {
+      margin-left: 30%;
+    }
+    .collage--door .title,
+    .collage--door .meta {
+      margin-left: 0;
+      max-width: none;
+    }
+    .collage--door .title {
+      padding-top: 0;
     }
 
     /* The frame holds the cover with 40px to spare below. */
@@ -695,11 +869,27 @@ const crosses = variant === 'page' && textOn === 'ink';
     .collage--framed .b3 {
       right: 0;
       top: 40px;
-      width: 10%;
+      width: 14%;
       height: 90px;
     }
     .collage--framed .cover {
       margin-left: 20%;
+    }
+    /* A circle peeks out below and beside the block's lower left corner. */
+    .collage--framed.circle .stage {
+      padding-bottom: 64px;
+    }
+    .collage--framed.circle .b1 {
+      bottom: 24px;
+    }
+    .collage--framed.circle .cover {
+      margin-left: 24%;
+    }
+    .collage--framed .round {
+      left: 0;
+      top: auto;
+      bottom: 0;
+      width: 22%;
     }
   }
 </style>

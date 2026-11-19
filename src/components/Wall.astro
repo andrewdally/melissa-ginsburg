@@ -19,12 +19,15 @@ const { books, label = 'Books' } = Astro.props;
 </nav>
 
 <style>
+  /* Each tile overlaps the one before by 20px, and its scrap reaches 18px to
+     the left of it; the first tile in a row is set in by 18px, so its scrap
+     ends on the outer margin rather than in it. */
   .wall {
     display: flex;
     flex-wrap: wrap;
     align-items: flex-start;
     row-gap: var(--space-m);
-    padding-left: 20px;
+    padding-left: 38px;
   }
   .wall > :global(*) {
     margin-left: -20px;
@@ -37,11 +40,13 @@ const { books, label = 'Books' } = Astro.props;
   .wall > :global(:nth-child(6n + 6)) { margin-top: 8px; }
 
   @media (max-width: 900px) {
+    /* Scraps peek 14px past the sides and 12px over the top: room for both,
+       inside the margins. */
     .wall {
       flex-direction: column;
       flex-wrap: nowrap;
       row-gap: 0;
-      padding-left: 0;
+      padding: 12px 14px 0;
     }
     .wall > :global(*) {
       margin-left: 0;

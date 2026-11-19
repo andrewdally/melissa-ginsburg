@@ -18,7 +18,7 @@ const MIN_CONTRAST = 4.5;
 const MIN_FROM_PAPER = 1.3;
 
 /** Collage presets; see Collage.astro. */
-export const COLLAGES = ['left', 'right', 'framed', 'tower', 'band'] as const;
+export const COLLAGES = ['left', 'right', 'framed', 'tower', 'band', 'door'] as const;
 
 const books = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/books' }),
@@ -48,15 +48,21 @@ const books = defineCollection({
         color3: optional(color),
         /** Text set on `color`: "ink" or "paper". Leave blank to pick whichever reads better. */
         textOn: optional(z.enum(['ink', 'paper'])),
-        /** Layout of the top of the book page: "left", "right", "framed", "tower" or "band". */
+        /** Layout of the top of the book page: "left", "right", "framed", "tower", "band" or "door". */
         collage: optional(z.enum(COLLAGES)),
         /** Flip the collage left to right. */
         mirror: z.boolean().default(false),
+        /** "circle" only where the cover has one (a moon, a light, a target): the color2 piece becomes a circle. */
+        shape: z.enum(['rect', 'circle']).default('rect'),
         /** Tile size on the collage wall: "large", "tall", "wide" or "small". */
         tile: optional(z.enum(['large', 'tall', 'wide', 'small'])),
         /** Indent every other line of the excerpt. */
         excerptStagger: z.boolean().default(false),
         buy: z.array(z.object({ label: z.string(), url: z.url() })).default([]),
+        /** For the featured book: the short description on the home page. Blank: the description's first sentence. */
+        homeBlurb: optional(z.string()),
+        /** For the featured book: the name on the praise entry to quote on the home page. Blank: the first one not set large on the book page. */
+        homePraise: optional(z.string()),
         /** A few lines from the book, line breaks kept; a blank line starts a new stanza. */
         excerpt: optional(z.string()),
         format: optional(z.string()),
@@ -75,7 +81,7 @@ const books = defineCollection({
                 url: optional(z.url()),
                 /** Set one blurb as the large pull quote. */
                 featured: z.boolean().default(false),
-                /** The line to set large, copied exactly from the quote. Blank: the whole quote. */
+                /** The line to quote on its own (as the pull quote, or on the home page), copied exactly from the quote. Blank: the whole quote. */
                 pull: optional(z.string()),
               })
               // Case aside (a pull line may start with a capital), it must be the reviewer's words.
@@ -97,6 +103,20 @@ const books = defineCollection({
           .default([]),
       })
       .superRefine((book, ctx) => {
+        if (book.shape === 'circle' && !book.color2) {
+          ctx.addIssue({
+            code: 'custom',
+            path: ['shape'],
+            message: 'A circle is the color2 piece; set color2.',
+          });
+        }
+        if (book.homePraise && !book.praise.some((p) => p.name === book.homePraise)) {
+          ctx.addIssue({
+            code: 'custom',
+            path: ['homePraise'],
+            message: `No praise entry is by "${book.homePraise}". Copy the name exactly from the praise list.`,
+          });
+        }
         const pale = contrast(book.color, PAPER);
         if (pale < MIN_FROM_PAPER) {
           ctx.addIssue({
@@ -148,8 +168,8 @@ const books = defineCollection({
 const news = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/news' }),
   schema: z.object({
-    /** *Asterisks* set a book title in italic. */
-    title: z.string(),
+    /** A headline, only when the text doesn't already say it. *Asterisks* set a book title in italic. */
+    title: optional(z.string()),
     date: z.coerce.date(),
     /** Link the item to a book so it also shows on that book's page. */
     book: optional(reference('books')),

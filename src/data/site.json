@@ -11,7 +11,15 @@
     "email": "connect@aragi.net"
   },
   "links": [
-    { "label": "Instagram", "url": "https://www.instagram.com/chickenpoet" }
+    {
+      "label": "Instagram",
+      "url": "https://www.instagram.com/chickenpoet"
+    }
   ],
-  "macCredit": "[CREDIT LINE FOR THE MISSISSIPPI ARTS COMMISSION]"
+  "macCredit": "[CREDIT LINE FOR THE MISSISSIPPI ARTS COMMISSION]",
+  "aboutColors": {
+    "main": "#215088",
+    "second": "#5373A0",
+    "third": "#36271B"
+  }
 }

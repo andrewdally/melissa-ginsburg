@@ -12,10 +12,12 @@ interface Props {
   stagger?: boolean;
   /** "page": large, in the wide column. "hero": at reading size, in place. */
   variant?: 'page' | 'hero';
+  /** Spacing class for the page variant's row; "section" by default. */
+  class?: string;
 }
 
 const STAGGER = 1.2;
-const { text, stagger = false, variant = 'page' } = Astro.props;
+const { text, stagger = false, variant = 'page', class: spacing = 'section' } = Astro.props;
 const stanzas = text
   .trim()
   .split(/\n\s*\n/)
@@ -29,7 +31,7 @@ const style = `--longest: ${longest.toFixed(2)}`;
 
 {
   variant === 'page' ? (
-    <div class="grid section">
+    <div class:list={['grid', spacing]}>
       <div class="col-wide fit">
         <div class:list={['excerpt', 'page', { stagger }]} style={style}>
           {stanzas.map((lines) => (

@@ -6,13 +6,27 @@ import Wall from '../components/Wall.astro';
 import Row from '../components/Row.astro';
 import poems from '../data/poems.json';
 import site from '../data/site.json';
-import { countWord, formatDate, getBooks, getFeaturedBook, isFullLength, isoDate } from '../lib/books';
+import { formatDate, getBooks, getFeaturedBook, isFullLength, isoDate } from '../lib/books';
+import { inline } from '../lib/inline';
 import { url } from '../lib/url';
 
 const featured = await getFeaturedBook();
 const books = await getBooks();
 const wall = books.filter((b) => isFullLength(b) && b.id !== featured.id);
-const chapbooks = books.filter((b) => !isFullLength(b)).length;
+
+// Context for the featured book, between the hero and the wall.
+const { title, kind, publisher, format, pages, homeBlurb, homePraise, praise } = featured.data;
+const facts = [
+  kind.charAt(0).toUpperCase() + kind.slice(1),
+  publisher,
+  [format, pages ? `${pages} pages` : undefined].filter(Boolean).join(', '),
+].filter(Boolean);
+const firstSentence = (featured.body ?? '').trim().match(/^[\s\S]+?[.!?](?=\s|$)/)?.[0];
+const blurb = homeBlurb ?? firstSentence;
+const quote = homePraise
+  ? praise.find((p) => p.name === homePraise)
+  : (praise.find((p) => !p.featured) ?? praise[0]);
+const featuredHref = url(`/books/${featured.id}`);
 
 const latest = (await getCollection('news')).sort(
   (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
@@ -28,13 +42,45 @@ const about = await getEntry('pages', 'about');
     <Collage book={featured} variant="home" />
 
     {
-      wall.length > 0 && (
-        <section class="section" aria-label="Books">
-          <Wall books={wall} label="More books" />
-          <p class="all-books">
-            <a href={url('/books')}>
-              All books{chapbooks > 0 && `, including ${countWord(chapbooks)} chapbook${chapbooks === 1 ? '' : 's'}`}
+      (blurb || quote) && (
+        <Row class="section context" as="section">
+          <Fragment slot="note">
+            {facts.map((line, i) => (
+              <>
+                {i > 0 && <br />}
+                {line}
+              </>
+            ))}
+          </Fragment>
+          {blurb && <p class="blurb" set:html={inline(blurb)} />}
+          {quote && (
+            <figure class="praise">
+              <blockquote>
+                <p set:html={`“${inline(quote.pull ?? quote.quote)}”`} />
+              </blockquote>
+              <figcaption class="label">{quote.name}</figcaption>
+            </figure>
+          )}
+          <p class="more-about">
+            <a href={featuredHref}>
+              More about <i>{title}</i>
             </a>
+          </p>
+        </Row>
+      )
+    }
+
+    {
+      wall.length > 0 && (
+        <section class="section" aria-labelledby="also-by">
+          <h2 class="heading" id="also-by">
+            Also by Melissa
+          </h2>
+          <div class="wall-wrap">
+            <Wall books={wall} label="Also by Melissa" />
+          </div>
+          <p class="all-books">
+            <a href={url('/books')}>All books</a>
           </p>
         </section>
       )
@@ -61,7 +107,7 @@ const about = await getEntry('pages', 'about');
       }
 
       <Row noteStyle="label">
-        <Fragment slot="note">Recent poems</Fragment>
+        <Fragment slot="note">Poems</Fragment>
         <ul class="run">
           {
             recent.map((poem) => (
@@ -73,7 +119,7 @@ const about = await getEntry('pages', 'about');
               </li>
             ))
           }
-          <li><a href={url('/poems')}>all {poems.poems.length}</a></li>
+          <li><a href={url('/poems')}>All poems</a></li>
         </ul>
       </Row>
 
@@ -81,13 +127,13 @@ const about = await getEntry('pages', 'about');
         about?.data.summary && (
           <Row noteStyle="label">
             <Fragment slot="note">About</Fragment>
-            <p>{about.data.summary}</p>
-            <p class="more">
-              <a href={url('/about')}>More</a>
+            <p set:html={inline(about.data.summary)} />
+            <p class="more links">
+              <a href={url('/about')}>About</a>
               <span class="sep" aria-hidden="true">
                 &nbsp;·&nbsp;
               </span>
-              <a href={`mailto:${site.agent.email}`}>Agent</a>
+              <a href={url('/about#contact')}>Contact</a>
               {site.links.map((link) => (
                 <>
                   <span class="sep" aria-hidden="true">
@@ -105,10 +151,38 @@ const about = await getEntry('pages', 'about');
 </Base>
 
 <style>
+  /* The featured book in a few lines: the facts in the margin, a description,
+     one blurb, a link. */
+  .blurb {
+    font-size: 23px;
+    line-height: 1.55;
+  }
+  .praise {
+    margin-top: var(--space-s);
+    font-size: 19px;
+    line-height: 1.6;
+  }
+  .praise figcaption {
+    margin-top: 10px;
+  }
+  .more-about {
+    margin-top: var(--space-s);
+    font-size: 17px;
+  }
+  .wall-wrap {
+    margin-top: var(--space-m);
+  }
   .all-books {
     margin-top: var(--space-m);
-    text-align: right;
-    font-size: 17px;
+    font-size: 19px;
+  }
+  @media (max-width: 760px) {
+    .blurb {
+      font-size: 20px;
+    }
+    .praise {
+      font-size: 17.5px;
+    }
   }
   .rows {
     display: flex;

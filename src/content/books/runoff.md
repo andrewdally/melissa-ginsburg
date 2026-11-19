@@ -36,6 +36,7 @@ praise:
       tadpoles, to not look away—and I cannot.
     name: Aimee Nezhukumatathil
     credit: author of *World of Wonders*
+    pull: It double-dares us, via star anise, chicken yards, and herons spearing tadpoles, to not look away—and I cannot.
   - quote: >-
       In *Runoff*, Melissa Ginsburg has ‘planted / trees like messages / left them
       / in a greening wake.’ These poems unearth a new depth of experience, where

@@ -12,7 +12,7 @@ interface Props {
 }
 
 const { book, index } = Astro.props;
-const { title, color, color2, textOn, tile } = book.data;
+const { title, color, color2, textOn, tile, shape } = book.data;
 const style = `--c1: ${color}; --on: ${textColor(textOn)};${color2 ? ` --c2: ${color2};` : ''}`;
 ---
 
@@ -21,7 +21,7 @@ const style = `--c1: ${color}; --on: ${textColor(textOn)};${color2 ? ` --c2: ${c
   href={url(`/books/${book.id}`)}
   style={`${style} --i: ${index};`}
 >
-  {color2 && <span class="back" aria-hidden="true" />}
+  {color2 && <span class:list={['back', { round: shape === 'circle' }]} aria-hidden="true" />}
   <span class="face">
     <span class="display t" style={fitStyle(title)}>{title}</span>
     <span class="k">{kindAndYear(book)}</span>
@@ -87,6 +87,19 @@ const style = `--c1: ${color}; --on: ${textColor(textOn)};${color2 ? ` --c2: ${c
   .v1 .back { left: -18px; bottom: -24px; width: 46%; height: 36%; }
   .v2 .back { left: -18px; top: -24px; width: 34%; height: 58%; }
   .v3 .back { left: -18px; bottom: -22px; width: 58%; height: 30%; }
+  /* Where the cover has a circle, the scrap is one: about half the tile's
+     width, at the same corner. */
+  .tile .back.round {
+    width: 50%;
+    height: auto;
+    aspect-ratio: 1;
+    border-radius: 50%;
+  }
+
+  /* A scrap below a tile counts toward its height in the row, so the wall ends
+     at its lowest edge and the gap below it is measured from there. */
+  .v1:has(.back) { margin-bottom: 24px; }
+  .v3:has(.back) { margin-bottom: 22px; }
 
   /* Below 900px the wall becomes a pile; see Wall.astro. */
   @media (max-width: 900px) {
@@ -109,7 +122,17 @@ const style = `--c1: ${color}; --on: ${textColor(textOn)};${color2 ? ` --c2: ${c
       width: calc(var(--pw) * 100%);
       z-index: calc(100 - var(--i));
     }
+    .v1:has(.back),
+    .v3:has(.back) {
+      margin-bottom: 0;
+    }
+    /* Within the tile's height, so it never hangs below the pile. */
+    .tile .back.round {
+      width: auto;
+      height: 70%;
+    }
     /* Down the pile, scraps peek out at the sides, clear of the next title. */
+    .tile .back { left: auto; right: auto; bottom: auto; }
     .v0 .back { right: -14px; top: -12px; width: 34%; height: 40%; }
     .v1 .back { left: -14px; top: -12px; width: 36%; height: 44%; }
     .v2 .back { right: -14px; top: -12px; width: 40%; height: 38%; }
