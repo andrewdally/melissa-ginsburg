@@ -61,8 +61,5 @@ npm run preview   # serve the built site
 In `npm run dev`, add `?grid` to any address to draw the 12-column grid over the page.
 Text should start only at the outer margin, column 2 or column 6.
 
-A GitHub Action (`Check links`) tests every outside link on the built site, on each
-change and weekly. It reports dead links; it doesn't stop the site from publishing.
-
 Old addresses from the previous site (`/doll-apollo`, `/events`, …) redirect to their
 new homes; see `redirects` in `astro.config.mjs`.
