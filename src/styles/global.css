@@ -67,8 +67,12 @@ body {
   body {
     font-size: 17.5px;
     line-height: 1.62;
-    hyphens: auto;
   }
+}
+
+/* Collage blocks may bleed off the page edge; the page never scrolls sideways. */
+main {
+  overflow-x: clip;
 }
 
 img {
@@ -110,6 +114,12 @@ ol {
 em,
 i {
   font-style: italic;
+}
+/* A title inside italic text (a credit, a note) is set upright. */
+:is(em, i) :is(em, i),
+.note :is(em, i),
+.footer-line :is(em, i) {
+  font-style: normal;
 }
 
 /* Links are underlined words in ink; hover thickens the line. Nothing moves. */

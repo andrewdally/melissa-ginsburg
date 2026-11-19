@@ -9,7 +9,8 @@ import data from '../data/poems.json';
     <h1 class="visually-hidden">Poems &amp;c.</h1>
 
     <div class="grid top">
-      <ul class="col-wide run" aria-label="Poems">
+      <h2 class="col-wide label run-label" id="in-magazines">Poems in magazines</h2>
+      <ul class="col-wide run" aria-labelledby="in-magazines">
         {
           data.poems.map((poem, i) => (
             <li>
@@ -44,10 +45,19 @@ import data from '../data/poems.json';
   .top {
     margin-top: var(--space-m);
   }
+  .run-label {
+    margin-bottom: var(--space-s);
+  }
   /* One long run of poems, as on the old site. */
   .run {
-    font-size: clamp(22px, 2.4vw, 32px);
-    line-height: 1.55;
+    font-size: clamp(20px, 1.9vw, 25px);
+    line-height: 1.6;
+  }
+  .run a {
+    text-decoration-thickness: 1px;
+  }
+  .run a:hover {
+    text-decoration-thickness: 2px;
   }
   .run li {
     display: inline;
@@ -55,8 +65,10 @@ import data from '../data/poems.json';
   .venue {
     color: var(--muted);
   }
+  /* Caslon's slash is nearly upright; room on each side keeps it from reading as a rule. */
   .sep {
     color: var(--muted);
+    padding-inline: 0.3em;
   }
   .elsewhere {
     display: flex;

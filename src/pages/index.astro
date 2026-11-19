@@ -50,7 +50,8 @@ const about = await getEntry('pages', 'about');
             <div class="prose">
               <LatestContent />
             </div>
-            {latest.data.link && (
+            {/* The hero already has the order link. */}
+            {latest.data.link && latest.data.link !== featured.data.buy[0]?.url && (
               <p class="more">
                 <a href={latest.data.link}>{latest.data.linkLabel ?? 'More'}</a>
               </p>
@@ -78,7 +79,8 @@ const about = await getEntry('pages', 'about');
 
       {
         about?.data.summary && (
-          <Row>
+          <Row noteStyle="label">
+            <Fragment slot="note">About</Fragment>
             <p>{about.data.summary}</p>
             <p class="more">
               <a href={url('/about')}>More</a>
@@ -115,6 +117,9 @@ const about = await getEntry('pages', 'about');
   }
   .run li {
     display: inline;
+  }
+  .run .sep {
+    padding-inline: 0.25em;
   }
   .more {
     margin-top: 4px;

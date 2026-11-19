@@ -10,8 +10,8 @@ featured: true
 cover: ../../assets/covers/runoff.jpg
 coverAlt: Stippled black-and-white deer leaping across an orange field
 color: "#F47B20"
-color2: "#FFE14A"
-color3: "#343231"
+color2: "#343231"
+color3: "#FFE14A"
 textOn: ink
 collage: left
 tile: large

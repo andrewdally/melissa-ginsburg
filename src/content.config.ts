@@ -1,7 +1,7 @@
 import { defineCollection, reference } from 'astro:content';
 import { glob } from 'astro/loaders';
 import { z } from 'astro/zod';
-import { bestTextOn, contrast, textColor } from './lib/color';
+import { INK, PAPER, bestTextOn, contrast, textColor } from './lib/color';
 
 // Editors (and the CMS) tend to leave optional fields as "" rather than
 // deleting them. Treat blanks as "not set" so they don't fail validation.
@@ -14,6 +14,11 @@ const color = z
 
 /** Small text on a colour needs 4.5:1; wall tiles set the kind and year small. */
 const MIN_CONTRAST = 4.5;
+/** A main colour closer than this to the paper disappears into the page. */
+const MIN_FROM_PAPER = 1.3;
+
+/** Collage presets; see Collage.astro. */
+export const COLLAGES = ['left', 'right', 'framed', 'tower', 'band'] as const;
 
 const books = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/books' }),
@@ -43,8 +48,10 @@ const books = defineCollection({
         color3: optional(color),
         /** Text set on `color`: "ink" or "paper". Leave blank to pick whichever reads better. */
         textOn: optional(z.enum(['ink', 'paper'])),
-        /** Layout of the top of the book page: "left", "right" or "framed". */
-        collage: optional(z.enum(['left', 'right', 'framed'])),
+        /** Layout of the top of the book page: "left", "right", "framed", "tower" or "band". */
+        collage: optional(z.enum(COLLAGES)),
+        /** Flip the collage left to right. */
+        mirror: z.boolean().default(false),
         /** Tile size on the collage wall: "large", "tall", "wide" or "small". */
         tile: optional(z.enum(['large', 'tall', 'wide', 'small'])),
         /** Indent every other line of the excerpt. */
@@ -90,6 +97,14 @@ const books = defineCollection({
           .default([]),
       })
       .superRefine((book, ctx) => {
+        const pale = contrast(book.color, PAPER);
+        if (pale < MIN_FROM_PAPER) {
+          ctx.addIssue({
+            code: 'custom',
+            path: ['color'],
+            message: `${book.color} is only ${pale.toFixed(2)}:1 against the paper, so the book disappears into the page. Lead with the book's darker colour as color, and move this one to color2.`,
+          });
+        }
         const on = book.textOn ?? bestTextOn(book.color);
         const ratio = contrast(book.color, textColor(on));
         if (ratio < MIN_CONTRAST) {
@@ -103,8 +118,19 @@ const books = defineCollection({
           ctx.addIssue({
             code: 'custom',
             path: ['collage'],
-            message: `The "left" collage sets the title across the colour in ink, which doesn't read on ${book.color}. Use "right" or "framed".`,
+            message: `The "left" collage sets the title across the colour in ink, which doesn't read on ${book.color}. Use another collage.`,
           });
+        }
+        // In "left", the color3 sliver also runs behind the title.
+        if ((book.collage ?? (on === 'ink' ? 'left' : 'framed')) === 'left' && book.color3) {
+          const sliver = contrast(book.color3, INK);
+          if (sliver < MIN_CONTRAST) {
+            ctx.addIssue({
+              code: 'custom',
+              path: ['color3'],
+              message: `In the "left" collage the color3 sliver runs behind the title, and ink on ${book.color3} is ${sliver.toFixed(1)}:1; it needs ${MIN_CONTRAST}:1. Pick a lighter color3, swap it with color2, or leave it out.`,
+            });
+          }
         }
       })
       .transform((book) => {

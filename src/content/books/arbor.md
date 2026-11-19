@@ -5,11 +5,12 @@ category: chapbook
 publisher: New Michigan Press
 cover: ../../assets/covers/arbor.jpg
 coverAlt: A black-and-white collage of a nest holding three eggs on a torn branch, on cream
-color: "#E2E2C4"
-color2: "#757571"
+color: "#6B6B67"
+color2: "#E2E2C4"
 color3: "#F9F7DE"
-textOn: ink
-collage: framed
+textOn: paper
+collage: band
+mirror: true
 tile: small
 buy:
   - label: New Michigan Press

@@ -1,16 +1,22 @@
 ---
+// Where to buy a book: "Order from A / B / C". Each link keeps its separator on
+// its own line, so a line never starts with a slash or breaks inside a name.
 import { isUpcoming, type Book } from '../lib/books';
 
 interface Props {
   book: Book;
-  /** Only the first link (the home page). */
-  first?: boolean;
+  /** The first link to show (0-based). */
+  start?: number;
+  /** How many links to show. */
+  max?: number;
+  /** The words before the links; "Order from" or "Preorder from" by default. */
+  lead?: string;
   class?: string;
 }
 
-const { book, first = false, class: className } = Astro.props;
-const links = first ? book.data.buy.slice(0, 1) : book.data.buy;
-const verb = isUpcoming(book) ? 'Preorder from' : 'Order from';
+const { book, start = 0, max = Infinity, lead, class: className } = Astro.props;
+const links = book.data.buy.slice(start, start + max);
+const verb = lead ?? (isUpcoming(book) ? 'Preorder from' : 'Order from');
 ---
 
 {
@@ -25,15 +31,17 @@ const verb = isUpcoming(book) ? 'Preorder from' : 'Order from';
 {
   links.length > 1 && (
     <p class:list={['order', className]}>
-      {verb}&nbsp;
+      {verb}{' '}
       {links.map((link, i) => (
         <>
-          {i > 0 && (
-            <span class="sep" aria-hidden="true">
-              &nbsp;/&nbsp;
-            </span>
-          )}
-          <a href={link.url}>{link.label}</a>
+          <span class="unit">
+            <a href={link.url}>{link.label}</a>
+            {i < links.length - 1 && (
+              <span class="sep" aria-hidden="true">
+                &nbsp;/
+              </span>
+            )}
+          </span>{' '}
         </>
       ))}
     </p>
@@ -44,6 +52,9 @@ const verb = isUpcoming(book) ? 'Preorder from' : 'Order from';
   .order {
     font-size: 18px;
     line-height: 1.5;
+  }
+  .unit {
+    white-space: nowrap;
   }
   @media (max-width: 760px) {
     .order {

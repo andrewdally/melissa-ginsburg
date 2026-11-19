@@ -11,7 +11,7 @@ const { Content } = await render(about);
 const { photo, photoAlt } = about.data;
 ---
 
-<Base title="About" image={photo}>
+<Base title="About" image={photo} agentInFooter={false}>
   <div class="frame">
     <h1 class="visually-hidden">About</h1>
     <div class="grid top">
@@ -57,9 +57,11 @@ const { photo, photoAlt } = about.data;
     </div>
   </div>
 
-  <div slot="footer" class="support">
-    <Image src={mac} alt="Mississippi Arts Commission" width={180} />
-    <p>{site.macCredit}</p>
+  <div slot="footer" class="grid support">
+    <div class="col-margin">
+      <Image src={mac} alt="Mississippi Arts Commission" width={180} />
+    </div>
+    <p class="col-read">{site.macCredit}</p>
   </div>
 </Base>
 
@@ -77,10 +79,8 @@ const { photo, photoAlt } = about.data;
   }
   .support {
     margin-top: var(--space-m);
-    display: flex;
-    flex-wrap: wrap;
     align-items: center;
-    gap: var(--space-s);
+    row-gap: var(--space-s);
     font-size: 15px;
     font-style: italic;
   }

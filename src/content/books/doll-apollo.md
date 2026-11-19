@@ -6,11 +6,11 @@ publisher: LSU Press
 year: 2022
 cover: ../../assets/covers/doll-apollo.jpg
 coverAlt: A red toile pattern with an astronaut, a rider on horseback, and paper-doll figures
-color: "#E1D8BC"
-color2: "#B2493F"
+color: "#B2493F"
+color2: "#E1D8BC"
 color3: "#C6AA91"
-textOn: ink
-collage: framed
+textOn: paper
+collage: tower
 tile: wide
 buy:
   - label: LSU Press
