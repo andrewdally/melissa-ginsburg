@@ -12,6 +12,8 @@ color3: "#151820"
 textOn: paper
 collage: right
 tile: tall
+scrapPosition: bottom-right
+scrapLayer: back
 buy:
   - label: Bookshop.org
     url: https://bookshop.org/book/9780062429704

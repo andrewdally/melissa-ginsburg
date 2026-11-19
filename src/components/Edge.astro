@@ -10,10 +10,12 @@ import { getFeaturedBook } from '../lib/books';
 
 interface Props {
   layout: 'news' | 'poems';
+  /** Shown only on a phone, or only wider. */
+  only?: 'phone' | 'wide';
 }
 
 const MIN = 4.5;
-const { layout } = Astro.props;
+const { layout, only } = Astro.props;
 const { color, color2, color3 } = (await getFeaturedBook()).data;
 
 /** The colour itself, or as little paper mixed in as lets ink read on it. */
@@ -34,7 +36,7 @@ const style = [`--e1: ${readable(color)}`, light && `--e2: ${readable(light)}`, 
   .join('; ');
 ---
 
-<div class:list={['edge', layout]} style={style} aria-hidden="true">
+<div class:list={['edge', layout, only && `only-${only}`]} style={style} aria-hidden="true">
   {dark && <i class="p3" />}
   <i class="p1"></i>
   {light && <i class="p2" />}
@@ -61,62 +63,97 @@ const style = [`--e1: ${readable(color)}`, light && `--e2: ${readable(light)}`, 
   .p2 {
     background: var(--e2);
   }
+  /* The dark piece fills the margin beside the text, from the window edge. */
   .p3 {
     background: var(--e3);
-    /* A square filling the margin beside the text. */
-    width: min(calc(var(--bleed) + var(--col)), 160px);
-    aspect-ratio: 1;
+    width: calc(var(--bleed) + var(--col));
+    height: 160px;
   }
 
-  /* News: from the right edge, beside the first item and as tall as it; the
-     light piece over the main block's lower left corner, under the item's last
-     lines; the dark square on the main block's top edge, out in the margin. */
+  /*
+   * A piece behind text is a sheet, not a highlighter: at least 240px tall
+   * and wider than every line it crosses, so whole lines sit on it. Smaller
+   * pieces stay in the margins, clear of text.
+   */
+  .edge {
+    /* Left edge of grid column n (1-based) is (n - 1) * (col + gutter). */
+    --step: calc(var(--col) + var(--gutter));
+  }
+
+  /* News: a sheet from the right edge under the whole first item, from 32px
+     left of its text; the light piece in the empty column left of the text,
+     over the sheet's lower left corner; the dark square on the sheet's top
+     right corner, in the margin beyond the text. */
+  .news {
+    --top: -32px;
+    /* Tall enough for the item, at least 240px, and never under 1:4. */
+    --sheet: max(calc(100% + 64px), 240px, calc((var(--content) - var(--step) * 5 + 32px + var(--bleed)) / 3.8));
+  }
   .news .p1 {
+    left: calc(var(--step) * 5 - 32px);
     right: calc(-1 * var(--bleed));
-    width: calc(30% + var(--bleed));
-    top: 0;
-    height: max(100%, 200px);
+    top: var(--top);
+    height: var(--sheet);
   }
   .news .p2 {
-    left: 54%;
-    width: 24%;
-    top: 58%;
-    bottom: -32px;
+    --w: max(90px, var(--step));
+    left: calc(var(--step) * 5 - 8px - var(--w));
+    width: var(--w);
+    top: calc(var(--top) + var(--sheet) - 140px);
+    height: 130px;
   }
   .news .p3 {
     right: calc(-1 * var(--bleed));
-    top: -32px;
+    top: var(--top);
   }
 
-  /* Poems: from the left edge, level with the middle of the run; the light
-     piece steps up from the main block into the run; the dark square hangs
-     below it in the margin. */
+  /* Poems (placed in the run itself, which sets the line height): a sheet
+     under the run's last whole lines, 32px past both ends of every line, its
+     top and bottom on line boundaries so no line is cut; the light piece in
+     the right margin, stepping up from the sheet's top right corner; the dark
+     square in the left margin beside the sheet's lower left corner. */
   .poems {
-    /* Broad, never a strip, however far it bleeds. */
-    --p1h: max(26%, 150px, calc((var(--bleed) + var(--content) * 0.34) * 0.27));
-    --p3s: min(calc(var(--bleed) + var(--col)), 160px);
+    /* The run's width plus 32px each side. */
+    --sw: calc(var(--step) * 10 - var(--gutter) + 64px);
+    /* At least 240px, and at least a quarter of its width, in whole lines. */
+    --sh: max(round(up, 240px, 1lh), round(up, calc(var(--sw) * 0.25), 1lh));
   }
   .poems .p1 {
-    left: calc(-1 * var(--bleed));
-    width: calc(var(--bleed) + 34%);
-    top: 42%;
-    height: var(--p1h);
+    left: -32px;
+    right: -32px;
+    bottom: 0;
+    height: var(--sh);
   }
   .poems .p2 {
-    left: 26%;
-    width: 16%;
-    top: calc(42% - 90px);
-    height: 130px;
+    left: calc(100% + 8px);
+    right: calc(-1 * (var(--gutter) + var(--col) + var(--bleed)));
+    top: calc(100% - var(--sh) - 140px);
+    height: 180px;
   }
-  /* Within the run's section, so the gap below it holds. */
   .poems .p3 {
-    left: calc(-1 * var(--bleed));
-    top: min(calc(42% + var(--p1h) - 30px), calc(100% - var(--p3s)));
+    left: calc(-1 * (var(--gutter) + var(--col) + var(--bleed)));
+    top: calc(100% - 160px);
+  }
+
+  @media (max-width: 760px) {
+    .only-wide {
+      display: none;
+    }
+  }
+  @media (min-width: 761px) {
+    .only-phone {
+      display: none;
+    }
   }
 
   /* The margin is too narrow for a square of any size below this. */
   @media (max-width: 1039px) {
     .p3 {
+      display: none;
+    }
+  }
+  @media (min-width: 761px) and (max-width: 1039px) {
+    .poems .p2 {
       display: none;
     }
   }
@@ -130,6 +167,7 @@ const style = [`--e1: ${readable(color)}`, light && `--e2: ${readable(light)}`, 
       height: 72px;
     }
     .news .p1 {
+      left: auto;
       right: calc(-1 * var(--bleed));
       width: calc(var(--bleed) + 180px);
       top: 0;
@@ -151,6 +189,7 @@ const style = [`--e1: ${readable(color)}`, light && `--e2: ${readable(light)}`, 
     }
     .poems .p2 {
       left: 150px;
+      right: auto;
       width: 90px;
       top: 0;
       height: 72px;
