@@ -83,8 +83,8 @@ const style = tints.map((t, i) => (t ? `--t${i + 1}: ${t}` : '')).filter(Boolean
     background: var(--t3);
   }
 
-  /* News: a large block from the top-right edge, a tall strip at the left, a
-     small block between them. */
+  /* News: a large block from the top-right edge, a medium near-square at the
+     left, a small block between them. */
   .news .t1 {
     left: 56%;
     right: calc(-1 * var(--bleed));
@@ -94,8 +94,8 @@ const style = tints.map((t, i) => (t ? `--t${i + 1}: ${t}` : '')).filter(Boolean
   .news .t2 {
     left: 2%;
     top: calc(330 * var(--u));
-    width: 7%;
-    height: calc(520 * var(--u));
+    width: 20%;
+    height: calc(250 * var(--u));
   }
   .news .t3 {
     left: 54%;
@@ -104,19 +104,19 @@ const style = tints.map((t, i) => (t ? `--t${i + 1}: ${t}` : '')).filter(Boolean
     height: calc(170 * var(--u));
   }
 
-  /* Poems: a wide band from the left edge behind the middle of the run, a tall
-     strip at the right, a small block over the band's end. */
+  /* Poems: a wide band from the left edge behind the middle of the run, a
+     squarish block at the upper right, a small block over the band's end. */
   .poems .t1 {
     left: calc(-1 * var(--bleed));
     width: calc(var(--bleed) + 62%);
     top: calc(420 * var(--u));
-    height: calc(240 * var(--u));
+    height: max(calc(240 * var(--u)), calc((var(--bleed) + var(--content) * 0.62) * 0.27));
   }
   .poems .t2 {
-    left: 83%;
+    left: 76%;
     top: calc(60 * var(--u));
-    width: 11%;
-    height: calc(600 * var(--u));
+    width: 18%;
+    height: calc(230 * var(--u));
   }
   .poems .t3 {
     left: 54%;
@@ -137,9 +137,9 @@ const style = tints.map((t, i) => (t ? `--t${i + 1}: ${t}` : '')).filter(Boolean
     }
     .news .t2 {
       left: calc(-1 * var(--bleed));
-      top: 150px;
-      width: calc(var(--bleed) + 9%);
-      height: 280px;
+      top: 170px;
+      width: calc(var(--bleed) + 30%);
+      height: 120px;
     }
     .poems .t1 {
       top: 210px;
@@ -147,11 +147,11 @@ const style = tints.map((t, i) => (t ? `--t${i + 1}: ${t}` : '')).filter(Boolean
       height: 130px;
     }
     .poems .t2 {
-      left: 82%;
+      left: 64%;
       right: calc(-1 * var(--bleed));
       width: auto;
       top: 0;
-      height: 320px;
+      height: 150px;
     }
   }
 </style>

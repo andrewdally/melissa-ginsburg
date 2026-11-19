@@ -100,8 +100,8 @@ const ratio = photo ? (photo.width / photo.height).toFixed(4) : '0.67';
   /*
    * A collage from the photo, not a copy of a book preset: the main blue runs
    * off the left edge of the page, the photo half off its right edge, a pale
-   * blue block hangs below the photo's right side, a brown strip runs under it
-   * all. The bio starts at column 6 beside it.
+   * blue block hangs below the photo's right side, and a brown square lies
+   * under the photo's lower left corner. The bio starts at column 6 beside it.
    */
   .portrait {
     --bleed: calc(var(--margin) + (100vw - min(100vw, var(--max))) / 2);
@@ -130,16 +130,16 @@ const ratio = photo ? (photo.width / photo.height).toFixed(4) : '0.67';
   .a2 {
     background: var(--a2);
     left: 30%;
-    width: 8%;
+    width: max(72px, 8%);
     top: calc(var(--photo-top) + var(--photo-h) - 40 * var(--u));
     height: calc(250 * var(--u));
   }
   .a3 {
     background: var(--a3);
-    left: 4%;
-    width: 30%;
-    top: calc(var(--photo-top) + var(--photo-h) + 180 * var(--u));
-    height: 10px;
+    left: calc(15% - 50 * var(--u));
+    width: calc(120 * var(--u));
+    top: calc(var(--photo-top) + var(--photo-h) - 70 * var(--u));
+    height: calc(120 * var(--u));
   }
   .photo {
     position: absolute;
@@ -213,11 +213,11 @@ const ratio = photo ? (photo.width / photo.height).toFixed(4) : '0.67';
       height: 110px;
     }
     .a3 {
-      left: 0;
-      width: 50%;
+      left: calc(14% - 24px);
+      width: 56px;
       top: auto;
-      bottom: 0;
-      height: 8px;
+      bottom: 24px;
+      height: 56px;
     }
     .photo {
       position: relative;

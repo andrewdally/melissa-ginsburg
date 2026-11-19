@@ -11,6 +11,7 @@ color2: "#E8572A"
 color3: "#1A181D"
 textOn: paper
 collage: door
+shape: circle
 tile: tall
 buy:
   - label: Square Books, signed

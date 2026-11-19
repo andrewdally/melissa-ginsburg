@@ -10,6 +10,7 @@ color2: "#CECBBE"
 color3: "#B23A4A"
 textOn: paper
 collage: framed
+shape: circle
 tile: small
 buy:
   - label: Condensery Press

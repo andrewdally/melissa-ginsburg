@@ -52,6 +52,8 @@ const books = defineCollection({
         collage: optional(z.enum(COLLAGES)),
         /** Flip the collage left to right. */
         mirror: z.boolean().default(false),
+        /** "circle" only where the cover has one (a moon, a light, a target): the color2 piece becomes a circle. */
+        shape: z.enum(['rect', 'circle']).default('rect'),
         /** Tile size on the collage wall: "large", "tall", "wide" or "small". */
         tile: optional(z.enum(['large', 'tall', 'wide', 'small'])),
         /** Indent every other line of the excerpt. */
@@ -101,6 +103,13 @@ const books = defineCollection({
           .default([]),
       })
       .superRefine((book, ctx) => {
+        if (book.shape === 'circle' && !book.color2) {
+          ctx.addIssue({
+            code: 'custom',
+            path: ['shape'],
+            message: 'A circle is the color2 piece; set color2.',
+          });
+        }
         if (book.homePraise && !book.praise.some((p) => p.name === book.homePraise)) {
           ctx.addIssue({
             code: 'custom',
