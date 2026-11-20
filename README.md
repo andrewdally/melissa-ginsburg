@@ -2,6 +2,39 @@
 
 Melissa Ginsburg's website, built with [Astro](https://astro.build) as a static site.
 
+## Editing in Pages CMS
+
+Melissa edits the site in [Pages CMS](https://app.pagescms.org), a web editor
+for the files in this repository. It has forms for **News & events**, **Poems &c.**,
+**Books**, **About** and **Site details**, laid out by `.pages.yml`. Each save
+commits to `main`, and the publish workflow puts it on the site in a couple of
+minutes.
+
+Setup, once, by the repository owner:
+
+1. Sign in at [app.pagescms.org](https://app.pagescms.org) with GitHub and install
+   its GitHub App on this repository.
+2. Open the repository there, go to **Collaborators**, and invite Melissa by
+   email. She signs in with a link sent to that address; she doesn't need a
+   GitHub account.
+
+Good to know:
+
+- **Events** are news items dated the day of the event. Put the venue, city and
+  time in the text. The News page lists items newest first, so upcoming events
+  sit at the top.
+- **New poems** are added at the bottom of the list. Drag the new poem to the top:
+  the list is newest first, and the home page shows the top three.
+- **Images** upload to `src/assets` (covers to `src/assets/covers`). Cover
+  colours still have to be chosen by eye: see the book fields below.
+- **If a save doesn't appear on the site**, the build has stopped on something
+  it checks, such as a colour too pale against the paper or text that wouldn't
+  be readable on its colour. The **Actions** tab on GitHub shows the failed run
+  and its message. The site keeps showing the last good version until it's
+  fixed.
+- When you add a field to `src/content.config.ts`, add it to `.pages.yml` too.
+  The editor keeps fields it doesn't know about, but can't show them.
+
 ## Where the content lives
 
 Everything on the site comes from plain text files; no code changes are needed to update it.

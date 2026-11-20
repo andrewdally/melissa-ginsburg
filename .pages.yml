@@ -1,0 +1,519 @@
+# Pages CMS (https://pagescms.org): the editor for the site's content.
+#
+# Every save here is a commit to main, which republishes the site in a couple
+# of minutes. Fields mirror src/content.config.ts and the README's field table;
+# when a field is added there, add it here too.
+
+media:
+  - name: images
+    label: Images
+    input: src/assets
+    # Book and page files sit two folders below src/, so they point at images
+    # as ../../assets/…
+    output: ../../assets
+    categories: [image]
+
+settings:
+  content:
+    # Keep any field this file doesn't list, rather than dropping it on save.
+    merge: true
+
+content:
+  # ── News & events ─────────────────────────────────────────────────────────
+  - name: news
+    label: News & events
+    description: Readings, events and news, newest first on the News page. The newest also appears on the home page.
+    type: collection
+    path: src/content/news
+    filename: "{fields.date}-{hour}{minute}{second}.md"
+    view:
+      primary: date
+      fields: [date, title, book]
+      sort: [date]
+      default:
+        sort: date
+        order: desc
+    fields:
+      - name: date
+        label: Date
+        type: date
+        required: true
+        description: For a reading or event, the day it happens; otherwise the day of the news.
+      - name: title
+        label: Headline
+        type: string
+        description: Optional. Leave blank when the text already says it. Put a book title between asterisks to set it in italic, like *Runoff*.
+      - name: body
+        label: Text
+        type: rich-text
+        required: true
+        description: For an event, say where and when (venue, city, time).
+      - name: book
+        label: Book
+        type: reference
+        description: Optional. Also shows this item on that book's page.
+        options:
+          collection: books
+          value: "{name}"
+          label: "{title}"
+          search: title
+      - name: link
+        label: Link
+        type: string
+        description: Optional. Tickets, event page, preorder page…
+        pattern:
+          regex: ^(https?://\S+)?$
+          message: Paste a full web address, starting with https://
+      - name: linkLabel
+        label: Link text
+        type: string
+        description: The words for the link, like "Preorder from Milkweed". Blank shows "More".
+
+  # ── Poems &c. ─────────────────────────────────────────────────────────────
+  - name: poems
+    label: Poems &c.
+    description: Poems in magazines and other writing online.
+    type: file
+    path: src/data/poems.json
+    format: json
+    fields:
+      - name: poems
+        label: Poems in magazines
+        description: Newest first; the home page shows the top three. New poems are added at the bottom, so drag a new one to the top.
+        type: object
+        list:
+          collapsible:
+            collapsed: true
+            summary: "{fields.title} · {fields.venue}"
+        fields:
+          - name: title
+            label: Title
+            type: string
+            required: true
+          - name: venue
+            label: Magazine or site
+            type: string
+            required: true
+          - name: url
+            label: Link
+            type: string
+            required: true
+            pattern:
+              regex: ^(https?://\S+)?$
+              message: Paste a full web address, starting with https://
+          - name: excerpt
+            label: Opening lines
+            type: text
+            description: Optional. A few lines to open the Poems &c. page, one line per line. The first poem in the list with lines here is the one shown.
+      - name: elsewhere
+        label: Prose, video, conversation
+        description: Essays, interviews and other work, listed after the poems.
+        type: object
+        list:
+          collapsible:
+            collapsed: true
+            summary: "{fields.title} · {fields.venue}"
+        fields:
+          - name: title
+            label: Title
+            type: string
+            required: true
+          - name: venue
+            label: Magazine or site
+            type: string
+            required: true
+          - name: url
+            label: Link
+            type: string
+            required: true
+            pattern:
+              regex: ^(https?://\S+)?$
+              message: Paste a full web address, starting with https://
+
+  # ── Books ─────────────────────────────────────────────────────────────────
+  - name: books
+    label: Books
+    description: One entry per book. The file name becomes the book's web address, so rename with care.
+    type: collection
+    path: src/content/books
+    filename: "{primary}.md"
+    view:
+      primary: title
+      fields: [title, year, category, featured]
+      sort: [year, title]
+      default:
+        sort: year
+        order: desc
+    fields:
+      # The book
+      - name: title
+        label: Title
+        type: string
+        required: true
+      - name: kind
+        label: Kind
+        type: string
+        required: true
+        description: Shown under the title, lower case, like "poems", "a novel" or "a chapbook".
+      - name: category
+        label: Category
+        type: select
+        required: true
+        options:
+          values:
+            - { value: poetry, label: Poetry }
+            - { value: fiction, label: Fiction }
+            - { value: chapbook, label: Chapbook }
+      - name: publisher
+        label: Publisher
+        type: string
+        required: true
+      - name: year
+        label: Year
+        type: number
+        options: { min: 1990, max: 2100 }
+      - name: releaseDate
+        label: Release date
+        type: date
+        description: Only for a book that isn't out yet. Until then the page says "Preorder" and gives the date.
+      - name: featured
+        label: Featured on the home page
+        type: boolean
+        description: Tick for one book only.
+      - name: cover
+        label: Cover
+        type: image
+        required: true
+        options:
+          path: src/assets/covers
+      - name: coverAlt
+        label: Cover description
+        type: string
+        description: What the cover shows, for people who can't see it.
+      - name: body
+        label: Description
+        type: rich-text
+      - name: tagline
+        label: One-line summary
+        type: string
+        description: Not shown on the page; used in search results and link previews.
+      - name: excerpt
+        label: Excerpt
+        type: text
+        description: A few lines from the book. Line breaks are kept; a blank line starts a new stanza.
+      - name: buy
+        label: Where to buy
+        description: Best first. The top of the page shows the first three (an independent shop, Square Books for signed copies, the publisher); the rest follow the description.
+        type: object
+        list:
+          collapsible:
+            collapsed: true
+            summary: "{fields.label}"
+        fields:
+          - name: label
+            label: Shop
+            type: string
+            required: true
+          - name: url
+            label: Link
+            type: string
+            required: true
+            pattern:
+              regex: ^(https?://\S+)?$
+              message: Paste a full web address, starting with https://
+      - name: praise
+        label: Praise
+        description: Blurbs. Put a book title between asterisks to set it in italic.
+        type: object
+        list:
+          collapsible:
+            collapsed: true
+            summary: "{fields.name}"
+        fields:
+          - name: quote
+            label: Quote
+            type: text
+            required: true
+          - name: name
+            label: Name
+            type: string
+            required: true
+          - name: credit
+            label: Credit
+            type: string
+            description: Like "author of *Glitter Road*".
+          - name: url
+            label: Link
+            type: string
+            pattern:
+              regex: ^(https?://\S+)?$
+              message: Paste a full web address, starting with https://
+          - name: featured
+            label: Large pull quote
+            type: boolean
+            description: Tick for one blurb per book.
+          - name: pull
+            label: Line to quote on its own
+            type: text
+            description: Optional. Copied exactly from the quote. Set large on the book page (for the pull quote) or quoted on the home page.
+      - name: press
+        label: Interviews and conversations
+        type: object
+        list:
+          collapsible:
+            collapsed: true
+            summary: "{fields.title} · {fields.source}"
+        fields:
+          - name: title
+            label: Title
+            type: string
+            required: true
+          - name: source
+            label: Where
+            type: string
+            required: true
+          - name: url
+            label: Link
+            type: string
+            required: true
+            pattern:
+              regex: ^(https?://\S+)?$
+              message: Paste a full web address, starting with https://
+          - name: quote
+            label: Quote
+            type: text
+      - name: format
+        label: Format
+        type: string
+        description: Like "Paperback".
+      - name: pages
+        label: Pages
+        type: number
+      - name: price
+        label: Price
+        type: string
+        description: Like "$18.00".
+      - name: isbn
+        label: ISBN
+        type: string
+        description: With its hyphens.
+      - name: honors
+        label: Honors
+        type: string
+        list: true
+      - name: homeBlurb
+        label: Home page description
+        type: text
+        description: Featured book only. Blank uses the description's first sentence.
+      - name: homePraise
+        label: Home page blurb
+        type: string
+        description: Featured book only. The name on the blurb to quote, copied exactly. Blank uses the first blurb that isn't the pull quote.
+
+      # How the book looks. The README's "Book fields" table explains each one.
+      - name: color
+        label: "Design: main colour"
+        type: string
+        required: true
+        description: The large colour block, sampled from the cover, like #F47B20. Too pale and the site won't publish; use the cover's darker colour.
+        pattern:
+          regex: ^(#[0-9a-fA-F]{6})?$
+          message: A six-digit colour code, like #F47B20
+      - name: color2
+        label: "Design: accent colour"
+        type: string
+        pattern:
+          regex: ^(#[0-9a-fA-F]{6})?$
+          message: A six-digit colour code, like #F47B20
+      - name: color3
+        label: "Design: third colour"
+        type: string
+        description: Optional third piece of paper.
+        pattern:
+          regex: ^(#[0-9a-fA-F]{6})?$
+          message: A six-digit colour code, like #F47B20
+      - name: textOn
+        label: "Design: words on the main colour"
+        type: select
+        description: Blank picks whichever reads better.
+        options:
+          values:
+            - { value: ink, label: Ink (dark) }
+            - { value: paper, label: Paper (light) }
+      - name: collage
+        label: "Design: page layout"
+        type: select
+        description: The arrangement at the top of the book page. Give books next to each other different layouts.
+        options:
+          values:
+            - { value: left, label: "Left: title across the colour (light colours only)" }
+            - { value: right, label: Right }
+            - { value: framed, label: Framed }
+            - { value: tower, label: "Tower: tall narrow block off the page edge" }
+            - { value: band, label: "Band: broad band off the page edge" }
+            - { value: door, label: "Door: tall block down from the top" }
+            - { value: column, label: "Column: tall block behind the cover" }
+      - name: mirror
+        label: "Design: flip the layout"
+        type: boolean
+      - name: shape
+        label: "Design: accent shape"
+        type: select
+        description: Circle only where the cover has one (a moon, a light, a target). Needs an accent colour.
+        default: rect
+        options:
+          values:
+            - { value: rect, label: Rectangle }
+            - { value: circle, label: Circle }
+      - name: tile
+        label: "Design: size on the wall of books"
+        type: select
+        description: Blank is wide (small for chapbooks).
+        options:
+          values:
+            - { value: large, label: Large }
+            - { value: tall, label: Tall }
+            - { value: wide, label: Wide }
+            - { value: small, label: Small }
+      - name: scrapPosition
+        label: "Design: wall piece position"
+        type: select
+        description: Where the second piece sits on the wall. Blank picks by position.
+        options:
+          values:
+            - { value: top-right, label: Top right }
+            - { value: bottom-right, label: Bottom right }
+            - { value: left, label: Left edge }
+            - { value: top-left, label: Top left }
+            - { value: above, label: Rising above }
+            - { value: right, label: Tucked behind the right edge }
+      - name: scrapLayer
+        label: "Design: wall piece layer"
+        type: select
+        options:
+          values:
+            - { value: front, label: In front }
+            - { value: back, label: Behind }
+      - name: scrapColor
+        label: "Design: wall piece colour"
+        type: select
+        default: color2
+        options:
+          values:
+            - { value: color2, label: Accent colour }
+            - { value: color3, label: Third colour }
+      - name: excerptStagger
+        label: "Design: indent every other excerpt line"
+        type: boolean
+
+  # ── About and site details ────────────────────────────────────────────────
+  - name: about
+    label: About
+    description: The bio and photo. The home page quotes the bio's first and last sentences.
+    type: file
+    path: src/content/pages/about.md
+    format: yaml-frontmatter
+    fields:
+      - name: title
+        label: Title
+        type: string
+        hidden: true
+      - name: photo
+        label: Photo
+        type: image
+        options:
+          path: src/assets
+      - name: photoAlt
+        label: Photo description
+        type: string
+        description: What the photo shows, for people who can't see it.
+      - name: body
+        label: Bio
+        type: rich-text
+
+  - name: site
+    label: Site details
+    description: Contact details, links and the lines that appear on every page.
+    type: file
+    path: src/data/site.json
+    format: json
+    fields:
+      - name: name
+        label: Name
+        type: string
+        required: true
+      - name: tagline
+        label: Tagline
+        type: string
+      - name: location
+        label: Location
+        type: string
+      - name: description
+        label: Site description
+        type: text
+        description: Used in search results and link previews.
+      - name: footerNote
+        label: Footer line
+        type: string
+      - name: email
+        label: Email
+        type: string
+        description: Optional. Blank shows only the agent's details.
+      - name: agent
+        label: Agent
+        type: object
+        fields:
+          - name: name
+            label: Name
+            type: string
+          - name: agency
+            label: Agency
+            type: string
+          - name: email
+            label: Email
+            type: string
+      - name: links
+        label: Social links
+        type: object
+        list:
+          collapsible:
+            collapsed: true
+            summary: "{fields.label}"
+        fields:
+          - name: label
+            label: Name
+            type: string
+            required: true
+          - name: url
+            label: Link
+            type: string
+            required: true
+            pattern:
+              regex: ^(https?://\S+)?$
+              message: Paste a full web address, starting with https://
+      - name: macCredit
+        label: Arts Commission credit line
+        type: text
+      - name: aboutColors
+        label: About page colours
+        description: Sampled from the photo.
+        type: object
+        fields:
+          - name: main
+            label: Main
+            type: string
+            pattern:
+              regex: ^(#[0-9a-fA-F]{6})?$
+              message: A six-digit colour code, like #215088
+          - name: second
+            label: Second
+            type: string
+            pattern:
+              regex: ^(#[0-9a-fA-F]{6})?$
+              message: A six-digit colour code, like #215088
+          - name: third
+            label: Third
+            type: string
+            pattern:
+              regex: ^(#[0-9a-fA-F]{6})?$
+              message: A six-digit colour code, like #215088
