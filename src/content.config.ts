@@ -8,6 +8,11 @@ import { INK, PAPER, bestTextOn, contrast, textColor } from './lib/color';
 const blank = (v: unknown) => (v === '' || v === null ? undefined : v);
 const optional = <T extends z.ZodType>(schema: T) => z.preprocess(blank, schema.optional());
 
+// The CMS picks a book by its file ("runoff.md", or a path to it); the site
+// knows it by name ("runoff"). Accept either.
+const bookId = (v: unknown) =>
+  typeof v === 'string' ? v.replace(/^.*\//, '').replace(/\.md$/, '') : v;
+
 const color = z
   .string()
   .regex(/^#[0-9a-fA-F]{6}$/, 'Use a six-digit hex color, like #F47B20');
@@ -181,7 +186,7 @@ const news = defineCollection({
     title: optional(z.string()),
     date: z.coerce.date(),
     /** Link the item to a book so it also shows on that book's page. */
-    book: optional(reference('books')),
+    book: optional(z.preprocess(bookId, reference('books'))),
     link: optional(z.url()),
     linkLabel: optional(z.string()),
   }),
